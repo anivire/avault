@@ -6,11 +6,12 @@
         <Icon name="material-symbols:star-rounded" class="text-xl mr-1 mt-0.5"/>
         <h1 class="text-lg uppercase">{{ score == undefined ? 'n/a' : score }}</h1> 
     </div>
-    <NuxtLink :to="'/anime/' + animeId">
-        <img 
+    <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}">
+        <nuxt-img 
             :src="imageUrl" 
             :class="isPosterHovered ? 'h-96' : 'h-full'"
             class="rounded-lg transition-all duration-200 ease-in-out object-cover" 
+            loading="lazy"
             @mouseenter="isPosterHovered = true"
             @mouseleave="isPosterHovered = false"
         />
@@ -19,7 +20,7 @@
         :class="isPosterHovered ? 'translate-y-24' : 'translate-y'"
         class="transition-all duration-200 ease-in-out">
         <div 
-            :class="isInfoHovered ? 'translate-y-0' : 'translate-y-10'"
+            :class="isInfoHovered ? 'translate-y-0' : 'translate-y-9'"
             class="absolute bottom-0 p-3 flex flex-col grow gap-1 bg-zinc-900 hover:bg-zinc-800 rounded-b-md w-full transition-all duration-200 ease-in-out" 
             @mouseenter="isInfoHovered = true"
             @mouseleave="isInfoHovered = false">
@@ -34,26 +35,25 @@
                 <p>•</p>
                 <p>{{ new Date(airedFrom).getFullYear() }}</p>
             </div>
-            <!-- <NuxtLink :to="'/anime/' + animeId"> -->
-                <p 
-                    :class="!isInfoHovered ? 'line-clamp-1' : ''" 
-                    class="text-sm grow font-bold">
-                    {{ title }}
-                </p>
-            <!-- </NuxtLink> -->
+            <p 
+                :class="!isInfoHovered ? 'line-clamp-1' : ''" 
+                class="text-sm grow font-bold">
+                {{ title }}
+            </p>
             <p class="text-zinc-400 text-xs">{{ studio }}</p> 
             <div 
-                class="grid grid-cols-5 items-center">
-                <button class="hover:bg-rose-600/90 rounded-md p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:heart-line" class=""/>
+                class="flex flex-row gap-3 justify-center items-center">
+                <button class="flex flex-row items-center gap-1 hover:bg-rose-600/90 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
+                    <Icon name="ri:heart-fill"/>
                 </button>
-                <button class="flex flex-row items-center gap-1 col-span-2 hover:bg-zinc-600/50 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:star-line"/>
-                    <p class="text-sm">Score</p>
+                <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
+                    <Icon name="ri:star-fill"/>
                 </button>
                 <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md col-span-2 justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:add-box-line"/>
-                    <p class="text-sm">List</p>
+                    <Icon name="ri:add-box-fill"/>
+                </button>
+                <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md col-span-2 justify-center p-2 duration-200 easy-in-out transition-colors">
+                    <Icon name="ri:movie-2-fill"/>
                 </button>
             </div>      
         </div>
@@ -65,7 +65,7 @@
 const isPosterHovered = ref(false);
 const isInfoHovered = ref(false);
 
-const props = defineProps({
+defineProps({
     animeId:        { type: Number, required: true},
     imageUrl:       { type: String, required: true},
     title:          { type: String, required: true},

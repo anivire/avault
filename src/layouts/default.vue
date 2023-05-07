@@ -1,13 +1,13 @@
 <template>
     <NuxtLoadingIndicator />
-    <div class="flex flex-col">
-        <div class="footer"><AppNavbar/></div> 
-        <div class="page"><NuxtPage/></div>
-        <div class="footer"><AppFooter/></div>
+    <div class="flex flex-col relative min-h-screen">
+        <div class="absolute z-10 w-full"><AppHeader/></div> 
+        <div class="mb-28 grow"><NuxtPage/></div>
+        <div><AppFooter/></div>
     </div>
 </template>
 
 <script setup lang="ts">
 import AppFooter from '../components/nav/AppFooter.vue';
-import AppNavbar from '../components/nav/AppNavbar.vue';
+import AppHeader from '../components/nav/AppHeader.vue';
 </script>

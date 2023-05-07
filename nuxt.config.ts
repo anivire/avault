@@ -15,5 +15,7 @@ export default defineNuxtConfig({
     modules: [
         '@nuxtjs/supabase',
         'nuxt-icon',
+        '@nuxt/image-edge',
+        'nuxt-typed-router',
     ],
 })

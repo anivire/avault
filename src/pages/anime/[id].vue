@@ -1,86 +1,305 @@
 <template>
-    <div class="relative mx-auto max-w-7xl">
-        <div v-if="anime" class="grid grid-cols-3 gap-5 absolute z-10 mt-40">
-            <img :src="anime?.images.jpg.large_image_url" class="object-cover rounded-xl w-full">
-            <div class="flex flex-col gap-4 justify-start col-span-2 mt-28">
-                <h1>{{ anime.title_english != undefined ? anime.title_english : anime.titles[0].title }}</h1>
-                <div class="bg flex flex-row gap-3 items-center">
-                    <!-- <div class="px-4 p-2 flex flex-row justify-center items-center border-2 border-zinc-900 rounded-md">
-                       <h1 class="text-xl">{{ anime.rating }}</h1> 
-                    </div> -->
-                    <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-900 rounded-md">
-                       <h1 class="text-xl uppercase">{{ anime.type }}</h1> 
-                    </div>
-                    <div 
-                        :class="parseAnimeAiringStatus(anime.status) == 'Ongoing' ? 'bg-rose-400' : parseAnimeAiringStatus(anime.status) == 'Upcoming' ? 'bg-amber-400' : 'bg-emerald-400'"
-                        class="px-4 p-2 flex flex-row justify-center items-center rounded-md text-zinc-950">
-                       <h1 class="text-xl uppercase">{{ parseAnimeAiringStatus(anime.status) }}</h1> 
-                    </div>
-                    <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-900 rounded-md gap-1">
-                        <Icon name="material-symbols:star-rounded" class="text-xl"/>
-                        <h1 class="text-xl uppercase">{{ anime.score }}</h1> 
-                    </div>
-                    <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-900 rounded-md">
-                       <h1 v-if="anime.episodes" class="text-xl uppercase">{{ anime.episodes }} EP.</h1> 
-                       <h1 v-else class="text-xl uppercase">n/a EP.</h1> 
-                    </div>
-                    <div class="justify-center items-center">
-                        <h1 class="text-xl uppercase">x</h1>
-                    </div>
-                    <div class="px-3 p-2 flex flex-row justify-center items-center bg-zinc-900 rounded-md">
-                        <h1 v-if="anime!.duration != 'Unknown'" class="text-xl uppercase">{{ anime!.duration.indexOf('p') >= 0 ? anime!.duration.slice(0, anime!.duration.indexOf(' p')) + '.' : anime!.duration}}</h1> 
-                        <h1 v-else class="text-xl uppercase">n/a min.</h1> 
-                    </div>
-                </div>
-                <div>
-                    <button 
-                        @click="isTitlesShowed = !isTitlesShowed" 
-                        class="text-zinc-400 flex flex-row gap-1 items-center hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
-                            <Icon name="ri:translate-2" class="text-xl"/>    
-                            Show alternative titles
-                    </button>
-                    <div v-show="isTitlesShowed" class="alt-titles flex flex-col">
-                        <p v-if="anime.title_english != undefined" class="text-zinc-400">English: <span class="text-zinc-50">{{ anime!.title_english }}</span></p>
-                        <p v-if="anime.title_japanese != undefined" class="text-zinc-400">Japanese: <span class="text-zinc-50 ">{{ anime!.title_japanese }}</span></p>
-                        <div v-if="anime.title_synonyms.length != 0" class="flex flex-row gap-1">
-                            <p class="text-zinc-400">Synonyms:</p>
-                            <p v-for="title, i in anime.title_synonyms">
-                                {{ (title) + (i / 2 == 0 && anime.title_synonyms.length != 1 ? ',' : '') }}
-                            </p>
+    <div class="absolute overflow-hidden">
+        <nuxt-img 
+            v-if="anime"
+            :src="anime.images.jpg.small_image_url" 
+            class="w-screen h-52 object-cover blur-lg opacity-40 brightness-75"
+        />
+    </div> 
+
+    <nuxt-img 
+        v-if="anime"
+        :src="anime?.images.jpg.small_image_url" 
+        class="absolute w-screen h-80 object-cover blur-[164px] opacity-30 -z-10"
+    />
+
+    <div class="relative mx-auto max-w-7xl">   
+        <div v-if="anime" class="flex flex-col gap-8 mt-40">
+            <div class="grid grid-cols-3 gap-5">
+                <div class="flex flex-col gap-3">
+                    
+                    <nuxt-img 
+                        v-if="anime"
+                        :src="anime.images.jpg.large_image_url" 
+                        class="object-cover rounded-xl w-full"
+                    />
+                    
+                    <!-- User anime control panel -->
+                    <div class="grid grid-cols-6 gap-2">
+                        <button 
+                            @click="" 
+                            :class="isUserFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
+                            class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
+                            <Icon name="ri:heart-fill" class="text-xl"/>
+                        </button>
+                        <div class="relative w-full col-span-5">
+                            <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                                <div class="flex flex-row items-center gap-2">
+                                    <Icon name="ri:movie-2-fill" class="text-xl"/>
+                                    <p class="text-sm font-bold">Watched episodes</p>
+                                </div>
+                                <div class="flex flex-row items-center gap-2">
+                                    <!-- <button @click="userWatchedEpisodes > 0 ? userWatchedEpisodes-- : anime.episodes"><Icon name="ri:subtract-fill"/></button> -->
+                                    <input 
+                                        type="number" 
+                                        min="0" 
+                                        :max="anime.episodes != undefined ? anime.episodes : 999" 
+                                        v-model="userWatchedEpisodes" 
+                                        class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
+                                    <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
+                                    <button @click="userWatchedEpisodes < (anime.episodes != undefined ? anime.episodes : 999) ? userWatchedEpisodes++ : anime.episodes"><Icon name="ri:add-fill"/></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div 
+                            class="relative w-full col-span-3" 
+                            @mouseover="isListMenuOpen = true" 
+                            @mouseleave="isListMenuOpen = false">
+                            <button :class="isListMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                                <div class="flex flex-row items-center gap-2">
+                                    <Icon name="ri:add-box-fill" class="text-xl"/>
+                                    <p class="text-sm font-bold">List</p>
+                                </div>
+                                <p class="text-sm text-zinc-400">Select</p>
+                            </button>
+                            <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                                <button @click="selectList('select')" :class="isUserWatched ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                    <p class="text-xs p-2">Select</p>
+                                </button>
+                                
+                                <button @click="selectList('watched')" :class="isUserWatched ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                    <p class="text-xs p-2">Watched</p>
+                                    <Icon name="ri:check-line" class="mr-2"></Icon>
+                                </button>
+                                
+                                <button @click="selectList('watching')" :class="isUserWatching ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                    <p class="text-xs p-2">Watching</p>
+                                    <Icon name="ri:eye-fill" class="mr-2"></Icon>
+                                </button>
+
+                                <button @click="selectList('planned')" :class="isUserPlanned ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                    <p class="text-xs p-2">Planned</p>
+                                    <Icon name="ri:time-fill" class="mr-2"></Icon>
+                                </button>
+
+                                <button @click="selectList('dropped')" :class="isUserDropped ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                    <p class="text-xs p-2">Dropped</p>
+                                    <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div 
+                            class="relative w-full col-span-3"
+                            @mouseover="isScoreMenuOpen = true" 
+                            @mouseleave="isScoreMenuOpen = false">
+                            <button :class="isScoreMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                                <div class="flex flex-row items-center gap-2">
+                                    <Icon name="material-symbols:star-rounded" class="text-xl"/>
+                                    <p class="text-sm font-bold">Score</p>
+                                </div>
+                                <p class="text-sm text-zinc-400">Select</p>
+                            </button>
+                            <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col shadow-md ">
+                                <button :class="userAnimeScore == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
+                                <button :class="userAnimeScore == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
+                                <button :class="userAnimeScore == 9 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
+                                <button :class="userAnimeScore == 8 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(8)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">8 - Very Good</button>
+                                <button :class="userAnimeScore == 7 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(7)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">7 - Good</button>
+                                <button :class="userAnimeScore == 6 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(6)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">6 - Fine</button>
+                                <button :class="userAnimeScore == 5 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(5)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">5 - Average</button>
+                                <button :class="userAnimeScore == 4 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(4)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">4 - Bad</button>
+                                <button :class="userAnimeScore == 3 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(3)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">3 - Very Bad</button>
+                                <button :class="userAnimeScore == 2 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(2)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">2 - Horrible</button>
+                                <button :class="userAnimeScore == 1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">1 - Appaling</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col">
-                    <p class="text-zinc-400">Rating: <span class="text-zinc-50">{{ anime.rating }}</span></p>
-                    <p class="text-zinc-400">Source: <span class="text-zinc-50">{{ anime.source }}</span></p>
-                    <p class="text-zinc-400">Airing: <span class="text-zinc-50">{{ parseAnimeDate(anime.aired.from, anime.aired.to, anime.status) }}</span></p>
-                    <div v-if="anime.studios.length != 0" class="flex flex-row gap-1">
-                        <p class="text-zinc-400">Studios:</p> 
-                        <p v-for="studio, i in anime.studios" class="text-zinc-50">
-                            {{ (studio.name) + (i / 2 == 0 && anime.studios.length != 1 ? ',' : '') }}
-                        </p>
+
+                <!-- Anime info -->
+                <div class="flex flex-col gap-4 justify-start col-span-2 mt-16">
+                    <h1>{{ anime.title_english != undefined ? anime.title_english : anime.titles[0].title }}</h1>
+                    <div class="bg flex flex-row gap-3 items-center">
+                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                        <h1 class="text-xl uppercase">{{ anime.type }}</h1> 
+                        </div>
+                        <div 
+                            :class="parseAnimeAiringStatus(anime.status) == 'Ongoing' ? 'bg-amber-400' : parseAnimeAiringStatus(anime.status) == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
+                            class="px-4 p-2 flex flex-row justify-center items-center rounded-md text-zinc-800">
+                            <h1 class="text-xl uppercase">{{ parseAnimeAiringStatus(anime.status) }}</h1> 
+                        </div>
+                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md gap-1">
+                            <Icon name="material-symbols:star-rounded" class="text-xl"/>
+                            <h1 class="text-xl uppercase">{{ anime.score }}</h1> 
+                        </div>
+                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                            <h1 v-if="anime.episodes" class="text-xl uppercase">{{ anime.episodes }} EP.</h1> 
+                            <h1 v-else class="text-xl uppercase">n/a EP.</h1> 
+                        </div>
+                        <div class="justify-center items-center">
+                            <h1 class="text-xl uppercase">x</h1>
+                        </div>
+                        <div class="px-3 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                            <h1 v-if="anime!.duration != 'Unknown'" class="text-xl uppercase">{{ anime!.duration.indexOf('p') >= 0 ? anime!.duration.slice(0, anime!.duration.indexOf(' p')) + '.' : anime!.duration}}</h1> 
+                            <h1 v-else class="text-xl uppercase">n/a min.</h1> 
+                        </div>
                     </div>
-                    <!-- <p v-if="anime.producers.length != 0" class="text-zinc-400">Producers: <span class="text-zinc-50">{{ animeProducers() }}</span></p>
-                    <p v-if="anime.season" class="text-zinc-400">Season: <span class="text-zinc-50 capitalize ">{{ anime!.season }} {{ anime!.year }}</span></p> -->
+                    <div class="flex flex-row gap-3">
+                        <h1 v-for="genre, i in anime.genres" class="px-3 p-2 uppercase flex flex-row justify-center items-center bg-zinc-800 rounded-md text-xl">
+                            {{ genre.name }}
+                        </h1>
+                    </div>
+                    <div>
+                        <button 
+                            @click="isTitlesShowed = !isTitlesShowed" 
+                            class="text-zinc-400 flex flex-row gap-1 items-center hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
+                                <Icon name="ri:translate-2" class="text-xl"/>    
+                                Show alternative titles
+                        </button>
+                        <div v-show="isTitlesShowed" class="alt-titles flex flex-col">
+                            <p v-if="anime.title_english != undefined" class="text-zinc-400">English: <span class="text-zinc-50">{{ anime!.title_english }}</span></p>
+                            <p v-if="anime.title_japanese != undefined" class="text-zinc-400">Japanese: <span class="text-zinc-50 ">{{ anime!.title_japanese }}</span></p>
+                            <div v-if="anime.title_synonyms.length != 0" class="flex flex-row gap-1">
+                                <p class="text-zinc-400">Synonyms:
+                                    <span v-for="title, i in anime.title_synonyms" class="text-zinc-50">
+                                        {{ (title) + (anime.title_synonyms.length != 1 && i + 1 != anime.title_synonyms.length ? ', ' : '') }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col">
+                        <p v-if="anime.rating" class="text-zinc-400">Rating: <span class="text-zinc-50">{{ anime.rating }}</span></p>
+                        <p v-if="anime.source" class="text-zinc-400">Source: <span class="text-zinc-50">{{ anime.source }}</span></p>
+                        <p v-if="anime.aired.from" class="text-zinc-400">Airing: <span class="text-zinc-50">{{ parseAnimeDate(anime.aired.from, anime.aired.to, anime.status) }}</span></p>
+                        <p v-if="anime.season" class="text-zinc-400">Season: <span class="text-zinc-50 capitalize ">{{ anime.season }} {{ anime.year }}</span></p>
+                        <div v-if="anime.studios.length != 0" class="flex flex-row gap-1">
+                            <p class="text-zinc-400">Studios:
+                                <span v-for="studio, i in anime.studios" class="text-zinc-50">
+                                    {{ (studio.name) + (anime.studios.length != 1 && i + 1 != anime.studios.length ? ', ' : '') }}
+                                </span>
+                            </p> 
+                        </div>
+                        <div v-if="anime.producers.length != 0" class="flex flex-row gap-1">
+                            <p class="text-zinc-400">Producers: 
+                                <span v-for="producer, i in anime.producers" class="text-zinc-50">
+                                    {{ (producer.name) + (anime.producers.length != 1 && i + 1 != anime.producers.length ? ', ' : '') }}
+                                </span>
+                            </p> 
+                        </div>
+                    </div>
+                    <p v-if="anime.synopsis" class="text-zinc-400">Description: <span class="text-zinc-50">{{ anime.synopsis }}</span></p>
+                </div>
+            </div>
+
+            <!-- Trailer & characters -->
+            <div v-if="anime && characters && (anime.trailer.embed_url && characters!.length)" class="grid grid-cols-2 gap-5">
+                <div v-if="anime && anime.trailer.embed_url" class="flex flex-col gap-3">
+                    <h1 class="text-xl uppercase">Trailer</h1>
+                    <iframe 
+                        :src="'https://www.youtube.com/embed/' + anime!.trailer.youtube_id + '?enablejsapi=1&wmode=opaque&autoplay=0'" 
+                        class="relative w-full z-2 rounded-md" 
+                        style="height: 320px;" >
+                    </iframe>
+                </div>
+                
+                <div v-if="characters && characters!.length > 0" class="flex flex-col gap-3">
+                    <div class="flex flex-row justify-between items-center">
+                        <h1 class="text-xl uppercase">Characters</h1>
+                        <div class="grid grid-cols-3 text-center">
+                            <button 
+                                @click="currentCharacter == 0 ? currentCharacter = currentCharacter : currentCharacter = currentCharacter - 1" 
+                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
+                                <Icon name="ri:arrow-drop-left-line" class="text-xl"/> 
+                                Prev
+                            </button>
+                            <p class="text-zinc-50">{{ currentCharacter + 1 }}</p>
+                            <button 
+                                @click="currentCharacter == (anime!.trailer.embed_url ? Math.round(characters.length / 4 - 1) : Math.round(characters.length / 6))  ? currentCharacter = currentCharacter : currentCharacter = currentCharacter + 1" 
+                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
+                                Next 
+                                <Icon name="ri:arrow-drop-right-line" 
+                                class="text-xl"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div 
+                        class="characters-carousel grid grid-flow-col gap-4 h-full" 
+                        style="overflow-y: hidden; overflow-x: hidden;">
+                        <p v-show="characters!.length == 0">No characters was found</p>
+                        <CharacterCapsule 
+                            v-show="characters" 
+                            v-for="character in characters" class="z-0"
+                            :style="currentCharacter ? 'transform: translateX(-' + (anime.trailer.embed_url ? currentCharacter * 640 : currentCharacter * 1166) + 'px;' : ''"
+                            :character-id="character.character.mal_id"
+                            :image-url="character.character.images!.jpg.image_url"
+                            :name="character.character.name" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relations -->
+            <div class="flex flex-col gap-3">
+                <h1 class="text-xl uppercase">Relations</h1>
+                <div class="flex flex-row flex-wrap gap-3">
+                    <template v-for="item in anime.relations">
+                        <div v-for="entry in item.entry" class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all">
+                            <Icon v-if="item.relation == 'Character'" name="ri:user-3-fill" class="text-2xl"/>
+                            <Icon v-else-if="entry.type == 'anime'" name="ri:movie-2-line" class="text-2xl"/>
+                            <Icon v-else-if="entry.type == 'manga'" name="ri:book-3-line" class="text-2xl"/>
+
+                            <div>
+                                <div v-if="item.relation != 'Character'" class="flex flex-row gap-2 items-center">
+                                    <p class="text-xs uppercase text-zinc-400">{{ item.relation }}</p> 
+                                    <p class="text-xs text-zinc-400">•</p>
+                                    <p class="text-xs uppercase text-zinc-400">{{ entry.type }}</p> 
+                                </div>
+                                <div v-else class="flex flex-row gap-2 items-center">
+                                    <p class="text-xs uppercase text-zinc-400">{{ item.relation }}</p> 
+                                </div>
+                                <p class="font-bold">{{ entry.name }}</p>
+                            </div>
+                            
+                            <NuxtLink v-if="item.relation != 'Character' && entry.type != 'manga'" :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
+                                <Icon name="ri:arrow-right-up-line" class="text-3xl"/>
+                            </NuxtLink>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
     </div>
-    <div class="overflow-hidden h-64">
-        <img :src="anime?.images.jpg.large_image_url" class="w-screen h-screen object-cover blur-xl opacity-75">
-    </div>   
 </template>
 
 <script setup lang="ts">
-import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus } from '@tutkli/jikan-ts';
+import CharacterCapsule from '@/src/components/capsule/CharacterCapsule.vue';
+import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommendation } from '@tutkli/jikan-ts';
 
 const anime = ref<Anime>();
 const episodes = ref<AnimeEpisode[]>();
 const characters = ref<AnimeCharacter[]>();
+const recommendations = ref<Recommendation[]>();
 
 const isTitlesShowed = ref(false);
+const isFullSynopsis = ref(false);
+const isListMenuOpen = ref(false);
+const isEpisodesMenuOpen = ref(false);
+const isScoreMenuOpen = ref(false);
+const isImageLoaded = ref(false);
 
-const route = useRoute();
+const isUserFavorited = ref(false);
+const isUserWatched = ref(false);
+const isUserWatching = ref(false);
+const isUserPlanned = ref(false);
+const isUserDropped = ref(false);
+const userAnimeScore = ref(0);
+const userWatchedEpisodes = ref(0);
+
+const currentCharacter = ref(0)
+
+const route = useRoute("anime-id");
 
 // ToDo: add related anime data fetch and set episodes data to optional
 // Recieve all anime data include characters and episodes info
@@ -89,20 +308,16 @@ onMounted(async () => {
 }) 
 
 await Promise.all([
-    useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id}})
+    useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
         .then((data: Anime) => { anime.value = data })),
-    useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id}})
+    useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }})
         .then((data: AnimeEpisode[]) => { episodes.value = data })),
-    useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id}})
+    useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
         .then((data: AnimeCharacter[]) => { characters.value = data}))
 ])
 
 function parseAnimeAiringStatus(status: string): string {
     return status == AnimeStatus.airing ? "Ongoing" : status == AnimeStatus.upcoming ? "Upcoming" : "Released";
-}
-
-function parseAnimeRating(rating: string): string {
-    return rating == AnimeRating.g ? "G" : rating == AnimeRating.pg ? "PG" : rating == 'PG-13 - Teens 13 or older' ? 'PG-13' : rating == AnimeRating.r ? 'R' : rating == 'R - 17+ (violence & profanity)' ? 'R-17' : 'RX';
 }
 
 function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): string {
@@ -115,4 +330,21 @@ function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): 
         return new Date(dateFrom).toLocaleDateString() + " to " + new Date(dateTo).toLocaleDateString();
     }
 }
+
+function selectList(list: string) {
+
+}
+
+function selectScore(score: number) {
+
+}
 </script>
+
+<style>
+.hide-arrows { 
+  appearance: textfield;
+}
+.hide-arrows::-webkit-inner-spin-button { 
+  display: none;
+}
+</style>

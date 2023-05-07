@@ -1,5 +1,5 @@
 <template>
-<div class="my-10 grid grid-cols-5 gap-5 mx-auto max-w-7xl">
+<div class="mt-28 grid grid-cols-5 mx-auto max-w-7xl place-items-center gap-10">
     <AnimeCapsule
         v-if="onngoingAnimes" v-for="anime in onngoingAnimes"
         :aired-from="anime.aired.from"

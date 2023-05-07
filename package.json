@@ -9,11 +9,13 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxt/image-edge": "^1.0.0-28050764.aaee7ac",
     "@nuxtjs/supabase": "^0.3.5",
     "@types/node": "^18",
     "autoprefixer": "^10.4.14",
     "nuxt": "^3.4.2",
     "nuxt-icon": "^0.3.3",
+    "nuxt-typed-router": "^3.2.0",
     "postcss": "^8.4.23",
     "prisma": "^4.13.0",
     "tailwindcss": "^3.3.1"
