@@ -10,7 +10,7 @@
     <nuxt-img 
         v-if="anime"
         :src="anime?.images.jpg.small_image_url" 
-        class="absolute w-screen h-80 object-cover blur-[164px] opacity-30 -z-10"
+        class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
     />
 
     <div class="relative mx-auto max-w-7xl">   
@@ -132,7 +132,7 @@
                         </div>
                         <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md gap-1">
                             <Icon name="material-symbols:star-rounded" class="text-xl"/>
-                            <h1 class="text-xl uppercase">{{ anime.score }}</h1> 
+                            <h1 class="text-xl uppercase">{{ anime.score == undefined ? 'n/a' : anime.score }}</h1> 
                         </div>
                         <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
                             <h1 v-if="anime.episodes" class="text-xl uppercase">{{ anime.episodes }} EP.</h1> 
@@ -159,8 +159,9 @@
                                 Show alternative titles
                         </button>
                         <div v-show="isTitlesShowed" class="alt-titles flex flex-col">
-                            <p v-if="anime.title_english != undefined" class="text-zinc-400">English: <span class="text-zinc-50">{{ anime!.title_english }}</span></p>
-                            <p v-if="anime.title_japanese != undefined" class="text-zinc-400">Japanese: <span class="text-zinc-50 ">{{ anime!.title_japanese }}</span></p>
+                            <div v-for="item in anime.titles" class="flex flex-row gap-1">
+                                <p v-if="item.type != 'German' && item.type != 'Spanish' && item.type != 'French' && item.type != 'Synonym'" class="text-zinc-400">{{ item.type }}: <span class="text-zinc-50">{{ item.title }}</span></p>
+                            </div>
                             <div v-if="anime.title_synonyms.length != 0" class="flex flex-row gap-1">
                                 <p class="text-zinc-400">Synonyms:
                                     <span v-for="title, i in anime.title_synonyms" class="text-zinc-50">
@@ -194,8 +195,10 @@
                 </div>
             </div>
 
-            <!-- Trailer & characters -->
-            <div v-if="anime && characters && (anime.trailer.embed_url && characters!.length)" class="grid grid-cols-2 gap-5">
+            <!-- Anime trailer & characters -->
+            <div 
+                :class="!anime.trailer.embed_url ? 'grid-cols-1' : 'grid-cols-2'"
+                class="grid gap-5">
                 <div v-if="anime && anime.trailer.embed_url" class="flex flex-col gap-3">
                     <h1 class="text-xl uppercase">Trailer</h1>
                     <iframe 
@@ -215,9 +218,9 @@
                                 <Icon name="ri:arrow-drop-left-line" class="text-xl"/> 
                                 Prev
                             </button>
-                            <p class="text-zinc-50">{{ currentCharacter + 1 }}</p>
+                            <p class="text-zinc-50">{{ currentCharacter + 1 }} / {{ totalPages(characters.length, anime.trailer.embed_url == undefined ? false : true) }}</p>
                             <button 
-                                @click="currentCharacter == (anime!.trailer.embed_url ? Math.round(characters.length / 4 - 1) : Math.round(characters.length / 6))  ? currentCharacter = currentCharacter : currentCharacter = currentCharacter + 1" 
+                                @click="nextCharactersPage(characters.length, anime.trailer.embed_url == undefined ? false : true)" 
                                 class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
                                 Next 
                                 <Icon name="ri:arrow-drop-right-line" 
@@ -226,13 +229,14 @@
                         </div>
                     </div>
                     <div 
-                        class="characters-carousel grid grid-flow-col gap-4 h-full" 
+                        :class="characters.length < 8 ? 'flex flex-row' : 'grid grid-flow-col'"
+                        class="characters-carousel gap-4 h-full" 
                         style="overflow-y: hidden; overflow-x: hidden;">
                         <p v-show="characters!.length == 0">No characters was found</p>
                         <CharacterCapsule 
                             v-show="characters" 
                             v-for="character in characters" class="z-0"
-                            :style="currentCharacter ? 'transform: translateX(-' + (anime.trailer.embed_url ? currentCharacter * 640 : currentCharacter * 1166) + 'px;' : ''"
+                            :style="currentCharacter ? 'transform: translateX(-' + (anime.trailer.embed_url ? currentCharacter * 640 : currentCharacter * 1280) + 'px;' : ''"
                             :character-id="character.character.mal_id"
                             :image-url="character.character.images!.jpg.image_url"
                             :name="character.character.name" />
@@ -240,7 +244,7 @@
                 </div>
             </div>
 
-            <!-- Relations -->
+            <!-- Anime relations -->
             <div class="flex flex-col gap-3">
                 <h1 class="text-xl uppercase">Relations</h1>
                 <div class="flex flex-row flex-wrap gap-3">
@@ -251,7 +255,7 @@
                             <Icon v-else-if="entry.type == 'manga'" name="ri:book-3-line" class="text-2xl"/>
 
                             <div>
-                                <div v-if="item.relation != 'Character'" class="flex flex-row gap-2 items-center">
+                                <div v-if="item.relation != 'Character'" class="flex flex-row gap-1 items-center">
                                     <p class="text-xs uppercase text-zinc-400">{{ item.relation }}</p> 
                                     <p class="text-xs text-zinc-400">•</p>
                                     <p class="text-xs uppercase text-zinc-400">{{ entry.type }}</p> 
@@ -337,6 +341,39 @@ function selectList(list: string) {
 
 function selectScore(score: number) {
 
+}
+
+function nextCharactersPage(totalCharacters: number, isTrailerExist: boolean) {
+    if (isTrailerExist) {
+        if (currentCharacter.value != Math.round(totalCharacters / 4 - 1)) {
+            currentCharacter.value++;
+        } else {
+            currentCharacter.value = 0;
+        }
+    } else {
+        if (currentCharacter.value != Math.round(totalCharacters / 8 - 1) && totalCharacters > 8) {
+            currentCharacter.value++;
+        } else {
+            currentCharacter.value = 0;
+        }
+    }
+}
+
+function totalPages(totalCharacters: number, isTrailerExist: boolean): number {
+    if (isTrailerExist) {
+        if (totalCharacters > 4) {
+            return Math.round(totalCharacters / 4);
+        } else {
+            return 1;
+        }
+    } else {
+        if (totalCharacters > 8) {
+            return Math.round(totalCharacters / 8);
+        } else {
+            return 1;
+        }
+        
+    }
 }
 </script>
 

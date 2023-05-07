@@ -1,5 +1,5 @@
 <template>
-    <div class="character-capsule text-left bg-zinc-900 rounded-b-md transition duration-300 easy-in-out z-0 flex flex-col min-w-full w-36 h-80">
+    <div class="character-capsule text-left bg-zinc-900 rounded-b-md transition duration-300 easy-in-out z-0 flex flex-col w-36 h-80">
         <nuxt-img 
             :src="imageUrl" 
             class="relative w-full h-full max-h-64 rounded-t-md object-cover"
