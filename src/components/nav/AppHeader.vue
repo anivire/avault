@@ -7,7 +7,7 @@
                 <h1 class="uppercase text-2xl font-black text-zinc-400">アニメリスト</h1>
                 <h1 class="uppercase text-2xl font-black">Animelist</h1>
             </button></NuxtLink>
-            <NuxtLink to="/" class="text-sm items-center flex gap-1 font-bold">
+            <NuxtLink to="/anime/top" class="text-sm items-center flex gap-1 font-bold">
                 <Icon name="ri:trophy-line" class="text-base"/>
                 Top 100
             </NuxtLink>

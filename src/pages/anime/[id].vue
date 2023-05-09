@@ -101,7 +101,7 @@
                                 </div>
                                 <p class="text-sm text-zinc-400">Select</p>
                             </button>
-                            <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col shadow-md ">
+                            <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                                 <button :class="userAnimeScore == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
                                 <button :class="userAnimeScore == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
                                 <button :class="userAnimeScore == 9 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
@@ -197,6 +197,7 @@
 
             <!-- Anime trailer & characters -->
             <div 
+                v-if="anime || characters"
                 :class="!anime.trailer.embed_url ? 'grid-cols-1' : 'grid-cols-2'"
                 class="grid gap-5">
                 <div v-if="anime && anime.trailer.embed_url" class="flex flex-col gap-3">
@@ -213,12 +214,12 @@
                         <h1 class="text-xl uppercase">Characters</h1>
                         <div class="grid grid-cols-3 text-center">
                             <button 
-                                @click="currentCharacter == 0 ? currentCharacter = currentCharacter : currentCharacter = currentCharacter - 1" 
+                                @click="prevCharactersPage()" 
                                 class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
                                 <Icon name="ri:arrow-drop-left-line" class="text-xl"/> 
                                 Prev
                             </button>
-                            <p class="text-zinc-50">{{ currentCharacter + 1 }} / {{ totalPages(characters.length, anime.trailer.embed_url == undefined ? false : true) }}</p>
+                            <p class="text-zinc-50">{{ currentCharacterPage + 1 }} / {{ totalPages(characters.length, anime.trailer.embed_url == undefined ? false : true) }}</p>
                             <button 
                                 @click="nextCharactersPage(characters.length, anime.trailer.embed_url == undefined ? false : true)" 
                                 class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
@@ -236,7 +237,7 @@
                         <CharacterCapsule 
                             v-show="characters" 
                             v-for="character in characters" class="z-0"
-                            :style="currentCharacter ? 'transform: translateX(-' + (anime.trailer.embed_url ? currentCharacter * 640 : currentCharacter * 1280) + 'px;' : ''"
+                            :style="currentCharacterPage ? 'transform: translateX(-' + (anime.trailer.embed_url ? currentCharacterPage * 640 : currentCharacterPage * 1280) + 'px;' : ''"
                             :character-id="character.character.mal_id"
                             :image-url="character.character.images!.jpg.image_url"
                             :name="character.character.name" />
@@ -301,15 +302,9 @@ const isUserDropped = ref(false);
 const userAnimeScore = ref(0);
 const userWatchedEpisodes = ref(0);
 
-const currentCharacter = ref(0)
+const currentCharacterPage = ref(0)
 
 const route = useRoute("anime-id");
-
-// ToDo: add related anime data fetch and set episodes data to optional
-// Recieve all anime data include characters and episodes info
-onMounted(async () => {
-    
-}) 
 
 await Promise.all([
     useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
@@ -319,6 +314,16 @@ await Promise.all([
     useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
         .then((data: AnimeCharacter[]) => { characters.value = data}))
 ])
+
+if (anime.value) {
+    useSeoMeta({
+        title: anime.value.titles[0].title ? anime.value.titles[0].title + ' › AnimeList' : 'Anime › AnimeList',
+        ogTitle: anime.value.titles[0].title ? anime.value.titles[0].title : 'Anime',
+        description: anime.value.synopsis,
+        ogDescription: anime.value.synopsis,
+        ogImage: anime.value.images.jpg.image_url,
+    })
+}
 
 function parseAnimeAiringStatus(status: string): string {
     return status == AnimeStatus.airing ? "Ongoing" : status == AnimeStatus.upcoming ? "Upcoming" : "Released";
@@ -343,18 +348,24 @@ function selectScore(score: number) {
 
 }
 
+function prevCharactersPage() {
+    if (currentCharacterPage.value != 0) {
+        currentCharacterPage.value--;
+    }
+}
+
 function nextCharactersPage(totalCharacters: number, isTrailerExist: boolean) {
     if (isTrailerExist) {
-        if (currentCharacter.value != Math.round(totalCharacters / 4 - 1)) {
-            currentCharacter.value++;
+        if (currentCharacterPage.value != Math.round(totalCharacters / 4 - 1)) {
+            currentCharacterPage.value++;
         } else {
-            currentCharacter.value = 0;
+            currentCharacterPage.value = 0;
         }
     } else {
-        if (currentCharacter.value != Math.round(totalCharacters / 8 - 1) && totalCharacters > 8) {
-            currentCharacter.value++;
+        if (currentCharacterPage.value != Math.round(totalCharacters / 8 - 1) && totalCharacters > 8) {
+            currentCharacterPage.value++;
         } else {
-            currentCharacter.value = 0;
+            currentCharacterPage.value = 0;
         }
     }
 }

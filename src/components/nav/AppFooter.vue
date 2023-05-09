@@ -8,12 +8,12 @@
                         <h1 class="uppercase text-lg font-black">Animelist</h1>
                     </div>
                     <p class="text-sm text-zinc-400 flex">Feel free to say any feedback or other on <Icon name="simple-icons:github" class="text-lg ml-2 mr-1"/> <a href="/" class="underline decoration-dotted hover:decoration-white hover:text-zinc-50 decoration-zinc-50 underline-offset-4 mr-1 duration-300 easy-in-out transition">Github</a></p>
-                    <p class="text-sm text-zinc-400 flex">All anime data provided by unofficial My Anime List API <span class="bg-zinc-400 px-2 ml-2 text-zinc-950 font-bold">j</span> <a href="https://jikan.moe/" class="ml-1 underline decoration-dotted hover:decoration-white decoration-zinc-50 hover:text-zinc-50 underline-offset-4 duration-300 easy-in-out transition">jikan.moe</a></p>
+                    <p class="text-sm text-zinc-400 flex">All anime data provided by unofficial My Anime List API <span class="bg-zinc-400 rounded-sm px-2 ml-2 text-zinc-950 font-bold">j</span> <a href="https://jikan.moe/" class="ml-1 underline decoration-dotted hover:decoration-white decoration-zinc-50 hover:text-zinc-50 underline-offset-4 duration-300 easy-in-out transition">jikan.moe</a></p>
                 </div>
                 <div class="flex flex-row gap-5">
                     <Icon name="simple-icons:myanimelist" class="text-zinc-400 text-2xl hover:text-zinc-50 hover:scale-105 duration-300 easy-in-out transition"/>
                     <Icon name="simple-icons:github"    class="text-zinc-400 text-2xl hover:text-zinc-50 hover:scale-105 duration-300 easy-in-out transition"/>
-                    <span class="bg-zinc-400 px-2.5 text-zinc-950 font-bold hover:bg-zinc-50 hover:scale-105 duration-300 easy-in-out transition">j</span>
+                    <span class="bg-zinc-400 px-2.5 text-zinc-950 font-bold rounded-sm hover:bg-zinc-50 hover:scale-105 duration-300 easy-in-out transition">j</span>
                 </div>
             </div>
             <div class="flex flex-row">
