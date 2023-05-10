@@ -4,7 +4,7 @@ const jikanClient = new JikanClient();
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
-    const { data } = await jikanClient.seasons.getSeasonUpcoming()
+    const { data } = await jikanClient.seasons.getSeasonUpcoming({limit: query.count as number})
     .catch(async (response: Response) => {
         if (response.status == 429) {
             throw createError({

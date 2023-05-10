@@ -1,16 +1,18 @@
 <template>
-<div class="relative text-left rounded-lg transition duration-300 easy-in-out z-0 flex flex-col justify-between w-56 h-96 overflow-hidden">
+<!-- ToDo: fix squared and rectangled anime posters -->
+<div class="relative text-left rounded-lg transition duration-300 easy-in-out z-0 flex flex-col justify-between h-[22rem] overflow-hidden">
     <div 
-        :class="isPosterHovered ? '-translate-x-24' : ''"
+        v-if="airingStatus != 'Not yet aired' && score != null"
+        :class="isPosterHovered ? '-translate-x-24' : 'translate-x-0'"
         class="flex flex-row absolute p-1 pl-2 pr-3.5 mt-2 justify-center bg-zinc-900 rounded-r-lg duration-200 easy-in-out transition-all">
-        <Icon name="material-symbols:star-rounded" class="text-xl mr-1 mt-0.5"/>
+        <Icon name="material-symbols:star-rounded" class="text-xl mr-1 mt-1"/>
         <h1 class="text-lg uppercase">{{ score == undefined ? 'n/a' : score }}</h1> 
     </div>
     <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}">
         <nuxt-img 
             :src="imageUrl" 
-            :class="isPosterHovered ? 'h-96' : 'h-full'"
-            class="rounded-lg transition-all duration-200 ease-in-out object-cover" 
+            :class="isPosterHovered ? 'h-[22rem]' : 'h-full'"
+            class="transition-all duration-200 ease-in-out object-cover rounded-lg " 
             loading="lazy"
             @mouseenter="isPosterHovered = true"
             @mouseleave="isPosterHovered = false"

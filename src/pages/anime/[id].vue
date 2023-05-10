@@ -33,7 +33,7 @@
                             <Icon name="ri:heart-fill" class="text-xl"/>
                         </button>
                         <div class="relative w-full col-span-5">
-                            <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                            <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out ">
                                 <div class="flex flex-row items-center gap-2">
                                     <Icon name="ri:movie-2-fill" class="text-xl"/>
                                     <p class="text-sm font-bold">Watched episodes</p>
@@ -56,7 +56,7 @@
                             class="relative w-full col-span-3" 
                             @mouseover="isListMenuOpen = true" 
                             @mouseleave="isListMenuOpen = false">
-                            <button :class="isListMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                            <button :class="isListMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center hover:bg-zinc-800 transition duration-300 easy-in-out ">
                                 <div class="flex flex-row items-center gap-2">
                                     <Icon name="ri:add-box-fill" class="text-xl"/>
                                     <p class="text-sm font-bold">List</p>
