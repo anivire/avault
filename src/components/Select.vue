@@ -24,7 +24,8 @@
             <div 
                 v-for="option in options" 
                 @click="select({ value: option.value, name: option.name })"
-                class="hover:bg-blue-900 p-1 px-3 cursor-pointer rounded-md">
+                :class="selectedOption == option ? 'bg-blue-900' : 'hover:bg-blue-900'"
+                class=" p-1 px-3 cursor-pointer rounded-md">
                 <p class="text-xs">{{ option.name }}</p>
             </div>
         </div>
@@ -32,6 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import { cwd } from 'process';
+
 const isItemsShow = ref(false);
 const selectedOption = ref({value: [], name: ''})
 
@@ -39,14 +42,23 @@ const emits = defineEmits([
     'update:select',
 ])
 const props = defineProps({
-    options: { type: Object, required: true}
+    options: { type: Object, required: true},
+    default: { type: Object, required: false}
 })
 
 onMounted(() =>  {
-    selectedOption.value.value = props.options[0].value;
-    selectedOption.value.name = props.options[0].name;
+    if (props.default) {
+        console.log(props.default.value)
+        if (props.default.value[0] != -1 && props.default.value[0] != null) {
+            selectedOption.value = props.default as { value: [], name: string };
+            emits('update:select', props.default as { value: [], name: string });
+        } else {
+            selectedOption.value = props.options[0];
+            emits('update:select', props.options[0]);
+        }
+    }
 
-    emits('update:select', props.options[0]);
+    
 })
 
 function select(option: { value: [], name: string }) {

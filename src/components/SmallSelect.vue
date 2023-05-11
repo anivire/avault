@@ -38,8 +38,7 @@ const props = defineProps({
 })
 
 onMounted(() =>  {
-    selectedOption.value.value = props.options[0].value;
-    selectedOption.value.name = props.options[0].name;
+    selectedOption.value = props.options[0];
 
     emits('update:select-small', props.options[0]);
 })

@@ -5,10 +5,12 @@
                 <h1 class="text-lg uppercase">Ongoing anime</h1>
                 <Icon name="ri:arrow-right-up-line" class="text-2xl"/>
             </div>
-            <div class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+            <div
+                v-if="ongoingAnimes" 
+                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsule
-                    v-if="onngoingAnimes" 
-                    v-for="anime in onngoingAnimes"
+                    v-if="ongoingAnimes" 
+                    v-for="anime in ongoingAnimes"
                     :aired-from="anime.aired.from"
                     :airing-status="anime.status"
                     :anime-id="anime.mal_id"
@@ -19,6 +21,10 @@
                     :type="anime.type"
                 />
             </div>
+            <div v-else
+                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+                <AnimeCapsuleSkeleton v-for="i in 24"/>
+            </div>
         </div>
 
         <div class="flex flex-col gap-3">
@@ -26,7 +32,9 @@
                 <h1 class="text-lg uppercase">Upcoming anime</h1>
                 <Icon name="ri:arrow-right-up-line" class="text-2xl"/>
             </div>
-            <div class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+            <div 
+                v-if="upcomingAnimes"
+                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsule
                     v-if="upcomingAnimes" 
                     v-for="anime in upcomingAnimes"
@@ -40,6 +48,10 @@
                     :type="anime.type"
                 />
             </div>
+            <div v-else
+                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+                <AnimeCapsuleSkeleton v-for="i in 24"/>
+            </div>
         </div>
     </div>
 </template>
@@ -47,6 +59,6 @@
 <script setup lang="ts">
 import AnimeCapsule from '../components/capsule/AnimeCapsule.vue';
 
-const { data: onngoingAnimes } = await useLazyAsyncData('ongoing', () => $fetch('/api/v1/anime/season/ongoing', { method: 'GET', query: { count: 6 } }));
+const { data: ongoingAnimes } = await useLazyAsyncData('ongoing', () => $fetch('/api/v1/anime/season/ongoing', { method: 'GET', query: { count: 6 } }));
 const { data: upcomingAnimes } = await useLazyAsyncData('upcoming', () => $fetch('/api/v1/anime/season/upcoming', { method: 'GET', query: { count: 6 } }));
 </script>

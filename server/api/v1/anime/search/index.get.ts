@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
         end_date: query.yearEnd as string,
         type: query.format as string,
         status: query.status as string,
+        min_score: query.score as number,
         sfw: true,
-        min_score: query.score as number
     })
     .catch(async (response: Response) => {
         if (response.status == 429) {

@@ -7,12 +7,12 @@
             <p>{{ selectedFormat }}</p>
             <p>{{ selectedStatus }}</p>
             <p>{{ selectedGenre }}</p>
-            <p>{{ selectedFilter }}</p>
+            <p>{{ selectedScore }}</p>
         </div> -->
         
         <div class="flex flex-col gap-5">
             <div class="search-panel grid grid-cols-6 gap-3">
-                <div class="flex flex-col gap-2 col-span-1">
+                <div class="flex flex-col gap-2">
                     <p class="text-sm font-bold uppercase">Search</p>
                     <Input @update:input="q = $event"/>
                 </div>
@@ -21,15 +21,16 @@
                     <p class="text-sm font-bold uppercase">Year</p>
                     <Select 
                         :options="yearOptions"
+                        :default="selectedYear"
                         @update:select="selectedYear = $event"
                     />
                 </div>
-                
                 
                 <div class="flex flex-col gap-2">
                     <p class="text-sm font-bold uppercase">Format</p>
                     <Select 
                         :options="formatOptions"
+                        :default="selectedFormat"
                         @update:select="selectedFormat = $event"
                     />
                 </div>
@@ -38,23 +39,25 @@
                     <p class="text-sm font-bold uppercase">Status</p>
                     <Select 
                         :options="statusOptions"
+                        :default="selectedStatus"
                         @update:select="selectedStatus = $event"
                     />
                 </div>
-                
                 
                 <div class="flex flex-col gap-2">
                     <p class="text-sm font-bold uppercase">Genres</p>
                     <Select 
                         :options="genresOptions"
+                        :default="selectedGenre"
                         @update:select="selectedGenre = $event"
                     />
                 </div>
                 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Score</p>
+                    <p class="text-sm font-bold uppercase">Starting at</p>
                     <Select 
                         :options="scoreOptions"
+                        :default="selectedScore"
                         @update:select="selectedScore = $event"
                     />
                 </div>
@@ -91,7 +94,15 @@
                         class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
                         {{ selectedGenre.name }}
                     </p>
+                    
+                    <p 
+                        v-show="selectedScore.value[0] != -1 && selectedScore.value[0] != null"
+                        class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black flex flex-row gap-1 items-center">
+                        <Icon name="material-symbols:star-rounded" class="text-xl text-zinc-900"/>
+                        {{ selectedScore.name }}
+                    </p>
                 </div>
+
                 <!-- Sort button -->
                 <div class="flex flex-row gap-1">
                     <Icon 
@@ -115,9 +126,9 @@
                     @update:select-small="selectedAnimePerPage = $event"
                 /> -->
             </div>
-            <div>
+            <div v-if="searchAnimes">
                 <div 
-                    v-if="searchAnimes" 
+                    v-if="searchAnimes?.length != 0" 
                     class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                     <div v-for="anime in searchAnimes">
                         <AnimeCapsule
@@ -131,16 +142,28 @@
                             :type="anime.type"
                         />
                     </div>
-                    
+                </div>
+                <div 
+                    v-else
+                    class="flex flex-col items-center mt-16">
+                    <p class="font-bold">No results</p>
+                    <p class="text-zinc-400">Yeah, it's very sad to hear, but try to change the search filter a little bit?</p>
                 </div>
             </div>
-            <div class="flex flex-row justify-between items-center gap-3">
+            <div v-else
+                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+                <AnimeCapsuleSkeleton v-for="i in 24"/>
+            </div>
+            <div
+                v-if="searchAnimes?.length != 0" 
+                class="flex flex-row justify-between items-center gap-3">
                 <button 
                     @click="prevPage()"
                     class="flex flex-row w-fit text-sm gap-1 py-2 bg-zinc-900 hover:bg-zinc-800 px-5 items-center transition duration-300 easy-in-out rounded-md">
                     <Icon name="ri:arrow-left-s-line" class="text-xl"/>    
                     Prev page  
                 </button>
+                <!-- <p class="text-zinc-400">Page: <span class="text-zinc-50 text-lg">{{ currentPage }}</span> Anime per page: <span class="text-zinc-50 text-lg">{{ currentPage * 24 }}</span></p> -->
                 <p>{{ currentPage }}</p>
                 <button 
                     @click="nextPage()"
@@ -160,6 +183,7 @@ import SmallSelect from '@/src/components/SmallSelect.vue';
 import Input from '@/src/components/Input.vue';
 import { Anime, AnimeSeason, AnimeStatus, AnimeType } from '@tutkli/jikan-ts';
 import AnimeCapsule from '@/src/components/capsule/AnimeCapsule.vue';
+import AnimeCapsuleSkeleton from '@/src/components/skeleton/AnimeCapsuleSkeleton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -294,7 +318,7 @@ watch(currentPage, async (newValue, oldValue) => {
 
 // ToDo: fix unapproved anime in search
 watch(route, (newValue, oldValue) => {
-    //searchAnimes.value = undefined;
+    searchAnimes.value = undefined;
 
     useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
         method: 'GET', 

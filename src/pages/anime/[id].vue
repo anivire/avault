@@ -120,7 +120,7 @@
 
                 <!-- Anime info -->
                 <div class="flex flex-col gap-4 justify-start col-span-2 mt-16">
-                    <h1>{{ anime.title_english != undefined ? anime.title_english : anime.titles[0].title }}</h1>
+                    <h1>{{ anime.title != undefined ? anime.title : anime.titles[0].title }}</h1>
                     <div class="bg flex flex-row gap-3 items-center">
                         <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
                         <h1 class="text-xl uppercase">{{ anime.type }}</h1> 
