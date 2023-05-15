@@ -36,7 +36,17 @@
                             class="text-xl transition-transform duration-200 ease-in-out -ml-1"
                         />
                 </button>
+                <div 
+                    v-if="isLogout"
+                    v-show="isUserMenuOpen" 
+                    class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl items-center flex flex-col">
+
+                    <div class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md text-rose-500">
+                        <p class="items-center flex flex-row gap-2 text-sm"><Icon class="animate-spin" name="ri:loader-5-line"/> Logging out</p>
+                    </div>
+                </div>
                 <div
+                    v-else
                     v-show="isUserMenuOpen" 
                     class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl justify-between flex flex-col">
                     <NuxtLink 
@@ -75,7 +85,6 @@ const authorizedUser = useUserStore();
 
 const isUserMenuOpen = ref(false);
 const isUserLoaded = ref(false);
-const isUserLogged = ref(false);
 const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
@@ -120,6 +129,7 @@ client.auth.onAuthStateChange(async (event, session) => {
 // }
 
 const logOut = async () => {
+    isLogout.value = true;
     const { error } = await client.auth.signOut().finally(() => authorizedUser.logout());
 }
 </script>
