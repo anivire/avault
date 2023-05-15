@@ -3,7 +3,7 @@
         <nuxt-img 
             v-if="anime"
             :src="anime.images.jpg.small_image_url" 
-            class="w-screen h-52 object-cover blur-lg opacity-40 brightness-75"
+            class="w-screen h-52 object-cover blur-lg opacity-60"
         />
     </div> 
 

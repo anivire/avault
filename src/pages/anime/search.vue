@@ -11,6 +11,7 @@
         </div> -->
         
         <div class="flex flex-col gap-5">
+            <!-- Search panel -->
             <div class="search-panel grid grid-cols-6 gap-3">
                 <div class="flex flex-col gap-2">
                     <p class="text-sm font-bold uppercase">Search</p>
@@ -62,6 +63,7 @@
                     />
                 </div>
             </div>
+            <!-- Tags -->
             <div class="flex flex-row gap-3 items-center">
                 <Icon name="ri:price-tag-3-fill"/>
                 <div class="flex flex-row gap-2 items-center grow">
@@ -126,6 +128,7 @@
                     @update:select-small="selectedAnimePerPage = $event"
                 /> -->
             </div>
+            <!-- Animes -->
             <div v-if="searchAnimes">
                 <div 
                     v-if="searchAnimes?.length != 0" 
@@ -150,10 +153,13 @@
                     <p class="text-zinc-400">Yeah, it's very sad to hear, but try to change the search filter a little bit?</p>
                 </div>
             </div>
-            <div v-else
+            <!-- Skeleton -->
+            <div 
+                v-else
                 class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsuleSkeleton v-for="i in 24"/>
             </div>
+            <!-- Pagination -->
             <div
                 v-if="searchAnimes?.length != 0" 
                 class="flex flex-row justify-between items-center gap-3">
@@ -163,7 +169,6 @@
                     <Icon name="ri:arrow-left-s-line" class="text-xl"/>    
                     Prev page  
                 </button>
-                <!-- <p class="text-zinc-400">Page: <span class="text-zinc-50 text-lg">{{ currentPage }}</span> Anime per page: <span class="text-zinc-50 text-lg">{{ currentPage * 24 }}</span></p> -->
                 <p>{{ currentPage }}</p>
                 <button 
                     @click="nextPage()"

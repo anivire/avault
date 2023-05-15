@@ -14,8 +14,10 @@ export default defineNuxtConfig({
     ],
     modules: [
         '@nuxtjs/supabase',
-        'nuxt-icon',
+        '@pinia/nuxt',
+        '@pinia-plugin-persistedstate/nuxt',
         '@nuxt/image-edge',
+        'nuxt-icon',
         'nuxt-typed-router',
     ],
 })

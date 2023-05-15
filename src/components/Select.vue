@@ -48,7 +48,6 @@ const props = defineProps({
 
 onMounted(() =>  {
     if (props.default) {
-        console.log(props.default.value)
         if (props.default.value[0] != -1 && props.default.value[0] != null) {
             selectedOption.value = props.default as { value: [], name: string };
             emits('update:select', props.default as { value: [], name: string });

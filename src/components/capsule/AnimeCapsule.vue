@@ -8,6 +8,13 @@
         <Icon name="material-symbols:star-rounded" class="text-xl mr-1 mt-1"/>
         <h1 class="text-lg uppercase">{{ score == undefined ? 'n/a' : score }}</h1> 
     </div>
+    <div 
+        v-if="isTop"
+        :class="isPosterHovered ? '-translate-x-24' : 'translate-x-0'"
+        class="flex flex-row absolute p-1 pl-2 pr-3.5 mt-12 justify-center bg-zinc-900 rounded-r-lg duration-200 easy-in-out transition-all">
+        <Icon name="ri:trophy-fill" class="text-xl mr-1 mt-1"/>
+        <h1 class="text-lg uppercase">{{ topNumber }}</h1> 
+    </div>
     <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}">
         <nuxt-img 
             :src="imageUrl" 
@@ -76,5 +83,7 @@ defineProps({
     airedFrom:      { type: String, required: true},
     type:           { type: String, required: true},
     airingStatus:   { type: String, required: true},
+    isTop:          { type: Boolean, required: false},
+    topNumber:      { type: Number, required: false},
 })
 </script>

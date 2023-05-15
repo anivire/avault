@@ -33,8 +33,10 @@ model flow_state {
   provider_refresh_token String?
   created_at             DateTime?             @db.Timestamptz(6)
   updated_at             DateTime?             @db.Timestamptz(6)
+  authentication_method  String
 
   @@index([auth_code], map: "idx_auth_code")
+  @@index([user_id, authentication_method], map: "idx_user_id_auth_method")
   @@schema("auth")
 }
 
@@ -126,7 +128,6 @@ model refresh_tokens {
   @@index([instance_id, user_id])
   @@index([parent])
   @@index([session_id, revoked])
-  @@index([token])
   @@schema("auth")
 }
 
@@ -253,21 +254,61 @@ model users {
   identities                  identities[]
   mfa_factors                 mfa_factors[]
   sessions                    sessions[]
+  profile                     profile?
   profiles                    profiles?
 
   @@index([instance_id])
   @@schema("auth")
 }
 
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model animeList {
+  user_id         String   @id(map: "user_lists_pkey") @db.Uuid
+  mal_id          BigInt
+  watching_status String
+  wathed_episodes BigInt?
+  score           BigInt?
+  is_favorited    Boolean
+  added_at        DateTime @db.Timestamptz(6)
+  udated_at       DateTime @db.Timestamptz(6)
+  image_url       String
+  title           String
+  studios         String
+  type            String
+  total_episodes  BigInt?
+  airing_season   String
+  airing_status   String
+  profiles        profiles @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model profile {
+  user_id       String    @id @db.Uuid
+  username      String
+  tag           String
+  avatar_url    String?
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  last_seen_at  DateTime? @default(now()) @db.Timestamptz(6)
+  badges        Json?     @db.Json
+  pinned_animes Json?     @db.Json
+  users         users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model profiles {
-  id          String    @id @db.Uuid
+  id          String     @id @db.Uuid
   username    String?
   avatar_url  String?
-  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  created_at  DateTime?  @default(now()) @db.Timestamptz(6)
   anime_list  String?
   user_badges String?
-  users       users     @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  animeList   animeList?
+  users       users      @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }

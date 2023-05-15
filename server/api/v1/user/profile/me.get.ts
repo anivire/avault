@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
     const data = await prisma.profile.findFirstOrThrow({
         where: {
-            tag: query.tag as string
+            user_id: query.id as string
         }}
     );
 
