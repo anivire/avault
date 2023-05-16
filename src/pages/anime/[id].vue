@@ -14,7 +14,7 @@
     />
 
     <div class="relative mx-auto max-w-7xl">   
-        <div v-if="anime" class="flex flex-col gap-8 mt-40">
+        <div v-if="anime != null" class="flex flex-col gap-8 mt-40">
             <div class="grid grid-cols-3 gap-5">
                 <div class="flex flex-col gap-3">
                     
@@ -27,10 +27,10 @@
                     <!-- User anime control panel -->
                     <div class="grid grid-cols-6 gap-2">
                         <button 
-                            @click="" 
-                            :class="isUserFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
+                            @click="markFavorited()" 
+                            :class="userIsAnimeFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
                             class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
-                            <Icon name="ri:heart-fill" class="text-xl"/>
+                            <Icon name="ri:heart-fill" class="text-2xl"/>
                         </button>
                         <div class="relative w-full col-span-5">
                             <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out ">
@@ -47,7 +47,7 @@
                                         v-model="userWatchedEpisodes" 
                                         class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
                                     <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
-                                    <button @click="userWatchedEpisodes < (anime.episodes != undefined ? anime.episodes : 999) ? userWatchedEpisodes++ : anime.episodes"><Icon name="ri:add-fill"/></button>
+                                    <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill"/></button>
                                 </div>
                             </div>
                         </div>
@@ -61,29 +61,46 @@
                                     <Icon name="ri:add-box-fill" class="text-xl"/>
                                     <p class="text-sm font-bold">List</p>
                                 </div>
-                                <p class="text-sm text-zinc-400">Select</p>
+                                <p v-if="userAnimeList == 'select' || userAnimeList == undefined || userAnimeList == ''" class="text-sm text-zinc-400">Selecte</p>
+                                <p 
+                                    :class="userAnimeList == 'watched' ? 'text-emerald-400' : userAnimeList == 'watching' ? 'text-amber-400' : userAnimeList == 'planned' ? 'text-violet-400' : 'text-rose-400'"
+                                    class="text-sm font-bold">{{ userAnimeList.charAt(0).toUpperCase() + userAnimeList.slice(1) }}</p>
                             </button>
                             <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
-                                <button @click="selectList('select')" :class="isUserWatched ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                <button 
+                                    @click="selectList('select')" 
+                                    class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
                                     <p class="text-xs p-2">Select</p>
                                 </button>
                                 
-                                <button @click="selectList('watched')" :class="isUserWatched ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                <button 
+                                    @click="selectList('watched')" 
+                                    :class="userAnimeList == 'watched' ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  
+                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
                                     <p class="text-xs p-2">Watched</p>
                                     <Icon name="ri:check-line" class="mr-2"></Icon>
                                 </button>
                                 
-                                <button @click="selectList('watching')" :class="isUserWatching ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                <button 
+                                    @click="selectList('watching')" 
+                                    :class="userAnimeList == 'watching' ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  
+                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
                                     <p class="text-xs p-2">Watching</p>
                                     <Icon name="ri:eye-fill" class="mr-2"></Icon>
                                 </button>
 
-                                <button @click="selectList('planned')" :class="isUserPlanned ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                <button 
+                                    @click="selectList('planned')" 
+                                    :class="userAnimeList == 'planned' ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  
+                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
                                     <p class="text-xs p-2">Planned</p>
                                     <Icon name="ri:time-fill" class="mr-2"></Icon>
                                 </button>
 
-                                <button @click="selectList('dropped')" :class="isUserDropped ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                <button 
+                                    @click="selectList('dropped')" 
+                                    :class="userAnimeList == 'dropped' ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" 
+                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
                                     <p class="text-xs p-2">Dropped</p>
                                     <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
                                 </button>
@@ -281,11 +298,17 @@
 <script setup lang="ts">
 import CharacterCapsule from '@/src/components/capsule/CharacterCapsule.vue';
 import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommendation } from '@tutkli/jikan-ts';
+import { animeList } from '@prisma/client'
+import { useUserStore } from '@/store/UserStore';
 
 const anime = ref<Anime>();
 const episodes = ref<AnimeEpisode[]>();
 const characters = ref<AnimeCharacter[]>();
 const recommendations = ref<Recommendation[]>();
+const client = useSupabaseClient();
+
+const authorizedUser = useUserStore();
+const route = useRoute("anime-id");
 
 const isTitlesShowed = ref(false);
 const isFullSynopsis = ref(false);
@@ -294,17 +317,12 @@ const isEpisodesMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
 const isImageLoaded = ref(false);
 
-const isUserFavorited = ref(false);
-const isUserWatched = ref(false);
-const isUserWatching = ref(false);
-const isUserPlanned = ref(false);
-const isUserDropped = ref(false);
 const userAnimeScore = ref(0);
+const userAnimeList = ref('');
 const userWatchedEpisodes = ref(0);
+const userIsAnimeFavorited = ref(false);
 
-const currentCharacterPage = ref(0)
-
-const route = useRoute("anime-id");
+const currentCharacterPage = ref(0);
 
 await Promise.all([
     useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
@@ -312,7 +330,16 @@ await Promise.all([
     useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }})
         .then((data: AnimeEpisode[]) => { episodes.value = data })),
     useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
-        .then((data: AnimeCharacter[]) => { characters.value = data}))
+        .then((data: AnimeCharacter[]) => { characters.value = data})),
+    useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }})
+        .then((data) => { 
+            if (client.auth.getSession != null) {
+                userAnimeScore.value = data.score as number;
+                userAnimeList.value = data.watching_status;
+                userWatchedEpisodes.value = data.wathed_episodes as number;
+                userIsAnimeFavorited.value = data.is_favorited;
+            }
+        })),
 ])
 
 if (anime.value) {
@@ -340,12 +367,82 @@ function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): 
     }
 }
 
-function selectList(list: string) {
 
+async function createOrUpdateAnimeEntry() {
+    const { data, error } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
+
+    if (error.value?.message == 'No animeList found') {
+        console.log('Created new entry');
+        // If anime entry is not exists in user animelist, then create new one
+        if (anime.value) {
+            const newEntryData = {
+                mal_id: route.params.id,
+                total_episodes: anime.value.episodes,
+                image_url: anime.value.images.jpg.image_url,
+                title: anime.value.title != undefined ? anime.value.title : anime.value.titles[0].title,
+                studios: 'test', // add correct studios property
+                type: anime.value.type.toString(),
+                airing_season: anime.value.season + ' ' + anime.value.year,
+                airing_status: parseAnimeAiringStatus(anime.value.status),
+                watching_status: userAnimeList.value,
+                score: userAnimeScore.value,
+                is_favorited: userIsAnimeFavorited.value,
+                added_at: new Date(),
+                updated_at: new Date(),
+                user_id: authorizedUser.user.user_id,
+                wathed_episodes: userWatchedEpisodes.value
+            }; 
+
+            await useAsyncData('createEntry', () => $fetch('/api/v1/user/animelist/createEntry', { method: 'POST', body: { animeList: newEntryData }}));
+        }
+    } else {
+        console.log('Updated exist');
+        if (anime.value) {
+            const updatedEntryData = {
+                total_episodes: anime.value.episodes,
+                airing_season: anime.value.season + ' ' + anime.value.year,
+                airing_status: parseAnimeAiringStatus(anime.value.status),
+                watching_status: userAnimeList.value,
+                score: userAnimeScore.value,
+                is_favorited: userIsAnimeFavorited.value,
+                updated_at: new Date(),
+                wathed_episodes: userWatchedEpisodes.value,
+                entry_id: data.value!.entry_id
+            }; 
+
+            await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
+        }
+    }
+}
+
+function markFavorited() {
+    userIsAnimeFavorited.value = !userIsAnimeFavorited.value;
+
+    createOrUpdateAnimeEntry();
+}
+
+function selectWatchedEpisodes() {
+    if (anime.value) {
+        userWatchedEpisodes.value < (anime.value.episodes != undefined ? anime.value.episodes : 999) ? userWatchedEpisodes.value++ : anime.value!.episodes;
+        createOrUpdateAnimeEntry();
+    }
+}
+
+async function selectList(list: string) {
+    if (list != 'select') {
+        if (list == 'watched' && anime.value?.episodes != undefined) {
+            userWatchedEpisodes.value = anime.value.episodes;
+        }
+
+        userAnimeList.value = list;
+        createOrUpdateAnimeEntry();
+    }
 }
 
 function selectScore(score: number) {
+    userAnimeScore.value = score;
 
+    createOrUpdateAnimeEntry();
 }
 
 function prevCharactersPage() {

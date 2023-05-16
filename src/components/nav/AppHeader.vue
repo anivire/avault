@@ -50,7 +50,7 @@
                     v-show="isUserMenuOpen" 
                     class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl justify-between flex flex-col">
                     <NuxtLink 
-                        :to="{ name: 'profile-username', params: { username: authorizedUser.user.username } }"
+                        :to="{ name: 'profile-tag', params: { tag: authorizedUser.user.username } }"
                         class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
                             <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:book-3-line" class="text-base"/> Profile</p>
                     </NuxtLink>
@@ -59,7 +59,7 @@
                     </div>
                     <button 
                         @click="logOut()"
-                        class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
+                        class="hover:bg-rose-600/50 p-1 px-3 cursor-pointer rounded-md">
                         <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:logout-box-r-line" class="text-base"/> Log-out</p>
                     </button>
                 </div>
@@ -88,8 +88,7 @@ const isUserLoaded = ref(false);
 const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
-    if (event == 'SIGNED_IN' && session) {
-        // isUserLogged.value = true;
+    if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION') && session) {
 
         await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }})
             .then((data: any) => {
@@ -108,25 +107,11 @@ client.auth.onAuthStateChange(async (event, session) => {
         console.log('SIGNED_OUT', session);
     } else {
         isUserLoaded.value = false;
+        authorizedUser.logout();
         console.log(event, session);
     }
     
 })
-
-// const session = await client.auth.getSession();
-// const supaUser = await client.auth.getUser();
-
-// if (supaUser.data != null) {
-//     await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: supaUser.data.user?.id }})
-//         .then((data: any) => {
-//             user.updateUserData({
-//                 id: data.user_id,
-//                 username: data.username, 
-//                 tag: data.tag,
-//                 avatar: data.avatar_url});
-//         }
-//     ));
-// }
 
 const logOut = async () => {
     isLogout.value = true;

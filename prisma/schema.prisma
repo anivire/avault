@@ -264,51 +264,52 @@ model users {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model animeList {
-  user_id         String   @id(map: "user_lists_pkey") @db.Uuid
-  mal_id          BigInt
+  entry_id        String   @id(map: "animelist_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String   @db.Uuid
+  mal_id          String
   watching_status String
-  wathed_episodes BigInt?
-  score           BigInt?
+  wathed_episodes Int?
+  score           Int?
   is_favorited    Boolean
   added_at        DateTime @db.Timestamptz(6)
-  udated_at       DateTime @db.Timestamptz(6)
+  updated_at      DateTime @db.Timestamptz(6)
   image_url       String
   title           String
   studios         String
   type            String
-  total_episodes  BigInt?
+  total_episodes  Int?
   airing_season   String
   airing_status   String
-  profiles        profiles @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profiles        profile  @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model profile {
-  user_id       String    @id @db.Uuid
+  user_id       String      @id @db.Uuid
   username      String
   tag           String
   avatar_url    String?
-  created_at    DateTime? @default(now()) @db.Timestamptz(6)
-  last_seen_at  DateTime? @default(now()) @db.Timestamptz(6)
-  badges        Json?     @db.Json
-  pinned_animes Json?     @db.Json
-  users         users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  created_at    DateTime?   @default(now()) @db.Timestamptz(6)
+  last_seen_at  DateTime?   @default(now()) @db.Timestamptz(6)
+  badges        Json?       @db.Json
+  pinned_animes Json?       @db.Json
+  animeList     animeList[]
+  users         users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model profiles {
-  id          String     @id @db.Uuid
+  id          String    @id @db.Uuid
   username    String?
   avatar_url  String?
-  created_at  DateTime?  @default(now()) @db.Timestamptz(6)
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
   anime_list  String?
   user_badges String?
-  animeList   animeList?
-  users       users      @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users       users     @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
