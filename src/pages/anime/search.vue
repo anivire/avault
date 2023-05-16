@@ -284,7 +284,7 @@ watch(q, async (newValue, oldValue) => {
     currentPage.value = 1;
     const searchTimeout = setTimeout(() => {
         updateRoute();
-    }, 1000)
+    }, 2000)
 })
 
 watch(selectedYear, async (newValue, oldValue) => {
@@ -349,8 +349,6 @@ watch(route, (newValue, oldValue) => {
 
         searchAnimes.value = data
      }));
-
-    console.log(searchAnimes);
 })
 
 // ToDo: fix unapproved anime in search

@@ -1,13 +1,13 @@
 <template>
     <div
-        :class="score! >= 7 ? 'to-emerald-900' : score! >= 5 ? 'to-amber-900' : score! < 5 && score! != 0 ? 'to-rose-900' : 'to-zinc-900'"
-        class="w-full from-zinc-900 bg-gradient-to-r rounded-md flex flex-row justify-between items-center">
+        :class="score! >= 7 ? 'to-emerald-900 hover:to-emerald-700' : score! >= 5 ? 'to-amber-900 hover:to-amber-700' : score! < 5 && score! != 0 ? 'to-rose-900 hover:to-rose-700' : 'to-zinc-900 hover:to-zinc-700'"
+        class="w-full from-zinc-900 bg-gradient-to-r rounded-md flex flex-row justify-between items-center transition-all duration-200 ease-in-out">
         <div class="flex flex-row gap-5 overflow-hidden relative items-center h-36">
             <nuxt-img :src="imageUrl" class="h-full rounded-l-md"/>
             <div class="info flex flex-col gap-2 justify-center">
                 <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}" class="flex flex-row gap-1 items-center hover:bg-zinc-700/50 rounded-md w-fit">
                     <p class="text-base font-bold line-clamp-1">{{ title }}</p>
-                    <Icon name="ri:arrow-right-up-line" class="text-base"/>
+                    <Icon name="ri:arrow-right-up-line" class="text-xl"/>
                 </NuxtLink>
                 <div class="flex flex-row gap-1.5 mb-1">
                     <p 
