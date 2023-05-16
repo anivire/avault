@@ -443,4 +443,11 @@ function nextPage() {
         behavior: "smooth",
     });
 }
+
+useSeoMeta({
+    title: 'Search › AnimeList',
+    ogTitle: 'Search',
+    description: 'Search anime page',
+    ogDescription: 'Search anime page',
+})
 </script>

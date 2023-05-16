@@ -28,4 +28,11 @@ import AnimeCapsule from '@/src/components/capsule/AnimeCapsule.vue';
 import AnimeCapsuleSkeleton from '@/src/components/skeleton/AnimeCapsuleSkeleton.vue';
 
 const { data: topAnimes } = await useLazyAsyncData('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 25 } }));
+
+useSeoMeta({
+    title: 'Top 100 rated anime › AnimeList',
+    ogTitle: 'Top 100',
+    description: 'Top 100 rated anime of all time by MAL users',
+    ogDescription: 'Top 100 rated anime of all time by MAL users',
+})
 </script>

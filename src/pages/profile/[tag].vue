@@ -233,7 +233,6 @@ watch(selectedStatus, (newValue) => {
     
 })
 
-
 const { data: user } = await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
 
 if (user.value) {
@@ -243,5 +242,13 @@ if (user.value) {
         anime.value = data.value as unknown as animeList[];
     }
 }
+
+useSeoMeta({
+    title: user.value != undefined ? user.value.tag + '\'s Profile › AnimeList' : 'Profile › AnimeList',
+    ogTitle: user.value != undefined ? user.value.tag : 'Profile',
+    description: 'User profile page',
+    ogDescription: 'User profile page',
+    ogImage: user.value?.avatar_url,
+})
 
 </script>
