@@ -50,7 +50,7 @@
                     v-show="isUserMenuOpen" 
                     class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl justify-between flex flex-col">
                     <NuxtLink 
-                        :to="{ name: 'profile-tag', params: { tag: authorizedUser.user.username } }"
+                        :to="{ name: 'profile-tag', params: { tag: authorizedUser.user.tag } }"
                         class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
                             <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:book-3-line" class="text-base"/> Profile</p>
                     </NuxtLink>
@@ -88,18 +88,20 @@ const isUserLoaded = ref(false);
 const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
-    if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION') && session) {
+    if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION' || event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') && session) {
 
-        await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }})
-            .then((data: any) => {
-                authorizedUser.setData({
-                    avatar_url: data.avatar_url,
-                    tag: data.tag,
-                    user_id: data.user_id,
-                    username: data.username
-                });
-            }
-        ));
+        const { data } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }}));
+        
+        console.log(data);
+
+        if (data.value) {
+            authorizedUser.setData({
+                avatar_url: data.value.avatar_url!,
+                tag: data.value.tag,
+                user_id: data.value.user_id,
+                username: data.value.username
+            });
+        }
 
         isUserLoaded.value = true;
     } else if (event == 'SIGNED_OUT' && session) {

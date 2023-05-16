@@ -5,38 +5,41 @@
         <div class="flex flex-row gap-5 overflow-hidden relative items-center h-36">
             <nuxt-img :src="imageUrl" class="h-full rounded-l-md"/>
             <div class="info flex flex-col gap-2 justify-center">
-                <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}"><h1 class="text-xl">{{ title }}</h1></NuxtLink>
-                <div class="flex flex-row gap-1.5">
+                <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}" class="flex flex-row gap-1 items-center hover:bg-zinc-700/50 rounded-md w-fit">
+                    <p class="text-base font-bold line-clamp-1">{{ title }}</p>
+                    <Icon name="ri:arrow-right-up-line" class="text-base"/>
+                </NuxtLink>
+                <div class="flex flex-row gap-1.5 mb-1">
                     <p 
                         v-if="isFavorited"
-                        class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full bg-zinc-50">
+                        class="text-zinc-900 font-extrabold text-xs p-1 px-2 rounded-full bg-zinc-50">
                         <Icon name="ri:heart-fill"/>
                     </p>
                     <p 
-                        class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full bg-zinc-50">
+                        class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full bg-zinc-50">
                         {{ type }}
                     </p>
                     <p 
                         :class="watchingStatus == 'watching' ? 'bg-amber-400' : watchingStatus == 'watched' ? 'bg-emerald-400' : watchingStatus == 'planned' ? 'bg-violet-400' : 'bg-rose-400'"
-                        class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full">
+                        class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full">
                         {{ watchingStatus == 'watching' ? 'Watching' : watchingStatus == 'watched' ? 'Watched' : watchingStatus == 'planned' ? 'Planned' : 'Dropped' }}
                     </p>
                     <p 
                         :class="airingStatus == 'Ongoing' ? 'bg-amber-400' : watchingStatus == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
-                        class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full">
+                        class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full">
                         {{ airingStatus }}
                     </p>
                 </div>
                 <div class="flex flex-col">
                     <div class="flex flex-row gap-3">
-                        <p class="text-zinc-400">Added <span class="text-zinc-50">{{ addedAt }}</span></p>
-                        <p class="text-zinc-400">Updated <span class="text-zinc-50">{{ updatedAt }}</span></p>
+                        <p class="text-zinc-400 text-sm">Added <span class="text-zinc-50">{{ addedAt }}</span></p>
+                        <!-- <p class="text-zinc-400 text-sm">Updated <span class="text-zinc-50">{{ updatedAt }}</span></p> -->
                     </div>
-                    <p class="text-zinc-400">Episodes watched <span class="text-zinc-50">{{ wathedEpisodes }} / {{ totalEpisodes == 0 || totalEpisodes == null ? '?' : totalEpisodes }}</span></p>
+                    <p class="text-zinc-400 text-sm">Episodes watched <span class="text-zinc-50">{{ wathedEpisodes }} / {{ totalEpisodes == 0 || totalEpisodes == null ? '?' : totalEpisodes }}</span></p>
                 </div>
             </div>
         </div>
-        <h1 class="mr-10">{{ score == 0 || score == -1 ? '' : score }}</h1>
+        <h1 class="mx-10">{{ score == 0 || score == -1 ? '' : score }}</h1>
     </div>
 </template>
 
@@ -54,7 +57,7 @@ defineProps({
     title: { type: String, required: true},
     studios: { type: String, required: true},
     type: { type: String, required: true},
-    totalEpisodes: { type: Number, required: true},
+    totalEpisodes: { type: Number, required: false},
     airingSeason: { type: String, required: true},
     airingStatus: { type: String, required: true},
 })

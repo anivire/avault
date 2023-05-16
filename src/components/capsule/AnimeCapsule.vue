@@ -42,7 +42,7 @@
                 <p>•</p>
                 <p>{{ type }}</p>
                 <p>•</p>
-                <p>{{ new Date(airedFrom).getFullYear() }}</p>
+                <p>{{ airedFrom == null ? 'Unannounced' : new Date(airedFrom).getFullYear() }}</p>
             </div>
             <p 
                 :class="!isInfoHovered ? 'line-clamp-1' : ''" 
@@ -79,8 +79,8 @@ defineProps({
     imageUrl:       { type: String, required: true},
     title:          { type: String, required: true},
     studio:         { type: String, required: true},
-    score:          { type: Number, required: true},
-    airedFrom:      { type: String, required: true},
+    score:          { type: Number, required: false},
+    airedFrom:      { type: String, required: false},
     type:           { type: String, required: true},
     airingStatus:   { type: String, required: true},
     isTop:          { type: Boolean, required: false},

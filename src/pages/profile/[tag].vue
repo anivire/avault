@@ -1,19 +1,21 @@
 <template>
 <div class="absolute overflow-hidden">
     <nuxt-img 
+        v-if="user"
         :src="user?.avatar_url ? user.avatar_url : ''" 
         class="w-screen h-52 object-cover blur-lg opacity-60"
     />
 </div> 
 
-<nuxt-img 
+<nuxt-img  
+    v-if="user"
     :src="user?.avatar_url ? user.avatar_url : ''" 
     class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
 />
 <div 
     v-if="user != null"
-    class="relative mx-auto max-w-7xl mt-36 flex flex-col gap-10">   
-    <div class="flex flex-row gap-3">  
+    class="relative mx-auto max-w-7xl mt-36 flex flex-col gap-5">   
+    <div class="flex flex-row gap-3 mb-5">  
         <nuxt-img 
         :src="user?.avatar_url ? user.avatar_url : ''" 
             class="object-cover rounded-full w-36"
@@ -47,18 +49,9 @@
             />
         </div>
 
-        <div class="flex flex-col gap-2 col-span-2">
+        <div class="flex flex-col gap-2 col-span-3">
             <p class="text-sm font-bold uppercase">Search</p>
             <Input @update:input="q = $event"/>
-        </div>
-
-        <div class="flex flex-col gap-2">
-            <p class="text-sm font-bold uppercase">Year</p>
-            <Select 
-                :options="yearOptions"
-                :default="selectedYear"
-                @update:select="selectedYear = $event"
-            />
         </div>
         
         <div class="flex flex-col gap-2">
@@ -79,7 +72,71 @@
             />
         </div>
     </div>
-    <div class="anime flex flex-col gap-5">
+    <div class="flex flex-row gap-3 items-center">
+        <Icon name="ri:price-tag-3-fill"/>
+        <div class="flex flex-row gap-2 items-center grow">            
+            <p 
+                v-show="selectedList.value[0] != -1 && selectedList.value[0] != null"
+                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                {{ selectedList.name }}
+            </p>
+
+            <p 
+                v-show="selectedFormat.value[0] != -1 && selectedFormat.value[0] != null"
+                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                {{ selectedFormat.name }}
+            </p>
+
+            <p 
+                v-show="selectedStatus.value[0] != -1 && selectedStatus.value[0] != null"
+                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                {{ selectedStatus.name }}
+            </p>
+        </div>
+
+        <!-- Sort button -->
+        <div class="flex flex-row gap-1">
+            <Icon 
+                @click="viewMode = 'grid'"
+                :class="viewMode == 'grid' ? 'text-zinc-50' : 'text-zinc-400'"
+                name="ri:layout-grid-fill" 
+                class="text-xl cursor-pointer"
+            />  
+            <Icon 
+                @click="viewMode = 'flex'"
+                :class="viewMode == 'flex' ? 'text-zinc-50' : 'text-zinc-400'"
+                name="ri:menu-fill" 
+                class="text-xl cursor-pointer"
+            /> 
+        </div>
+        
+        <div class="flex flex-row gap-1">
+            <Icon 
+                @click="selectedSort = sort[0]"
+                :class="selectedSort.value[0] == 'asc' ? 'text-zinc-50' : 'text-zinc-400'"
+                name="ri:sort-asc" 
+                class="text-xl cursor-pointer"
+            />    
+            <Icon 
+                @click="selectedSort = sort[1]"
+                :class="selectedSort.value[0] == 'desc' ? 'text-zinc-50' : 'text-zinc-400'"
+                name="ri:sort-desc" 
+                class="text-xl cursor-pointer"
+            />    
+        </div>
+        <SmallSelect 
+            :options="order"
+            @update:select-small="selectedOrder = $event"
+        />
+        
+        <!-- <SmallSelect 
+            :options="animePerPage"
+            @update:select-small="selectedAnimePerPage = $event"
+        /> -->
+    </div>
+    <div 
+        :class="viewMode == 'grid' ? 'grid grid-cols-2' : viewMode == 'flex' ? 'flex flex-col' : ''"
+        class="anime gap-5">
         <AnimeProfileCapsule 
             v-for="entry in anime" 
             :added-at="(new Date(entry.added_at).toLocaleDateString())"
@@ -106,32 +163,20 @@ import { animeList, profile } from '.prisma/client';
 import AnimeProfileCapsule from '@/src/components/capsule/AnimeProfileCapsule.vue';
 import Input from '@/src/components/Input.vue';
 import Select from '@/src/components/Select.vue';
-import { cwd } from 'process';
+import SmallSelect from '@/src/components/SmallSelect.vue';
 
 const route = useRoute('profile-tag');
 
 const order = ref([
     { value: ['score'], name: 'Score'},
     { value: ['title'], name: 'Title'},
-    { value: ['popularity'], name: 'Popularity'},
-    { value: ['start_date'], name: 'Release date'},
+    { value: ['update'], name: 'Last update'},
+    { value: ['add_date'], name: 'Adding date'},
 ]);
 
 const sort = ref([
     { value: ['asc'], name: 'Asc'},
     { value: ['desc'], name: 'Desc'},
-]);
-
-const yearOptions = ref([
-    { value: [-1], name: 'Any' },
-    { value: [1980, 1990], name: '1980-1989' },
-    { value: [1990, 2000], name: '1990-1999' },
-    { value: [2000, 2011], name: '2000-2010' },
-    { value: [2011, 2015], name: '2011-2014' },
-    { value: [2015, 2020], name: '2015-2019' },
-    { value: [2020, 2022], name: '2020-2021' },
-    { value: [2022, 2023], name: '2022' },
-    { value: [2023, 2024], name: '2023' },
 ]);
 
 const listOptions = ref([
@@ -140,6 +185,7 @@ const listOptions = ref([
     { value: ['watching'], name: 'Watching' },
     { value: ['planned'], name: 'Planned' },
     { value: ['dropped'], name: 'Dropped' },
+    { value: ['favorited'], name: 'Favorited' },
 ]);
 
 const formatOptions = ref([
@@ -160,18 +206,35 @@ const statusOptions = ref([
 ]);
 
 const q = ref('');
-const selectedYear = ref({value: [], name: ''});
 const selectedFormat = ref({value: [], name: ''});
 const selectedStatus = ref({value: [], name: ''});
 const selectedList = ref({value: [], name: ''});
 const selectedOrder = ref(order.value[0]);
 const selectedSort = ref(sort.value[1]);
 
-const user = ref<profile>()
-const anime = ref<animeList[]>()
+// const user = ref<profile>();
+const anime = ref<animeList[]>();
+const sortedAnime = ref<animeList[]>();
+const viewMode = ref('flex');
 
-await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }})
-    .then((data) => { user.value = data as profile }));
+watch(selectedList, (newValue) => {
+    
+})
+
+watch(q, (newValue) => {
+    
+})
+
+watch(selectedFormat, (newValue) => {
+    
+})
+
+watch(selectedStatus, (newValue) => {
+    
+})
+
+
+const { data: user } = await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
 
 if (user.value) {
     const { data, error } = await useAsyncData('animelist', () => $fetch('/api/v1/user/animelist', {method: 'GET', query: { user_id: user.value!.user_id}}));

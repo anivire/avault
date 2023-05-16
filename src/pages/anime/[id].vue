@@ -61,8 +61,9 @@
                                     <Icon name="ri:add-box-fill" class="text-xl"/>
                                     <p class="text-sm font-bold">List</p>
                                 </div>
-                                <p v-if="userAnimeList == 'select' || userAnimeList == undefined || userAnimeList == ''" class="text-sm text-zinc-400">Selecte</p>
+                                <p v-if="userAnimeList == 'select' || userAnimeList == undefined || userAnimeList == ''" class="text-sm text-zinc-400">Select</p>
                                 <p 
+                                    v-else
                                     :class="userAnimeList == 'watched' ? 'text-emerald-400' : userAnimeList == 'watching' ? 'text-amber-400' : userAnimeList == 'planned' ? 'text-violet-400' : 'text-rose-400'"
                                     class="text-sm font-bold">{{ userAnimeList.charAt(0).toUpperCase() + userAnimeList.slice(1) }}</p>
                             </button>
@@ -116,7 +117,9 @@
                                     <Icon name="material-symbols:star-rounded" class="text-xl"/>
                                     <p class="text-sm font-bold">Score</p>
                                 </div>
-                                <p class="text-sm text-zinc-400">Select</p>
+                                <p 
+                                    :class="userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
+                                    class="text-sm">{{ userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'Select' : userAnimeScore }}</p>
                             </button>
                             <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                                 <button :class="userAnimeScore == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
@@ -301,9 +304,9 @@ import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommen
 import { animeList } from '@prisma/client'
 import { useUserStore } from '@/store/UserStore';
 
-const anime = ref<Anime>();
-const episodes = ref<AnimeEpisode[]>();
-const characters = ref<AnimeCharacter[]>();
+// const anime = ref<Anime>();
+// const episodes = ref<AnimeEpisode[]>();
+// const characters = ref<AnimeCharacter[]>();
 const recommendations = ref<Recommendation[]>();
 const client = useSupabaseClient();
 
@@ -324,23 +327,37 @@ const userIsAnimeFavorited = ref(false);
 
 const currentCharacterPage = ref(0);
 
-await Promise.all([
-    useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
-        .then((data: Anime) => { anime.value = data })),
-    useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }})
-        .then((data: AnimeEpisode[]) => { episodes.value = data })),
-    useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
-        .then((data: AnimeCharacter[]) => { characters.value = data})),
-    useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }})
-        .then((data) => { 
-            if (client.auth.getSession != null) {
-                userAnimeScore.value = data.score as number;
-                userAnimeList.value = data.watching_status;
-                userWatchedEpisodes.value = data.wathed_episodes as number;
-                userIsAnimeFavorited.value = data.is_favorited;
-            }
-        })),
-])
+// await Promise.all([
+//     useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
+//         .then((data: Anime) => { anime.value = data })),
+//     useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }})
+//         .then((data: AnimeEpisode[]) => { episodes.value = data })),
+//     useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
+//         .then((data: AnimeCharacter[]) => { characters.value = data})),
+//     useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }})
+//         .then((data) => { 
+//             if (client.auth.getSession != null && data) {
+//                 userAnimeScore.value = data.score as number;
+//                 userAnimeList.value = data.watching_status;
+//                 userWatchedEpisodes.value = data.wathed_episodes as number;
+//                 userIsAnimeFavorited.value = data.is_favorited;
+//             }
+//         })),
+// ])
+
+const { data: anime } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }}));
+// const { data: episodes } = useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }}));
+const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
+const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
+
+
+// If user authorized, check animeList entry
+if (searchEntry.value?.mal_id != undefined && client.auth.getSession != null) {
+    userAnimeScore.value = searchEntry.value.score as number;
+    userAnimeList.value = searchEntry.value.watching_status;
+    userWatchedEpisodes.value = searchEntry.value.wathed_episodes as number;
+    userIsAnimeFavorited.value = searchEntry.value.is_favorited;
+}
 
 if (anime.value) {
     useSeoMeta({
@@ -371,7 +388,7 @@ function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): 
 async function createOrUpdateAnimeEntry() {
     const { data, error } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
 
-    if (error.value?.message == 'No animeList found') {
+    if (data.value?.mal_id == undefined) {
         console.log('Created new entry');
         // If anime entry is not exists in user animelist, then create new one
         if (anime.value) {
