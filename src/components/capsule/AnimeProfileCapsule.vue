@@ -8,6 +8,11 @@
                 <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}"><h1 class="text-xl">{{ title }}</h1></NuxtLink>
                 <div class="flex flex-row gap-1.5">
                     <p 
+                        v-if="isFavorited"
+                        class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full bg-zinc-50">
+                        <Icon name="ri:heart-fill"/>
+                    </p>
+                    <p 
                         class="text-zinc-900 font-extrabold text-xs p-0.5 px-3 rounded-full bg-zinc-50">
                         {{ type }}
                     </p>
