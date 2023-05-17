@@ -3,9 +3,9 @@
 <div class="py-6">
     <div class="flex flex-row w-full items-center max-w-7xl mx-auto justify-between">
         <div class="flex flex-row items-center gap-8">
-            <NuxtLink to="/"><button class="flex flex-row gap-1 py-2">
-                <h1 class="uppercase text-2xl font-black text-zinc-400">アニメリスト</h1>
-                <h1 class="uppercase text-2xl font-black">Animelist</h1>
+            <NuxtLink to="/"><button class="flex flex-row gap-1 py-2 items-center">
+                <h1 class="uppercase text-2xl font-black">avault</h1>
+                <Icon name="ri:safe-fill" class="text-2xl"/>
             </button></NuxtLink>
             <NuxtLink to="/anime/top" class="text-sm items-center flex gap-1 font-bold">
                 <Icon name="ri:trophy-line" class="text-base"/>
@@ -40,8 +40,7 @@
                     v-if="isLogout"
                     v-show="isUserMenuOpen" 
                     class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl items-center flex flex-col">
-
-                    <div class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md text-rose-500">
+                    <div class="p-1 px-3 cursor-pointer rounded-md text-rose-500">
                         <p class="items-center flex flex-row gap-2 text-sm"><Icon class="animate-spin" name="ri:loader-5-line"/> Logging out</p>
                     </div>
                 </div>
@@ -89,6 +88,7 @@ const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
     if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION' || event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') && session) {
+        console.log(session);
         const { data } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }}));
         
         if (data.value) {

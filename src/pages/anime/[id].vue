@@ -361,7 +361,7 @@ if (searchEntry.value?.mal_id != undefined && client.auth.getSession != null) {
 
 if (anime.value) {
     useSeoMeta({
-        title: anime.value.titles[0].title ? anime.value.titles[0].title + ' › AnimeList' : 'Anime › AnimeList',
+        title: anime.value.titles[0].title ? anime.value.titles[0].title + ' › AVAULT' : 'Anime › AVAULT',
         ogTitle: anime.value.titles[0].title ? anime.value.titles[0].title : 'Anime',
         description: anime.value.synopsis,
         ogDescription: anime.value.synopsis,

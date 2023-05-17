@@ -90,9 +90,9 @@ const { data: upcomingAnimes, pending: upcomingPending } = await useLazyAsyncDat
 const { data: topAnimes, pending: topPending } = await useLazyAsyncData('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 6 } }));
 
 useSeoMeta({
-    title: 'Home › AnimeList',
+    title: 'Home › AVAULT',
     ogTitle: 'Home',
-    description: 'Home page of AnimeList',
-    ogDescription: 'Home page of AnimeList',
+    description: 'Home page of AVAULT',
+    ogDescription: 'Home page of AVAULT',
 })
 </script>

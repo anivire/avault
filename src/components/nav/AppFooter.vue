@@ -3,9 +3,9 @@
         <div class="w-full max-w-7xl mx-auto flex flex-row justify-between">   
             <div class="flex flex-col justify-between">
                 <div class="flex flex-col gap-1">
-                    <div class="flex flex-row ">
-                        <h1 class="uppercase text-lg font-bold mr-1 text-zinc-400">アニメリスト</h1>
-                        <h1 class="uppercase text-lg font-black">Animelist</h1>
+                    <div class="flex flex-row items-center gap-1">
+                        <h1 class="uppercase text-2xl font-black">avault</h1>
+                        <Icon name="ri:safe-fill" class="text-2xl"/>
                     </div>
                     <p class="text-sm text-zinc-400 flex">Feel free to say any feedback or other on <Icon name="simple-icons:github" class="text-lg ml-2 mr-1"/> <a href="/" class="underline decoration-dotted hover:decoration-white hover:text-zinc-50 decoration-zinc-50 underline-offset-4 mr-1 duration-300 easy-in-out transition">Github</a></p>
                     <p class="text-sm text-zinc-400 flex">All anime data provided by unofficial My Anime List API <span class="bg-zinc-400 rounded-sm px-2 ml-2 text-zinc-950 font-bold">j</span> <a href="https://jikan.moe/" class="ml-1 underline decoration-dotted hover:decoration-white decoration-zinc-50 hover:text-zinc-50 underline-offset-4 duration-300 easy-in-out transition">jikan.moe</a></p>

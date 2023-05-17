@@ -443,7 +443,7 @@ function nextPage() {
 }
 
 useSeoMeta({
-    title: 'Search › AnimeList',
+    title: 'Search › AVAULT',
     ogTitle: 'Search',
     description: 'Search anime page',
     ogDescription: 'Search anime page',

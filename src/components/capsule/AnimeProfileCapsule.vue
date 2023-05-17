@@ -1,9 +1,15 @@
 <template>
     <div
-        :class="score! >= 7 ? 'to-emerald-900 hover:to-emerald-700' : score! >= 5 ? 'to-amber-900 hover:to-amber-700' : score! < 5 && score! != 0 ? 'to-rose-900 hover:to-rose-700' : 'to-zinc-900 hover:to-zinc-700'"
+        @mouseenter="isHovered = true"
+        @mouseleave="isHovered = false"
+        :class="score! >= 7 ? 'to-emerald-900 hover:to-emerald-500' : score! >= 5 ? 'to-amber-900 hover:to-amber-500' : score! < 5 && score! != 0 ? 'to-rose-900 hover:to-rose-500' : 'to-zinc-900 hover:to-zinc-700'"
         class="w-full from-zinc-900 bg-gradient-to-r rounded-md flex flex-row justify-between items-center transition-all duration-200 ease-in-out">
-        <div class="flex flex-row gap-5 overflow-hidden relative items-center h-36">
-            <nuxt-img :src="imageUrl" class="h-full rounded-l-md"/>
+        <div class="flex flex-row gap-5 relative items-center h-36">
+            <nuxt-img 
+                :src="imageUrl" 
+                :class="isHovered ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
+                class="h-full transition-all duration-200 ease-in-out"
+            />
             <div class="info flex flex-col gap-2 justify-center">
                 <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}" class="flex flex-row gap-1 items-center hover:bg-zinc-700/50 rounded-md w-fit">
                     <p class="text-base font-bold line-clamp-1">{{ title }}</p>
@@ -25,7 +31,7 @@
                         {{ watchingStatus == 'watching' ? 'Watching' : watchingStatus == 'watched' ? 'Watched' : watchingStatus == 'planned' ? 'Planned' : 'Dropped' }}
                     </p>
                     <p 
-                        :class="airingStatus == 'Ongoing' ? 'bg-amber-400' : watchingStatus == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
+                        :class="airingStatus == 'Ongoing' ? 'bg-amber-400' : airingStatus == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
                         class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full">
                         {{ airingStatus }}
                     </p>
@@ -44,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+const isHovered = ref(false);
 
 defineProps({
     animeId: { type: Number, required: true},

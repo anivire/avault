@@ -135,10 +135,11 @@
         /> -->
     </div>
     <div 
+        v-if="sortedAnime && sortedAnime.length != 0"
         :class="viewMode == 'grid' ? 'grid grid-cols-2' : viewMode == 'flex' ? 'flex flex-col' : ''"
         class="anime gap-5">
         <AnimeProfileCapsule 
-            v-for="entry in anime" 
+            v-for="entry in sortedAnime" 
             :added-at="(new Date(entry.added_at).toLocaleDateString())"
             :airing-season="entry.airing_season"
             :airing-status="entry.airing_status"
@@ -154,6 +155,12 @@
             :watching-status="entry.watching_status"
             :wathed-episodes="(entry.wathed_episodes as number)"
         />
+    </div>
+    <div 
+        v-else
+        class="flex flex-col items-center mt-16">
+        <p class="font-bold">No results</p>
+        <p class="text-zinc-400">Yeah, it's very sad to hear...</p>
     </div>
 </div>
 </template>
@@ -190,19 +197,19 @@ const listOptions = ref([
 
 const formatOptions = ref([
     { value: [-1], name: 'Any' },
-    { value: ['tv'], name: 'TV' },
-    { value: ['movie'], name: 'Movie' },
-    { value: ['special'], name: 'Special' },
-    { value: ['ova'], name: 'OVA' },
-    { value: ['ona'], name: 'ONA' },
-    { value: ['music'], name: 'Music' },
+    { value: ['TV'], name: 'TV' },
+    { value: ['Movie'], name: 'Movie' },
+    { value: ['Special'], name: 'Special' },
+    { value: ['OVA'], name: 'OVA' },
+    { value: ['ONA'], name: 'ONA' },
+    { value: ['Music'], name: 'Music' },
 ]);
 
 const statusOptions = ref([
     { value: [-1], name: 'Any' },
-    { value: ['complete'], name: 'Released' },
-    { value: ['airing'], name: 'Ongoing' },
-    { value: ['upcoming'], name: 'Upcoming' },
+    { value: ['Released'], name: 'Released' },
+    { value: ['Ongoing'], name: 'Ongoing' },
+    { value: ['Upcoming'], name: 'Upcoming' },
 ]);
 
 const q = ref('');
@@ -216,22 +223,36 @@ const selectedSort = ref(sort.value[1]);
 const anime = ref<animeList[]>();
 const sortedAnime = ref<animeList[]>();
 const viewMode = ref('flex');
+const isSearch = ref(false);
 
 watch(selectedList, (newValue) => {
-    
+    console.log(newValue.name)
+    setSearchQuery();
 })
 
 watch(q, (newValue) => {
-    
+    console.log('q')
+    setSearchQuery();
 })
 
 watch(selectedFormat, (newValue) => {
-    
+    console.log(newValue.name)
+    setSearchQuery();
 })
 
 watch(selectedStatus, (newValue) => {
-    
+    console.log(newValue.name)
+    setSearchQuery();
 })
+
+const setSearchQuery = () => {
+    sortedAnime.value = anime.value!.filter(x => 
+        (selectedList.value.value[0] == -1 || x.watching_status == selectedList.value.value[0]) 
+        && (q.value == '' || x.title.toLowerCase().indexOf(q.value.toLowerCase()) >= 0)
+        && (selectedFormat.value.value[0] == -1 || x.type == selectedFormat.value.value[0])
+        && (selectedStatus.value.value[0] == -1 || x.airing_status == selectedStatus.value.value[0])
+    );
+}
 
 const { data: user } = await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
 
@@ -240,11 +261,12 @@ if (user.value) {
 
     if (data.value) {
         anime.value = data.value as unknown as animeList[];
+        sortedAnime.value = anime.value;
     }
 }
 
 useSeoMeta({
-    title: user.value != undefined ? user.value.tag + '\'s Profile › AnimeList' : 'Profile › AnimeList',
+    title: user.value != undefined ? user.value.tag + '\'s Profile › AVAULT' : 'Profile › AVAULT',
     ogTitle: user.value != undefined ? user.value.tag : 'Profile',
     description: 'User profile page',
     ogDescription: 'User profile page',
