@@ -218,36 +218,39 @@ const selectedStatus = ref({value: [], name: ''});
 const selectedList = ref({value: [], name: ''});
 const selectedOrder = ref(order.value[0]);
 const selectedSort = ref(sort.value[1]);
+const selectedFavorite = ref(false);
 
 // const user = ref<profile>();
 const anime = ref<animeList[]>();
 const sortedAnime = ref<animeList[]>();
 const viewMode = ref('flex');
-const isSearch = ref(false);
 
 watch(selectedList, (newValue) => {
-    console.log(newValue.name)
+    if (newValue.value[0] == "favorited") {
+        selectedFavorite.value = true;
+    } else {
+        selectedFavorite.value = false;
+    }
+
     setSearchQuery();
 })
 
 watch(q, (newValue) => {
-    console.log('q')
     setSearchQuery();
 })
 
 watch(selectedFormat, (newValue) => {
-    console.log(newValue.name)
     setSearchQuery();
 })
 
 watch(selectedStatus, (newValue) => {
-    console.log(newValue.name)
     setSearchQuery();
 })
 
 const setSearchQuery = () => {
     sortedAnime.value = anime.value!.filter(x => 
-        (selectedList.value.value[0] == -1 || x.watching_status == selectedList.value.value[0]) 
+        ((selectedList.value.value[0] == -1 || x.watching_status == selectedList.value.value[0]) 
+        || (selectedFavorite.value == false || x.is_favorited == true))
         && (q.value == '' || x.title.toLowerCase().indexOf(q.value.toLowerCase()) >= 0)
         && (selectedFormat.value.value[0] == -1 || x.type == selectedFormat.value.value[0])
         && (selectedStatus.value.value[0] == -1 || x.airing_status == selectedStatus.value.value[0])
