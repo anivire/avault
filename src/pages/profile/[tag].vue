@@ -220,7 +220,6 @@ const selectedOrder = ref(order.value[0]);
 const selectedSort = ref(sort.value[1]);
 const selectedFavorite = ref('');
 
-// const user = ref<profile>();
 const anime = ref<animeList[]>();
 const sortedAnime = ref<animeList[]>();
 const viewMode = ref('flex');

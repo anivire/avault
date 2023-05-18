@@ -88,7 +88,7 @@ const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
     if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION' || event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') && session) {
-        console.log(session);
+        console.log(event, session);
         const { data } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }}));
         
         if (data.value) {
