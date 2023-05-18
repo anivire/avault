@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-3">
             <div class="flex flex-row items-center justify-between px-1 py-3">
                 <h1 class="text-lg uppercase">Ongoing anime</h1>
-                <Icon name="ri:arrow-right-up-line" class="text-2xl"/>
+                <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div
                 v-if="!ongoingPending" 
@@ -29,7 +29,7 @@
         <div class="flex flex-col gap-3">
             <div class="flex flex-row items-center justify-between px-1 py-3">
                 <h1 class="text-lg uppercase">Upcoming anime</h1>
-                <Icon name="ri:arrow-right-up-line" class="text-2xl"/>
+                <NuxtLink to="/anime/upcoming"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div 
                 v-if="!upcomingPending"
@@ -55,7 +55,7 @@
         <div class="flex flex-col gap-3">
             <div class="flex flex-row items-center justify-between px-1 py-3">
                 <h1 class="text-lg uppercase">Top 100 anime</h1>
-                <Icon name="ri:arrow-right-up-line" class="text-2xl"/>
+                <NuxtLink to="/anime/top"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div 
                 v-if="!topPending"

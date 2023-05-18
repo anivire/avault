@@ -18,8 +18,8 @@
     <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}">
         <nuxt-img 
             :src="imageUrl" 
-            :class="isPosterHovered ? 'h-[22rem]' : 'h-full'"
-            class="transition-all duration-200 ease-in-out object-cover rounded-lg " 
+            :class="isPosterHovered ? 'h-[22rem] rounded-lg' : 'h-full rounded-t-lg'"
+            class="transition-all duration-200 ease-in-out object-cover" 
             loading="lazy"
             @mouseenter="isPosterHovered = true"
             @mouseleave="isPosterHovered = false"
@@ -29,7 +29,7 @@
         :class="isPosterHovered ? 'translate-y-24' : 'translate-y'"
         class="transition-all duration-200 ease-in-out">
         <div 
-            :class="isInfoHovered ? 'translate-y-0' : 'translate-y-9'"
+            :class="isInfoHovered ? 'translate-y-0' : 'translate-y-0'"
             class="absolute bottom-0 p-3 flex flex-col grow gap-1 bg-zinc-900 hover:bg-zinc-800 rounded-b-md w-full transition-all duration-200 ease-in-out" 
             @mouseenter="isInfoHovered = true"
             @mouseleave="isInfoHovered = false">
@@ -50,7 +50,7 @@
                 {{ title }}
             </p>
             <p class="text-zinc-400 text-xs">{{ studio }}</p> 
-            <div 
+            <!-- <div 
                 class="flex flex-row gap-3 justify-center items-center">
                 <button class="flex flex-row items-center gap-1 hover:bg-rose-600/90 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
                     <Icon name="ri:heart-fill"/>
@@ -64,7 +64,7 @@
                 <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md col-span-2 justify-center p-2 duration-200 easy-in-out transition-colors">
                     <Icon name="ri:movie-2-fill"/>
                 </button>
-            </div>      
+            </div>       -->
         </div>
     </div>
 </div>
@@ -86,4 +86,6 @@ defineProps({
     isTop:          { type: Boolean, required: false},
     topNumber:      { type: Number, required: false},
 })
+
+
 </script>

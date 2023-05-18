@@ -370,11 +370,13 @@ await Promise.all([
             }
         })
     .then((data: Anime[]) => { 
-        data.forEach(element => {
-            if (element.approved == false) {
-                data.splice(data.indexOf(element), 1);
-            }
-        });
+
+        // data.forEach(element => {
+        //     if (element.approved == false) {
+        //         data.splice(data.indexOf(element), 1);
+        //     }
+        // });
+        
         searchAnimes.value = data 
     }))
 ])

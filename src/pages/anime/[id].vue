@@ -142,26 +142,36 @@
                 <div class="flex flex-col gap-4 justify-start col-span-2 mt-16">
                     <h1>{{ anime.title != undefined ? anime.title : anime.titles[0].title }}</h1>
                     <div class="bg flex flex-row gap-3 items-center">
-                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
-                        <h1 class="text-xl uppercase">{{ anime.type }}</h1> 
+                        <div
+                            v-if="anime.type" 
+                            class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                            <h1 class="text-xl uppercase">{{ anime.type }}</h1> 
                         </div>
                         <div 
                             :class="parseAnimeAiringStatus(anime.status) == 'Ongoing' ? 'bg-amber-400' : parseAnimeAiringStatus(anime.status) == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
                             class="px-4 p-2 flex flex-row justify-center items-center rounded-md text-zinc-800">
                             <h1 class="text-xl uppercase">{{ parseAnimeAiringStatus(anime.status) }}</h1> 
                         </div>
-                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md gap-1">
+                        <div 
+                            v-if="anime.score"  
+                            class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md gap-1">
                             <Icon name="material-symbols:star-rounded" class="text-xl"/>
                             <h1 class="text-xl uppercase">{{ anime.score == undefined ? 'n/a' : anime.score }}</h1> 
                         </div>
-                        <div class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                        <div
+                            v-if="anime.episodes"  
+                            class="px-4 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
                             <h1 v-if="anime.episodes" class="text-xl uppercase">{{ anime.episodes }} EP.</h1> 
                             <h1 v-else class="text-xl uppercase">n/a EP.</h1> 
                         </div>
-                        <div class="justify-center items-center">
+                        <div 
+                            v-if="anime.duration != 'Unknown'"  
+                            class="justify-center items-center">
                             <h1 class="text-xl uppercase">x</h1>
                         </div>
-                        <div class="px-3 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
+                        <div
+                            v-if="anime.duration != 'Unknown'"   
+                            class="px-3 p-2 flex flex-row justify-center items-center bg-zinc-800 rounded-md">
                             <h1 v-if="anime!.duration != 'Unknown'" class="text-xl uppercase">{{ anime!.duration.indexOf('p') >= 0 ? anime!.duration.slice(0, anime!.duration.indexOf(' p')) + '.' : anime!.duration}}</h1> 
                             <h1 v-else class="text-xl uppercase">n/a min.</h1> 
                         </div>
@@ -250,7 +260,7 @@
                         </div>
                     </div>
                     <div 
-                        :class="characters.length < 8 ? 'flex flex-row' : 'grid grid-flow-col'"
+                        :class="characters.length < 5 ? 'flex flex-row' : 'grid grid-flow-col'"
                         class="characters-carousel gap-4 h-full" 
                         style="overflow-y: hidden; overflow-x: hidden;">
                         <p v-show="characters!.length == 0">No characters was found</p>

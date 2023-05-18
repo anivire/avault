@@ -4,7 +4,7 @@ const jikanClient = new JikanClient();
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
-    const { data } = await jikanClient.top.getTopAnime({limit: query.count as number})
+    const { data } = await jikanClient.top.getTopAnime({limit: query.count as number, page: query.page as number})
     .catch(async (response: Response) => {
         if (response.status == 429) {
             throw createError({
