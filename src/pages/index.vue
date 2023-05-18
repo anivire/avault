@@ -6,7 +6,7 @@
                 <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div
-                v-if="!ongoingPending" 
+                v-if="ongoingAnimes" 
                 class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsule
                     v-for="anime in ongoingAnimes"
@@ -32,7 +32,7 @@
                 <NuxtLink to="/anime/upcoming"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div 
-                v-if="!upcomingPending"
+                v-if="upcomingAnimes"
                 class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsule
                     v-for="anime in upcomingAnimes"
@@ -58,7 +58,7 @@
                 <NuxtLink to="/anime/top"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div>
             <div 
-                v-if="!topPending"
+                v-if="topAnimes"
                 class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
                 <AnimeCapsule
                     v-for="anime, i in topAnimes"

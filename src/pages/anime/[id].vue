@@ -25,7 +25,7 @@
                     />
                     
                     <!-- User anime control panel -->
-                    <div class="grid grid-cols-6 gap-2">
+                    <div v-if="session.session != null" class="grid grid-cols-6 gap-2">
                         <button 
                             @click="markFavorited()" 
                             :class="userIsAnimeFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
@@ -314,11 +314,9 @@ import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommen
 import { animeList } from '@prisma/client'
 import { useUserStore } from '@/store/UserStore';
 
-// const anime = ref<Anime>();
-// const episodes = ref<AnimeEpisode[]>();
-// const characters = ref<AnimeCharacter[]>();
 const recommendations = ref<Recommendation[]>();
 const client = useSupabaseClient();
+const {data: session} = await client.auth.getSession()
 
 const authorizedUser = useUserStore();
 const route = useRoute("anime-id");
@@ -337,32 +335,13 @@ const userIsAnimeFavorited = ref(false);
 
 const currentCharacterPage = ref(0);
 
-// await Promise.all([
-//     useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
-//         .then((data: Anime) => { anime.value = data })),
-//     useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }})
-//         .then((data: AnimeEpisode[]) => { episodes.value = data })),
-//     useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }})
-//         .then((data: AnimeCharacter[]) => { characters.value = data})),
-//     useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }})
-//         .then((data) => { 
-//             if (client.auth.getSession != null && data) {
-//                 userAnimeScore.value = data.score as number;
-//                 userAnimeList.value = data.watching_status;
-//                 userWatchedEpisodes.value = data.wathed_episodes as number;
-//                 userIsAnimeFavorited.value = data.is_favorited;
-//             }
-//         })),
-// ])
-
 const { data: anime } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }}));
 // const { data: episodes } = useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }}));
 const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
 const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
 
-
 // If user authorized, check animeList entry
-if (searchEntry.value?.mal_id != undefined && client.auth.getSession != null) {
+if (searchEntry.value?.mal_id != undefined && session.session != null) {
     userAnimeScore.value = searchEntry.value.score as number;
     userAnimeList.value = searchEntry.value.watching_status;
     userWatchedEpisodes.value = searchEntry.value.wathed_episodes as number;

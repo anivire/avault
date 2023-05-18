@@ -175,8 +175,8 @@ import SmallSelect from '@/src/components/SmallSelect.vue';
 const route = useRoute('profile-tag');
 
 const order = ref([
-    { value: ['score'], name: 'Score'},
     { value: ['title'], name: 'Title'},
+    { value: ['score'], name: 'Score'},
     { value: ['update'], name: 'Last update'},
     { value: ['add_date'], name: 'Adding date'},
 ]);
@@ -217,12 +217,12 @@ const selectedFormat = ref({value: [], name: ''});
 const selectedStatus = ref({value: [], name: ''});
 const selectedList = ref({value: [], name: ''});
 const selectedOrder = ref(order.value[0]);
-const selectedSort = ref(sort.value[1]);
+const selectedSort = ref(sort.value[0]);
 const selectedFavorite = ref('');
 
 const anime = ref<animeList[]>();
 const sortedAnime = ref<animeList[]>();
-const viewMode = ref('flex');
+const viewMode = ref('grid');
 
 watch(selectedList, (newValue) => {
     if (newValue.value[0] == "favorited") {
@@ -246,6 +246,15 @@ watch(selectedStatus, (newValue) => {
     setSearchQuery();
 })
 
+watch(selectedOrder, (newValue) => {
+    setSearchQuery();
+})
+
+watch(selectedSort, (newValue) => {
+    setSearchQuery();
+})
+
+
 const setSearchQuery = () => {
     sortedAnime.value = anime.value!.filter(x => 
         (selectedList.value.value[0] != 'favorited' ? (selectedList.value.value[0] == -1 || x.watching_status == selectedList.value.value[0]) :
@@ -254,6 +263,22 @@ const setSearchQuery = () => {
         && (selectedFormat.value.value[0] == -1 || x.type == selectedFormat.value.value[0])
         && (selectedStatus.value.value[0] == -1 || x.airing_status == selectedStatus.value.value[0])
     );
+
+    if (selectedOrder.value.value[0] == 'score') {
+        sortedAnime.value.sort((a, b) => b.score!  - a.score!);
+    } else if (selectedOrder.value.value[0] == 'title') {
+        sortedAnime.value.sort((a, b) => a.title.toLocaleLowerCase() > b.title.toLocaleLowerCase() ? 1 : -1);
+    } else if (selectedOrder.value.value[0] == 'update') {
+        sortedAnime.value.sort((a, b) => new Date(a.updated_at).setHours(0, 0, 0, 0) - new Date(b.updated_at).setHours(0, 0, 0, 0));
+    } else if (selectedOrder.value.value[0] == 'add_date') {
+        sortedAnime.value.sort((a, b) => new Date(a.added_at).setHours(0, 0, 0, 0) - new Date(b.added_at).setHours(0, 0, 0, 0));
+    }
+
+    
+    if (selectedSort.value.value[0] == 'desc') {
+        sortedAnime.value.reverse();
+    }
+    
 }
 
 const { data: user } = await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
