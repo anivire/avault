@@ -1,14 +1,12 @@
 <template>
 <div class="absolute overflow-hidden">
     <nuxt-img 
-        v-if="user"
         :src="user?.avatar_url ? user.avatar_url : ''" 
         class="w-screen h-52 object-cover blur-lg opacity-60"
     />
 </div> 
 
 <nuxt-img  
-    v-if="user"
     :src="user?.avatar_url ? user.avatar_url : ''" 
     class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
 />
@@ -175,7 +173,7 @@ import SmallSelect from '@/src/components/SmallSelect.vue';
 const route = useRoute('profile-tag');
 
 const order = ref([
-    { value: ['title'], name: 'Title'},
+    { value: ['title'], name: 'Alphabet'},
     { value: ['score'], name: 'Score'},
     { value: ['update'], name: 'Last update'},
     { value: ['add_date'], name: 'Adding date'},
