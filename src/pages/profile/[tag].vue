@@ -20,7 +20,7 @@
         />
 
         <div class="flex flex-col gap-1 justify-end">
-            <h1 class="text-4xl">{{ user.tag }}</h1>
+            <h1 class="text-4xl">{{ user.username }}</h1>
             <div class="flex flex-row gap-5">
                 <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
                     <Icon name="ri:calendar-line" class="text-lg"/>
@@ -170,7 +170,7 @@ import Input from '@/src/components/Input.vue';
 import Select from '@/src/components/Select.vue';
 import SmallSelect from '@/src/components/SmallSelect.vue';
 
-const route = useRoute('profile-tag');
+const route = useRoute();
 
 const order = ref([
     { value: ['title'], name: 'Alphabet'},

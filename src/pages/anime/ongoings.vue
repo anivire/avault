@@ -34,4 +34,10 @@ import AnimeCapsuleSkeleton from '@/src/components/skeleton/AnimeCapsuleSkeleton
 
 const { data: ongoingAnimes, pending: ongoingPending } = await useLazyAsyncData('ongoing', () => $fetch('/api/v1/anime/season/ongoing', { method: 'GET', query: { count: 48 } }));
 
+useSeoMeta({
+    title: 'Ongoings › AVAULT',
+    ogTitle: 'Ongoings',
+    description: 'This anime season\'s ongoings',
+    ogDescription: 'This anime season\'s ongoings',
+})
 </script>

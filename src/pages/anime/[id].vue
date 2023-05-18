@@ -25,7 +25,7 @@
                     />
                     
                     <!-- User anime control panel -->
-                    <div v-if="session.session != null" class="grid grid-cols-6 gap-2">
+                    <div v-if="user != null" class="grid grid-cols-6 gap-2">
                         <button 
                             @click="markFavorited()" 
                             :class="userIsAnimeFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
@@ -316,10 +316,10 @@ import { useUserStore } from '@/store/UserStore';
 
 const recommendations = ref<Recommendation[]>();
 const client = useSupabaseClient();
-const {data: session} = await client.auth.getSession()
+const user = useSupabaseUser();
 
 const authorizedUser = useUserStore();
-const route = useRoute("anime-id");
+const route = useRoute();
 
 const isTitlesShowed = ref(false);
 const isFullSynopsis = ref(false);
@@ -338,10 +338,12 @@ const currentCharacterPage = ref(0);
 const { data: anime } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }}));
 // const { data: episodes } = useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }}));
 const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
-const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
+const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: user.value?.id }}));
+
+console.log(user.value)
 
 // If user authorized, check animeList entry
-if (searchEntry.value?.mal_id != undefined && session.session != null) {
+if (searchEntry.value?.mal_id != undefined && user.value != null) {
     userAnimeScore.value = searchEntry.value.score as number;
     userAnimeList.value = searchEntry.value.watching_status;
     userWatchedEpisodes.value = searchEntry.value.wathed_episodes as number;

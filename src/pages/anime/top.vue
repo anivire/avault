@@ -22,11 +22,6 @@
         />
         <AnimeCapsuleSkeleton v-if="isLoadingScroll" v-for="i in 24"/>
     </div>
-    <div 
-        v-else
-        class="mt-28 grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 mx-auto max-w-7xl place-items-center gap-3.5">
-        <AnimeCapsuleSkeleton v-for="i in 24"/>
-    </div>
 </div>
 </template>
 

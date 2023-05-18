@@ -13,7 +13,7 @@
             <div class="flex flex-col gap-1 justify-center w-full px-5">
                 <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}" class="flex flex-row gap-1 items-center hover:bg-zinc-700/50 rounded-md w-fit">
                     <p class="text-base font-bold line-clamp-1">{{ title }}</p>
-                    <Icon name="ri:arrow-right-up-line" class="text-xl"/>
+                    <Icon name="ri:arrow-right-up-line" class="text-xl min-w-max"/>
                 </NuxtLink>
                 <div class="flex flex-row gap-1.5 mb-1">
                     <p 

@@ -30,5 +30,6 @@ import AppHeader from './src/components/nav/AppHeader.vue';
   const props = defineProps({
     error: Object
   })
-  const handleError = () => clearError({ redirect: '/' })
+  
+  const handleError = () => clearError({ redirect: '/' });
 </script>
