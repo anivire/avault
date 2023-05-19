@@ -1,4 +1,5 @@
 <template>
+    <ToastWrapper/>
     <NuxtLoadingIndicator />
     <div class="flex flex-col relative min-h-screen">
         <div class="absolute z-10 w-full"><AppHeader/></div> 
@@ -10,4 +11,6 @@
 <script setup lang="ts">
 import AppFooter from '../components/nav/AppFooter.vue';
 import AppHeader from '../components/nav/AppHeader.vue';
+import Toast from '../components/Toast.vue';
+import ToastWrapper from '../components/ToastWrapper.vue';
 </script>

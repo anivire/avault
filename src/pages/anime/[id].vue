@@ -313,12 +313,14 @@ import CharacterCapsule from '@/src/components/capsule/CharacterCapsule.vue';
 import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommendation } from '@tutkli/jikan-ts';
 import { animeList } from '@prisma/client'
 import { useUserStore } from '@/store/UserStore';
+import { useToastStore } from '@/store/ToastStore';
 
 const recommendations = ref<Recommendation[]>();
 const client = useSupabaseClient();
 const user = useSupabaseUser();
 
 const authorizedUser = useUserStore();
+const toasts = useToastStore();
 const route = useRoute();
 
 const isTitlesShowed = ref(false);
@@ -377,7 +379,7 @@ function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): 
 
 
 async function createOrUpdateAnimeEntry() {
-    const { data, error } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
+    const { data } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
 
     if (data.value?.mal_id == undefined) {
         console.log('Created new entry');
@@ -401,7 +403,11 @@ async function createOrUpdateAnimeEntry() {
                 wathed_episodes: userWatchedEpisodes.value
             }; 
 
-            await useAsyncData('createEntry', () => $fetch('/api/v1/user/animelist/createEntry', { method: 'POST', body: { animeList: newEntryData }}));
+            const { error } = await useAsyncData('createEntry', () => $fetch('/api/v1/user/animelist/createEntry', { method: 'POST', body: { animeList: newEntryData }}));
+
+            if (error.value) {
+                toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
+            }
         }
     } else {
         console.log('Updated exist');
@@ -418,7 +424,11 @@ async function createOrUpdateAnimeEntry() {
                 entry_id: data.value!.entry_id
             }; 
 
-            await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
+            const { error } = await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
+            
+            if (error.value) {
+                toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
+            }
         }
     }
 }
@@ -427,12 +437,19 @@ function markFavorited() {
     userIsAnimeFavorited.value = !userIsAnimeFavorited.value;
 
     createOrUpdateAnimeEntry();
+
+    if (userIsAnimeFavorited.value) {
+        toasts.addToast({title: 'Anime marked Favorite', description: anime.value!.titles[0].title, icon: 'favorite', status: 'base'})
+    } else {
+        toasts.addToast({title: 'Anime unmarked Favorite', description: anime.value!.titles[0].title, icon: 'favorite', status: 'base'})
+    }
 }
 
 function selectWatchedEpisodes() {
     if (anime.value) {
         userWatchedEpisodes.value < (anime.value.episodes != undefined ? anime.value.episodes : 999) ? userWatchedEpisodes.value++ : anime.value!.episodes;
         createOrUpdateAnimeEntry();
+        toasts.addToast({title: 'Episodes watched ' + userWatchedEpisodes.value, description: anime.value!.titles[0].title, icon: 'episodes', status: 'base'})
     }
 }
 
@@ -444,6 +461,8 @@ async function selectList(list: string) {
 
         userAnimeList.value = list;
         createOrUpdateAnimeEntry();
+
+        toasts.addToast({title: 'Added to list ➝ ' + userAnimeList.value, description: anime.value!.titles[0].title, icon: 'list', status: 'base'})
     }
 }
 
@@ -451,6 +470,8 @@ function selectScore(score: number) {
     userAnimeScore.value = score;
 
     createOrUpdateAnimeEntry();
+
+    toasts.addToast({title: 'Set score to anime ⭐' + userAnimeScore.value, description: anime.value!.titles[0].title, icon: 'score', status: 'base'})
 }
 
 function prevCharactersPage() {

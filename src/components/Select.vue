@@ -33,8 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { cwd } from 'process';
-
 const isItemsShow = ref(false);
 const selectedOption = ref({value: [], name: ''})
 
@@ -56,8 +54,6 @@ onMounted(() =>  {
             emits('update:select', props.options[0]);
         }
     }
-
-    
 })
 
 function select(option: { value: [], name: string }) {

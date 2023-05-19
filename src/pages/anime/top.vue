@@ -34,7 +34,7 @@ const topAnimes = ref<Anime[]>();
 const page = ref(1);
 const isLoadingScroll = ref(false);
 
-const { data: animes } = await useLazyAsyncData<Anime[]>('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 25, page: page.value } }));
+const { data: animes } = await useAsyncData<Anime[]>('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 25, page: page.value } }));
 
 if (animes) {
     topAnimes.value = animes.value!;
@@ -47,7 +47,7 @@ onMounted(() => {
         if (bottomOfWindow && page.value < 4) {
             isLoadingScroll.value = true;
             page.value < 4 ? page.value++ : page.value;
-            const { data: animes } = await useLazyAsyncData<Anime[]>('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 25, page: page.value } }));
+            const { data: animes } = await useAsyncData<Anime[]>('top', () => $fetch('/api/v1/anime/search/top', { method: 'GET', query: { count: 25, page: page.value } }));
             
             if (animes) { topAnimes.value = topAnimes.value!.concat(animes.value!) }
             isLoadingScroll.value = false;

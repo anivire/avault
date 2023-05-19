@@ -56,6 +56,8 @@
 
 <script setup lang="ts">
 import AnimeCapsule from '../components/capsule/AnimeCapsule.vue';
+import AnimeCapsuleSkeleton from '../components/skeleton/AnimeCapsuleSkeleton.vue';
+import { useToastStore } from '@/store/ToastStore';
 
 const { data: ongoingAnimes, pending: ongoingPending } = await useLazyAsyncData('ongoing', () => $fetch('/api/v1/anime/season/ongoing', { method: 'GET', query: { count: 6 } }));
 const { data: upcomingAnimes, pending: upcomingPending } = await useLazyAsyncData('upcoming', () => $fetch('/api/v1/anime/season/upcoming', { method: 'GET', query: { count: 6 } }));
