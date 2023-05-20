@@ -29,7 +29,7 @@
                     :class="isUserMenuOpen ? 'rounded-t-md bg-zinc-800 ' : 'rounded-md bg-zinc-950'"
                     class="flex flex-row text-sm gap-2 py-2 px-5 items-center transition duration-300 easy-in-out font-bold">
                         <NuxtImg :src="authorizedUser.user.avatar_url" class="w-6 rounded-full"/>
-                        {{ authorizedUser.user.tag }}
+                        @{{ authorizedUser.user.tag }}
                         <Icon 
                             name="ri:arrow-down-s-line" 
                             :class="isUserMenuOpen ? 'rotate-180' : 'rotate-0'"

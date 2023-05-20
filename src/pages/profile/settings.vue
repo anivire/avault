@@ -1,15 +1,22 @@
 <template>
+<div class="absolute overflow-hidden">
+<nuxt-img 
+    v-if="user != null"     
+    :src="user.avatar_url ? user.avatar_url : ''" 
+    class="w-screen h-52 object-cover blur-lg opacity-60"
+/>
+</div> 
+<nuxt-img 
+    v-if="user != null" 
+    :src="user.avatar_url ? user.avatar_url : ''" 
+    class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
+/>
+
+<!-- <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75">
+    <p class="text-sm flex flex-row items-center gap-3 justify-center mt-16 ml-24">Entry loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
+</div> -->
 <div v-if="authorizedUser">
-    <div class="absolute overflow-hidden">
-    <nuxt-img 
-        :src="user?.avatar_url ? user.avatar_url : ''" 
-        class="w-screen h-52 object-cover blur-lg opacity-60"
-    />
-    </div> 
-    <nuxt-img  
-        :src="user?.avatar_url ? user.avatar_url : ''" 
-        class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
-    />
+    
     <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl mt-36">
         <div 
             v-if="user != null"
@@ -52,8 +59,8 @@
                 </div>
                 <div class="flex flex-row gap-2 items-center justify-between">
                     <Icon name="ri:font-size" class="text-2xl w-8"/>
-                    <input type="text" class="bg-zinc-800 text-sm placeholder-zinc-500 p-2 outline-0 rounded-md w-full" placeholder="New username">   
-                    <button class="bg-zinc-800 p-2 px-3 rounded-md text-sm hover:bg-zinc-700 transition-all duration-200 ease-in-out">Change</button>
+                    <input type="text" class="bg-zinc-800 text-sm placeholder-zinc-500 p-2 outline-0 rounded-md w-full" v-model="newUsername" placeholder="New username">   
+                    <button @click="changeUsername()" class="bg-zinc-800 p-2 px-3 rounded-md text-sm hover:bg-zinc-700 transition-all duration-200 ease-in-out">Change</button>
                 </div>
             </div>
 
@@ -88,10 +95,14 @@
 
 <script setup lang="ts">
 import { profile } from '.prisma/client';
+import { useToastStore } from '@/store/ToastStore';
+import { useUserStore } from '@/store/UserStore';
 
+const toasts = useToastStore();
 const authorizedUser = useSupabaseUser();
 const isCopied = ref(false);
 const user = ref<profile>();
+const newUsername = ref('');
 
 definePageMeta({
     middleware: ['auth']
@@ -119,5 +130,25 @@ const copyTag = () => {
     setTimeout(() => {
         isCopied.value = false;
     }, 1000);
+}
+
+const changeUsername = async () => {
+    if (newUsername.value.length >= 3) {
+        const { error } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/updateUsername', {method: 'POST', body: { user_id: authorizedUser.value?.id, username: newUsername.value }}));
+
+        if (error.value) {
+            toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'base'})
+        } else {
+            toasts.addToast({title: 'Username successfully updated', description: newUsername.value.toString(), icon: 'settings', status: 'base'})
+
+            const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: authorizedUser.value?.id }}));
+            
+            if (data.value) {
+                user.value = data.value;
+            }
+        }
+    } else {
+        toasts.addToast({title: 'Error', description: 'Minimum length of the username must be more than 3 characters', icon: 'error', status: 'error'})
+    }
 }
 </script>

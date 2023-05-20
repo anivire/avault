@@ -6,7 +6,7 @@
           <h1>4O4</h1>
           <p class="font-bold">Page not found</p>
         </div>
-        <p class="bg-zinc-900 rounded-md px-3 text-xs p-1 text-zinc-400 max-w-xl">{{ error }}</p>
+        <!-- <p class="bg-zinc-900 rounded-md px-3 text-xs p-1 text-zinc-400 max-w-xl">{{ error }}</p> -->
         <button @click="handleError" class="text-xs text-zinc-400 p-1 px-3 bg-zinc-900 rounded-md hover:bg-zinc-800 hover:text-zinc-50">Well, back to home... <Icon name="ri:arrow-right-up-line"/></button>
     </div>
     <div class="w-full"><AppFooter></AppFooter></div>
