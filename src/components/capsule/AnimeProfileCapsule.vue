@@ -10,13 +10,13 @@
                 isAnimeEditMenuOpen ? 'rounded-t-md' : 'rounded-md']"
             class="relative from-zinc-900 bg-gradient-to-r flex flex-row justify-between items-center transition-all duration-200 ease-in-out">
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75">
-                <p class="text-sm flex flex-row items-center gap-3 justify-center mt-16 ml-24">Entry loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
+                <p class="text-sm flex flex-row items-center gap-3 justify-center mt-16 ml-24"><Icon class="animate-spin text-3xl" name="ri:loader-5-line"/></p>
             </div>
-            <div class="flex flex-row items-center h-36 w-full">
+            <div class="flex flex-row items-center h-36 w-full ">
                 <nuxt-img 
                     :src="imageUrl" 
-                    :class="isHovered ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
-                    class="h-full transition-all duration-200 ease-in-out z-30"
+                    :class="isHovered && !isLoading ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
+                    class="h-full transition-all duration-200 ease-in-out z-10"
                 />
                 <div 
                     :class="score == 0 || score == -1 ? 'px-5' : 'pl-5'"
@@ -67,7 +67,7 @@
             <h1 v-if="score == 0 || score == -1 ? false : true" class="w-36 flex flex-row justify-center">{{ score }}</h1>
         </div>
         <div v-if="isAnimeEditMenuOpen && user" class="relative">
-            <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-20"></div>
+            <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-30"></div>
             <div class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
                 <!-- favorite -->
                 <button 
@@ -79,7 +79,7 @@
 
                 <!-- episodes -->
                 <div class="relative w-full col-span-7">
-                    <div class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
+                    <div class="w-full z-50 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name="ri:movie-2-fill" class="text-xl"/>
                             <p class="text-sm font-bold">Watched episodes</p>
@@ -105,7 +105,7 @@
                     @mouseleave="isListMenuOpen = false">
                     <button 
                         :class="isListMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                        class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center transition duration-300 easy-in-out ">
+                        class=" w-full z-50 flex flex-row gap-2 p-3 px-5 justify-between items-center transition duration-300 easy-in-out ">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name="ri:add-box-fill" class="text-xl"/>
                             <p class="text-sm font-bold">List</p>
@@ -164,7 +164,7 @@
                     @mouseleave="isScoreMenuOpen = false">
                     <button 
                         :class="isScoreMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                        class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between transition duration-300 easy-in-out ">
+                        class="items-center w-full z-50 flex flex-row gap-2 p-3 px-5 justify-between transition duration-300 easy-in-out ">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name="material-symbols:star-rounded" class="text-xl"/>
                             <p class="text-sm font-bold">Score</p>
