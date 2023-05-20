@@ -22,6 +22,10 @@
         <div class="flex flex-col gap-1 justify-end">
             <h1 class="text-4xl">{{ user.username }}</h1>
             <div class="flex flex-row gap-5">
+                <p class="text-zinc-400 flex flex-row items-center text-sm">
+                    <Icon name="ri:at-line" class="text-lg"/>
+                    <span class="text-zinc-400 text-base">{{ user.tag }}</span> 
+                </p>
                 <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
                     <Icon name="ri:calendar-line" class="text-lg"/>
                     Member since 
