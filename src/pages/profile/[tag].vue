@@ -133,26 +133,34 @@
         /> -->
     </div>
     <div 
-        v-if="sortedAnime && sortedAnime.length != 0"
-        :class="viewMode == 'grid' ? 'grid grid-cols-2' : viewMode == 'flex' ? 'flex flex-col' : ''"
-        class="anime gap-5">
-        <AnimeProfileCapsule 
-            v-for="entry in sortedAnime" 
-            :added-at="(new Date(entry.added_at).toLocaleDateString())"
-            :airing-season="entry.airing_season"
-            :airing-status="entry.airing_status"
-            :anime-id="(Number(entry.mal_id))"
-            :image-url="entry.image_url"
-            :is-favorited="entry.is_favorited"
-            :score="(entry.score as number)"
-            :title="entry.title"
-            :total-episodes="(entry.total_episodes as number)"
-            :studios="entry.studios"
-            :type="entry.type"
-            :updated-at="(new Date(entry.updated_at).toLocaleDateString())"
-            :watching-status="entry.watching_status"
-            :wathed-episodes="(entry.wathed_episodes as number)"
-        />
+        v-if="sortedAnime && sortedAnime.length != 0">
+        <div v-if="selectedList.value[0] == null" class="mt-16">
+            <p class="text-xs text-zinc-400 flex flex-row items-center gap-3 justify-center">Anime loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
+        </div>
+        <div 
+            v-else
+            :class="viewMode == 'grid' ? 'grid grid-cols-2' : viewMode == 'flex' ? 'flex flex-col' : ''"
+            class="anime gap-5">
+            <AnimeProfileCapsule 
+                v-for="entry in sortedAnime" 
+                :added-at="(new Date(entry.added_at).toLocaleDateString())"
+                :airing-season="entry.airing_season"
+                :airing-status="entry.airing_status"
+                :anime-id="(Number(entry.mal_id))"
+                :image-url="entry.image_url"
+                :is-favorited="entry.is_favorited"
+                :score="(entry.score as number)"
+                :title="entry.title"
+                :total-episodes="(entry.total_episodes as number)"
+                :studios="entry.studios"
+                :type="entry.type"
+                :updated-at="(new Date(entry.updated_at).toLocaleDateString())"
+                :watching-status="entry.watching_status"
+                :watched-episodes="(entry.wathed_episodes as number)"
+                :entry-id="entry.entry_id"
+                @update:entry="updateEntry($event)"
+            />
+        </div>
     </div>
     <div 
         v-else
@@ -251,6 +259,21 @@ watch(selectedOrder, (newValue) => {
 watch(selectedSort, (newValue) => {
     setSearchQuery();
 })
+
+const updateEntry = async (entryId: string) => {   
+    const { data } = await useAsyncData<animeList>('searchEntryById', () => $fetch('/api/v1/user/animelist/searchEntryById', {method: 'GET', query: { user_id: user.value!.user_id, entry_id: entryId}}));
+    
+    if (data.value) {
+        sortedAnime.value!.forEach(entry => {
+            if (entry.entry_id == entryId) {
+                sortedAnime.value![sortedAnime.value!.indexOf(entry)].is_favorited = data.value!.is_favorited;
+                sortedAnime.value![sortedAnime.value!.indexOf(entry)].watching_status = data.value!.watching_status;
+                sortedAnime.value![sortedAnime.value!.indexOf(entry)].score = data.value!.score;
+                sortedAnime.value![sortedAnime.value!.indexOf(entry)].wathed_episodes = data.value!.wathed_episodes;
+            }
+        });
+    }
+}
 
 
 const setSearchQuery = () => {

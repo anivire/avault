@@ -1,14 +1,21 @@
 <template>
-    <div class="flex flex-col gap-5 fixed top-4 right-4 z-50">
+    <TransitionGroup
+        tag="div"
+        enter-from-class="translate-x-full opacity-0"
+        enter-active-class="duration-500"
+        leave-active-class="uration-500"
+        leave-to-class="translate-x-full opacity-0"
+        class="toast-wrapper flex flex-col gap-5 fixed top-4 right-4 z-50">
         <Toast 
             v-for="item, i in toasts.toast"
             :title="item.title"
             :description="item.description"
             :icon="item.icon"
             :status="item.status"
-            @remove="remove(i)"
+            :key="item.key!"
+            @remove="remove(item.key!)"
         />
-    </div>
+    </TransitionGroup>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +24,10 @@ import { useToastStore } from '@/store/ToastStore';
 
 const toasts = useToastStore();
 
-const remove = (index: number) => {
+
+const remove = (index: string) => {
+    
+console.log(toasts.toast)
     toasts.rmToast(index);
 }
 </script>

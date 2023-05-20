@@ -8,10 +8,23 @@ export const useToastStore = defineStore('toast', {
     persist: true,
     actions: {
         addToast(data: ToastType) {
-            this.toast.push(data);
+            let newData: ToastType = {
+                key: crypto.randomUUID(),
+                description: data.description,
+                icon: data.icon,
+                status: data.status,
+                title: data.title
+            };
+
+            this.toast.push(newData);
         },
-        rmToast(index: number) {
-            this.toast.splice(index, 1);
+        rmToast(index: string) {
+            this.toast.forEach(element => {
+                if (element.key == index) {
+                    this.toast.splice(this.toast.indexOf(element), 1);
+                }
+            });
+            
         }
     }
 });

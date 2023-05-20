@@ -53,11 +53,11 @@
                         class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
                             <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:book-3-line" class="text-base"/> Profile</p>
                     </NuxtLink>
-                    <NuxtLink 
-                        to="/profile/settings"
+                    <a 
+                        href="/profile/settings"
                         class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
                         <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:settings-3-line" class="text-base"/> Settings</p>
-                    </NuxtLink>
+                    </a>
                     <button 
                         @click="logOut()"
                         class="hover:bg-rose-600/50 p-1 px-3 cursor-pointer rounded-md">

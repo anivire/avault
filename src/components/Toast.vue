@@ -26,24 +26,30 @@
 
 <script setup lang="ts">
 const liveTime = ref(50);
+const timerId = ref();
 
-defineProps({
+const props = defineProps({
     title: { type: String, required: true},
     description: { type: String, required: true},
     icon: { type: String, required: true},
     status: { type: String, required: true},
+    key: { type: String, required: true},
 })
 
 const emit = defineEmits(['remove']);
 
 onMounted(() => {
-    const timer = setInterval(() => {
+    console.log(props)
+    timerId.value = setInterval(() => {
         if (liveTime.value >= 1 ) {
             liveTime.value--;
         } else {
             emit('remove');
         }
     }, 100);
+})
 
+onUnmounted(() => {
+    clearInterval(timerId.value);
 })
 </script>

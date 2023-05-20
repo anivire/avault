@@ -1,11 +1,10 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware((to) => {
     const user = useSupabaseUser();
     const router = useRouter();
 
-    if (user.value && to.fullPath == '/profile/settings' && process.server) {
-        // return navigateTo(to.fullPath);
-        router.go(1);
-    } else if (!user.value && to.fullPath == '/profile/settings' && process.server) {
-        return navigateTo('/');
+    if (user.value && to.fullPath == '/profile/settings') {
+        router.push(to.fullPath);
+    } else if (!user.value && to.fullPath == '/profile/settings') {
+        router.push('/');
     }
 })

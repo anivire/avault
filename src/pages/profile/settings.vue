@@ -1,4 +1,5 @@
 <template>
+<div v-if="authorizedUser">
     <div class="absolute overflow-hidden">
     <nuxt-img 
         :src="user?.avatar_url ? user.avatar_url : ''" 
@@ -82,17 +83,27 @@
             
         </div>
     </div>
+</div>
 </template>
 
 <script setup lang="ts">
-const client = useSupabaseClient();
-const { data: session } = await client.auth.getSession();
-const { data: user } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.session?.user.id }}));
+import { profile } from '.prisma/client';
+
+const authorizedUser = useSupabaseUser();
 const isCopied = ref(false);
+const user = ref<profile>();
 
 definePageMeta({
     middleware: ['auth']
 })
+
+if (authorizedUser.value) {
+    const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: authorizedUser.value?.id }}));
+
+    if (data.value) {
+        user.value = data.value;
+    }
+}
 
 useSeoMeta({
     title: 'Settings › AVAULT',

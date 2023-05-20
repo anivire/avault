@@ -47,7 +47,7 @@
                                         v-model="userWatchedEpisodes" 
                                         class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
                                     <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
-                                    <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill"/></button>
+                                    <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
                                 </div>
                             </div>
                         </div>
@@ -310,13 +310,10 @@
 
 <script setup lang="ts">
 import CharacterCapsule from '@/src/components/capsule/CharacterCapsule.vue';
-import { Anime, AnimeCharacter, AnimeEpisode, AnimeRating, AnimeStatus, Recommendation } from '@tutkli/jikan-ts';
-import { animeList } from '@prisma/client'
+import { AnimeStatus } from '@tutkli/jikan-ts';
 import { useUserStore } from '@/store/UserStore';
 import { useToastStore } from '@/store/ToastStore';
 
-const recommendations = ref<Recommendation[]>();
-const client = useSupabaseClient();
 const user = useSupabaseUser();
 
 const authorizedUser = useUserStore();
@@ -324,11 +321,9 @@ const toasts = useToastStore();
 const route = useRoute();
 
 const isTitlesShowed = ref(false);
-const isFullSynopsis = ref(false);
 const isListMenuOpen = ref(false);
 const isEpisodesMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
-const isImageLoaded = ref(false);
 
 const userAnimeScore = ref(0);
 const userAnimeList = ref('');
@@ -338,11 +333,8 @@ const userIsAnimeFavorited = ref(false);
 const currentCharacterPage = ref(0);
 
 const { data: anime } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }}));
-// const { data: episodes } = useAsyncData('episodes', () => $fetch('/api/v1/anime/episodes', {method: 'GET', query: { id: route.params.id }}));
 const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
 const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: user.value?.id }}));
-
-console.log(user.value)
 
 // If user authorized, check animeList entry
 if (searchEntry.value?.mal_id != undefined && user.value != null) {
