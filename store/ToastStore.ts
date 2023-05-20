@@ -16,7 +16,7 @@ export const useToastStore = defineStore('toast', {
                 title: data.title
             };
 
-            this.toast.push(newData);
+            this.toast.unshift(newData);
         },
         rmToast(index: string) {
             this.toast.forEach(element => {
