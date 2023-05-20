@@ -66,134 +66,135 @@
             </div>
             <h1 v-if="score == 0 || score == -1 ? false : true" class="w-36 flex flex-row justify-center">{{ score }}</h1>
         </div>
-        <div 
-            v-if="isAnimeEditMenuOpen"
-            class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
-            <!-- favorite -->
-            <button 
-                @click="markFavorited()" 
-                :class="isFavorited ? 'bg-rose-500 text-zinc-800' : 'hover:bg-zinc-600/50 bg-zinc-800'" 
-                class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
-                <Icon name="ri:heart-fill" class="text-2xl"/>
-            </button>
+        <div v-if="isAnimeEditMenuOpen" class="relative">
+            <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-20"></div>
+            <div class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
+                <!-- favorite -->
+                <button 
+                    @click="markFavorited()" 
+                    :class="isFavorited ? 'bg-rose-500 text-zinc-800' : 'hover:bg-zinc-600/50 bg-zinc-800'" 
+                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
+                    <Icon name="ri:heart-fill" class="text-2xl"/>
+                </button>
 
-            <!-- episodes -->
-            <div class="relative w-full col-span-7">
-                <div class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
-                    <div class="flex flex-row items-center gap-2">
-                        <Icon name="ri:movie-2-fill" class="text-xl"/>
-                        <p class="text-sm font-bold">Watched episodes</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-2">
-                        <!-- <button @click="userWatchedEpisodes > 0 ? userWatchedEpisodes-- : anime.episodes"><Icon name="ri:subtract-fill"/></button> -->
-                        <input 
-                            type="number" 
-                            min="0" 
-                            :max="totalEpisodes != undefined ? totalEpisodes : 999" 
-                            :value="watchedEpisodes" 
-                            class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
-                        <p class="text-sm text-zinc-400">/ {{ totalEpisodes != undefined ? totalEpisodes : '?' }}</p>
-                        <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                <!-- episodes -->
+                <div class="relative w-full col-span-7">
+                    <div class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
+                        <div class="flex flex-row items-center gap-2">
+                            <Icon name="ri:movie-2-fill" class="text-xl"/>
+                            <p class="text-sm font-bold">Watched episodes</p>
+                        </div>
+                        <div class="flex flex-row items-center gap-2">
+                            <input 
+                                type="number" 
+                                min="0" 
+                                :max="totalEpisodes != undefined ? totalEpisodes : 999" 
+                                :value="watchedEpisodes" 
+                                readonly
+                                class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
+                            <p class="text-sm text-zinc-400">/ {{ totalEpisodes != undefined ? totalEpisodes : '?' }}</p>
+                            <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- list -->
-            <div 
-                class="relative w-full col-span-4" 
-                @mouseover="isListMenuOpen = true" 
-                @mouseleave="isListMenuOpen = false">
-                <button 
-                    :class="isListMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                    class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center transition duration-300 easy-in-out ">
-                    <div class="flex flex-row items-center gap-2">
-                        <Icon name="ri:add-box-fill" class="text-xl"/>
-                        <p class="text-sm font-bold">List</p>
+                <!-- list -->
+                <div 
+                    class="relative w-full col-span-4" 
+                    @mouseover="isListMenuOpen = true" 
+                    @mouseleave="isListMenuOpen = false">
+                    <button 
+                        :class="isListMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
+                        class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center transition duration-300 easy-in-out ">
+                        <div class="flex flex-row items-center gap-2">
+                            <Icon name="ri:add-box-fill" class="text-xl"/>
+                            <p class="text-sm font-bold">List</p>
+                        </div>
+                        <p v-if="watchingStatus == 'select' || watchingStatus == undefined || watchingStatus == ''" class="text-sm text-zinc-400">Select</p>
+                        <p 
+                            v-else
+                            :class="watchingStatus == 'watched' ? 'text-emerald-400' : watchingStatus == 'watching' ? 'text-amber-400' : watchingStatus == 'planned' ? 'text-violet-400' : 'text-rose-400'"
+                            class="text-sm font-bold">{{ watchingStatus.charAt(0).toUpperCase() + watchingStatus.slice(1) }}</p>
+                    </button>
+                    <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                        <button 
+                            @click="selectList('select')" 
+                            class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
+                            <p class="text-xs p-2">Select</p>
+                        </button>
+                        
+                        <button 
+                            @click="selectList('watched')" 
+                            :class="watchingStatus == 'watched' ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  
+                            class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                            <p class="text-xs p-2">Watched</p>
+                            <Icon name="ri:check-line" class="mr-2"></Icon>
+                        </button>
+                        
+                        <button 
+                            @click="selectList('watching')" 
+                            :class="watchingStatus == 'watching' ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  
+                            class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                            <p class="text-xs p-2">Watching</p>
+                            <Icon name="ri:eye-fill" class="mr-2"></Icon>
+                        </button>
+
+                        <button 
+                            @click="selectList('planned')" 
+                            :class="watchingStatus == 'planned' ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  
+                            class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                            <p class="text-xs p-2">Planned</p>
+                            <Icon name="ri:time-fill" class="mr-2"></Icon>
+                        </button>
+
+                        <button 
+                            @click="selectList('dropped')" 
+                            :class="watchingStatus == 'dropped' ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" 
+                            class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                            <p class="text-xs p-2">Dropped</p>
+                            <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
+                        </button>
                     </div>
-                    <p v-if="watchingStatus == 'select' || watchingStatus == undefined || watchingStatus == ''" class="text-sm text-zinc-400">Select</p>
-                    <p 
-                        v-else
-                        :class="watchingStatus == 'watched' ? 'text-emerald-400' : watchingStatus == 'watching' ? 'text-amber-400' : watchingStatus == 'planned' ? 'text-violet-400' : 'text-rose-400'"
-                        class="text-sm font-bold">{{ watchingStatus.charAt(0).toUpperCase() + watchingStatus.slice(1) }}</p>
-                </button>
-                <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
-                    <button 
-                        @click="selectList('select')" 
-                        class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
-                        <p class="text-xs p-2">Select</p>
-                    </button>
-                    
-                    <button 
-                        @click="selectList('watched')" 
-                        :class="watchingStatus == 'watched' ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  
-                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                        <p class="text-xs p-2">Watched</p>
-                        <Icon name="ri:check-line" class="mr-2"></Icon>
-                    </button>
-                    
-                    <button 
-                        @click="selectList('watching')" 
-                        :class="watchingStatus == 'watching' ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  
-                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                        <p class="text-xs p-2">Watching</p>
-                        <Icon name="ri:eye-fill" class="mr-2"></Icon>
-                    </button>
-
-                    <button 
-                        @click="selectList('planned')" 
-                        :class="watchingStatus == 'planned' ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  
-                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                        <p class="text-xs p-2">Planned</p>
-                        <Icon name="ri:time-fill" class="mr-2"></Icon>
-                    </button>
-
-                    <button 
-                        @click="selectList('dropped')" 
-                        :class="watchingStatus == 'dropped' ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" 
-                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                        <p class="text-xs p-2">Dropped</p>
-                        <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
-                    </button>
                 </div>
-            </div>
 
-            <!-- score -->
-            <div 
-                class="relative w-full col-span-3"
-                @mouseover="isScoreMenuOpen = true" 
-                @mouseleave="isScoreMenuOpen = false">
+                <!-- score -->
+                <div 
+                    class="relative w-full col-span-3"
+                    @mouseover="isScoreMenuOpen = true" 
+                    @mouseleave="isScoreMenuOpen = false">
+                    <button 
+                        :class="isScoreMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
+                        class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between transition duration-300 easy-in-out ">
+                        <div class="flex flex-row items-center gap-2">
+                            <Icon name="material-symbols:star-rounded" class="text-xl"/>
+                            <p class="text-sm font-bold">Score</p>
+                        </div>
+                        <p 
+                            :class="score == -1 || score == 0 || score == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
+                            class="text-sm">{{ score == -1 || score == 0 || score == undefined ? 'Select' : score }}</p>
+                    </button>
+                    <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                        <button :class="score == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
+                        <button :class="score == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
+                        <button :class="score == 9 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
+                        <button :class="score == 8 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(8)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">8 - Very Good</button>
+                        <button :class="score == 7 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(7)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">7 - Good</button>
+                        <button :class="score == 6 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(6)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">6 - Fine</button>
+                        <button :class="score == 5 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(5)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">5 - Average</button>
+                        <button :class="score == 4 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(4)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">4 - Bad</button>
+                        <button :class="score == 3 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(3)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">3 - Very Bad</button>
+                        <button :class="score == 2 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(2)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">2 - Horrible</button>
+                        <button :class="score == 1 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">1 - Appaling</button>
+                    </div> 
+                </div>
+
+                <!-- delete -->
                 <button 
-                    :class="isScoreMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                    class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between transition duration-300 easy-in-out ">
-                    <div class="flex flex-row items-center gap-2">
-                        <Icon name="material-symbols:star-rounded" class="text-xl"/>
-                        <p class="text-sm font-bold">Score</p>
-                    </div>
-                    <p 
-                        :class="score == -1 || score == 0 || score == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
-                        class="text-sm">{{ score == -1 || score == 0 || score == undefined ? 'Select' : score }}</p>
+                    @click="" 
+                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out hover:bg-rose-500 bg-zinc-800">
+                    <Icon name="ri:delete-bin-2-fill" class="text-2xl"/>
                 </button>
-                <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
-                    <button :class="score == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
-                    <button :class="score == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
-                    <button :class="score == 9 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
-                    <button :class="score == 8 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(8)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">8 - Very Good</button>
-                    <button :class="score == 7 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(7)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">7 - Good</button>
-                    <button :class="score == 6 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(6)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">6 - Fine</button>
-                    <button :class="score == 5 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(5)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">5 - Average</button>
-                    <button :class="score == 4 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(4)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">4 - Bad</button>
-                    <button :class="score == 3 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(3)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">3 - Very Bad</button>
-                    <button :class="score == 2 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(2)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">2 - Horrible</button>
-                    <button :class="score == 1 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">1 - Appaling</button>
-                </div> 
             </div>
-
-            <!-- delete -->
-            <button 
-                @click="" 
-                class=" p-2 px-4 rounded-md transition duration-300 easy-in-out hover:bg-rose-500 bg-zinc-800">
-                <Icon name="ri:delete-bin-2-fill" class="text-2xl"/>
-            </button>
         </div>
     </div>
 </template>

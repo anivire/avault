@@ -39,12 +39,12 @@
                                     <p class="text-sm font-bold">Watched episodes</p>
                                 </div>
                                 <div class="flex flex-row items-center gap-2">
-                                    <!-- <button @click="userWatchedEpisodes > 0 ? userWatchedEpisodes-- : anime.episodes"><Icon name="ri:subtract-fill"/></button> -->
                                     <input 
                                         type="number" 
                                         min="0" 
                                         :max="anime.episodes != undefined ? anime.episodes : 999" 
-                                        v-model="userWatchedEpisodes" 
+                                        v-model="userWatchedEpisodes"
+                                        readonly 
                                         class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
                                     <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
                                     <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
