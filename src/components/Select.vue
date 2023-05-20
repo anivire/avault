@@ -20,7 +20,7 @@
         </button>
         <div
             v-show="isItemsShow" 
-            class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-11 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3x justify-between flex flex-col backdrop-blur-3xl">
+            class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-11 z-50 p-2 origin-top bg-zinc-900/75 backdrop-blur-3x justify-between flex flex-col backdrop-blur-3xl">
             <div 
                 v-for="option in options" 
                 @click="select({ value: option.value, name: option.name })"
