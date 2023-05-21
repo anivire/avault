@@ -71,8 +71,8 @@
                 </div>
                 <div class="flex flex-row gap-2 items-center justify-between">
                     <Icon name="ri:delete-bin-2-fill" class="text-2xl w-8"/>
-                    <input type="text" class="bg-zinc-800 text-sm placeholder-zinc-500 p-2 outline-0 rounded-md w-full" placeholder="Write your tag here to confirm delete account">   
-                    <button class="bg-zinc-800 p-2 px-3 rounded-md text-sm hover:bg-rose-700/50 transition-all duration-200 ease-in-out">Delete</button>
+                    <input type="text" class="bg-zinc-800 text-sm placeholder-zinc-500 p-2 outline-0 rounded-md w-full" v-model="deleteTagConfirm" placeholder="Write your tag here to confirm delete account">   
+                    <button @click="deleteMe()" class="bg-zinc-800 p-2 px-3 rounded-md text-sm hover:bg-rose-700/50 transition-all duration-200 ease-in-out">Delete</button>
                 </div>
             </div>
             
@@ -97,12 +97,17 @@
 import { profile } from '.prisma/client';
 import { useToastStore } from '@/store/ToastStore';
 import { useUserStore } from '@/store/UserStore';
+import { e } from 'ofetch/dist/error-04138797';
 
 const toasts = useToastStore();
 const authorizedUser = useSupabaseUser();
+const authorizedStore = useUserStore();
+const client = useSupabaseClient();
+const router = useRouter();
 const isCopied = ref(false);
 const user = ref<profile>();
 const newUsername = ref('');
+const deleteTagConfirm = ref('');
 
 definePageMeta({
     middleware: ['auth']
@@ -149,6 +154,26 @@ const changeUsername = async () => {
         }
     } else {
         toasts.addToast({title: 'Error', description: 'Minimum length of the username must be more than 3 characters', icon: 'error', status: 'error'})
+    }
+}
+
+const deleteMe = async () => {
+    if (deleteTagConfirm.value == user.value!.tag) {
+        const { data, error } = await useAsyncData('deleteMe', () => $fetch('/api/v1/user/profile/deleteMe', {method: 'GET', query: { user_id: authorizedUser.value?.id }}));
+
+        console.log(data.value)
+        console.log(error.value)
+
+        if (error.value != null && data.value == null) {
+            toasts.addToast({title: 'Error', description: error.value!.message, icon: 'error', status: 'error'})
+        } else {
+            await client.auth.signOut().finally(() => { 
+                authorizedStore.logout(); 
+                router.push('/')
+            });
+        }
+    } else {
+        toasts.addToast({title: 'Error', description: 'Entered user tag does not match', icon: 'error', status: 'error'});
     }
 }
 </script>

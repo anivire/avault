@@ -83,6 +83,7 @@ import { useUserStore } from '@/store/UserStore';
 
 const client = useSupabaseClient();
 const authorizedUser = useUserStore();
+const router = useRouter();
 
 const isUserMenuOpen = ref(false);
 const isUserLoaded = ref(false);
@@ -116,6 +117,9 @@ client.auth.onAuthStateChange(async (event, session) => {
 
 const logOut = async () => {
     isLogout.value = true;
-    const { error } = await client.auth.signOut().finally(() => authorizedUser.logout());
+    await client.auth.signOut().finally(() => { 
+        authorizedUser.logout(); 
+        router.push('/')
+    });
 }
 </script>
