@@ -172,6 +172,7 @@
                 :watching-status="entry.watching_status"
                 :watched-episodes="(entry.wathed_episodes as number)"
                 :entry-id="entry.entry_id"
+                :user_id="user.user_id"
                 @update:entry="updateEntry($event)"
             />
         </div>

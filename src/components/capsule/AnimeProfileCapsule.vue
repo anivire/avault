@@ -26,7 +26,7 @@
                             <p class="text-base font-bold line-clamp-1">{{ title }}</p>
                             <Icon name="ri:arrow-right-up-line" class="text-xl min-w-max"/>
                         </NuxtLink>
-                        <button v-if="user" @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"><Icon name="ri:edit-2-fill" class="text-xl"/></button>
+                        <button v-if="user_id == authorizedUser.user.user_id" @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"><Icon name="ri:edit-2-fill" class="text-xl"/></button>
                     </div>
                     <div class="flex flex-row gap-1.5 mb-1">
                         <p 
@@ -66,7 +66,7 @@
             </div>
             <h1 v-if="score == 0 || score == -1 ? false : true" class="w-36 flex flex-row justify-center">{{ score }}</h1>
         </div>
-        <div v-if="isAnimeEditMenuOpen && user" class="relative">
+        <div v-if="isAnimeEditMenuOpen && user_id == authorizedUser.user.user_id" class="relative">
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-30"></div>
             <div class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
                 <!-- favorite -->
@@ -201,6 +201,7 @@
 
 <script setup lang="ts">
 import { useToastStore } from '@/store/ToastStore';
+import { useUserStore } from '@/store/UserStore';
 
 const isHovered = ref(false);
 const isAnimeEditMenuOpen = ref(false);
@@ -208,8 +209,8 @@ const isListMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
 const isLoading = ref(false);
 
+const authorizedUser = useUserStore()
 const user = useSupabaseUser();
-
 const toasts = useToastStore();
 
 const props = defineProps({
@@ -227,7 +228,8 @@ const props = defineProps({
     totalEpisodes: { type: Number, required: false},
     airingSeason: { type: String, required: true},
     airingStatus: { type: String, required: true},
-    entryId: { type: String, required: true}
+    entryId: { type: String, required: true},
+    user_id: { type: String, required: true}
 })
 
 const emits = defineEmits(['update:entry'])
