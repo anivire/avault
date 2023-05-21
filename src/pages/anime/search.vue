@@ -250,7 +250,6 @@ const statusOptions = ref([
 
 const scoreOptions = ref([
     { value: [-1], name: 'Any' },
-    { value: [10], name: '10' },
     { value: [9], name: '9' },
     { value: [8], name: '8' },
     { value: [7], name: '7' },
