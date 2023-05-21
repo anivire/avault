@@ -275,7 +275,7 @@ const searchAnimes = ref<Anime[]>();
 const selectedOrder = ref(order.value[0]);
 const selectedAnimePerPage = ref(animePerPage.value[0]);
 const selectedSort = ref(sort.value[1]);
-const selectedScore = ref(scoreOptions.value[4]);
+const selectedScore = ref({value: [], name: ''});
 const currentPage = ref(1);
 
 // Watchers
