@@ -20,7 +20,17 @@
         />
 
         <div class="flex flex-col gap-1 justify-end">
-            <h1 class="text-4xl">{{ user.username }}</h1>
+            <div class="flex flex-row gap-2 items-center">
+                <h1 class="text-4xl">{{ user.username }}</h1>
+                <div 
+                    v-if="user.badges"
+                    v-for="entry, i in (user.badges as any)" 
+                    class="mt-2 flex flex-row gap-1">
+                    <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="text-xl text-emerald-400"/>
+                    <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="text-xl text-emerald-400"/>
+                    <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="text-lg text-amber-400"/>
+                </div>
+            </div>
             <div class="flex flex-row gap-5">
                 <p class="text-zinc-400 flex flex-row items-center text-sm">
                     <Icon name="ri:at-line" class="text-lg"/>
@@ -324,5 +334,4 @@ useSeoMeta({
     ogDescription: 'User profile page',
     ogImage: user.value?.avatar_url,
 })
-
 </script>

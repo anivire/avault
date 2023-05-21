@@ -12,11 +12,7 @@
     class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
 />
 
-<!-- <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75">
-    <p class="text-sm flex flex-row items-center gap-3 justify-center mt-16 ml-24">Entry loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
-</div> -->
 <div v-if="authorizedUser">
-    
     <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl mt-36">
         <div 
             v-if="user != null"
@@ -28,8 +24,22 @@
                 />
 
                 <div class="flex flex-col gap-1 justify-end">
-                    <h1 class="text-4xl">{{ user.username }}</h1>
+                    <div class="flex flex-row gap-2 items-center">
+                        <h1 class="text-4xl">{{ user.username }}</h1>
+                        <div 
+                            v-if="user.badges"
+                            v-for="entry, i in (user.badges as any)" 
+                            class="mt-2 flex flex-row gap-1">
+                            <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="text-xl text-emerald-400"/>
+                            <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="text-xl text-emerald-400"/>
+                            <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="text-lg text-amber-400"/>
+                        </div>
+                    </div>
                     <div class="flex flex-row gap-5">
+                        <p class="text-zinc-400 flex flex-row items-center text-sm">
+                            <Icon name="ri:at-line" class="text-lg"/>
+                            <span class="text-zinc-400 text-base">{{ user.tag }}</span> 
+                        </p>
                         <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
                             <Icon name="ri:calendar-line" class="text-lg"/>
                             Member since 
@@ -76,7 +86,7 @@
                 </div>
             </div>
             
-            <div class="flex flex-col gap-3 w-full bg-zinc-900 p-3 px-5 rounded-md">
+            <!-- <div class="flex flex-col gap-3 w-full bg-zinc-900 p-3 px-5 rounded-md">
                 <div>
                     <h1 class="text-base uppercase">Export</h1>
                     <p class="text-sm text-zinc-500">Export all list's data to JSON</p>
@@ -85,7 +95,7 @@
                     <Icon name="ri:file-code-fill" class="text-2xl"/>
                     <button class="bg-zinc-800 p-2 px-3 rounded-md text-sm hover:bg-zinc-700 transition-all duration-200 ease-in-out w-full">Request data</button>
                 </div>
-            </div>
+            </div> -->
             
             
         </div>
