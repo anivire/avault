@@ -273,6 +273,31 @@
                             :name="character.character.name" />
                     </div>
                 </div>
+                <div v-else class="flex flex-col gap-3">
+                    <div class="flex flex-row justify-between items-center">
+                        <h1 class="text-xl uppercase">Characters</h1>
+                        <div class="grid grid-cols-3 text-center">
+                            <button 
+                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
+                                <Icon name="ri:arrow-drop-left-line" class="text-xl"/> 
+                                Prev
+                            </button>
+                            <p class="text-zinc-50">{{ currentCharacterPage + 1 }} / {{ 0 }}</p>
+                            <button 
+                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
+                                Next 
+                                <Icon name="ri:arrow-drop-right-line" 
+                                class="text-xl"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div 
+                        class="characters-carousel gap-4 h-full" 
+                        style="overflow-y: hidden; overflow-x: hidden;">
+                        <p v-show="characters!.length == 0">No characters was found</p>
+                        <CharacterCapsuleSkeleton v-for="i in 4"/> 
+                    </div>
+                </div>
             </div>
 
             <!-- Anime relations -->
@@ -310,6 +335,7 @@
 
 <script setup lang="ts">
 import CharacterCapsule from '@/src/components/capsule/CharacterCapsule.vue';
+import CharacterCapsuleSkeleton from '@/src/components/skeleton/AnimeCharacterSkeleton.vue';
 import { AnimeStatus } from '@tutkli/jikan-ts';
 import { useUserStore } from '@/store/UserStore';
 import { useToastStore } from '@/store/ToastStore';
