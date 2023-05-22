@@ -305,7 +305,7 @@
                 <h1 class="text-xl uppercase">Relations</h1>
                 <div class="flex flex-row flex-wrap gap-3">
                     <template v-for="item in anime.relations">
-                        <NuxtLink 
+                        <div 
                             v-for="entry in item.entry" 
                             class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all" 
                             :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
@@ -325,10 +325,10 @@
                                 <p class="font-bold">{{ entry.name }}</p>
                             </div>
                             
-                            <div v-if="item.relation != 'Character' && entry.type != 'manga'" >
+                            <NuxtLink v-if="item.relation != 'Character' && entry.type != 'manga'" >
                                 <Icon name="ri:arrow-right-up-line" class="text-3xl"/>
-                            </div>
-                        </NuxtLink>
+                            </NuxtLink>
+                        </div>
                     </template>
                 </div>
             </div>
