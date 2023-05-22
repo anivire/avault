@@ -472,7 +472,7 @@ function markFavorited() {
 }
 
 const selectWatchedEpisodesSub = () => {
-    userWatchedEpisodes.value >= 0 ? userWatchedEpisodes.value-- : anime.value!.episodes;
+    userWatchedEpisodes.value >= 1 ? userWatchedEpisodes.value-- : anime.value!.episodes;
     selectWatchedEpisodes();
 }
 

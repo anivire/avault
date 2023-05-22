@@ -174,6 +174,7 @@
                 :entry-id="entry.entry_id"
                 :user_id="user.user_id"
                 @update:entry="updateEntry($event)"
+                @delete:entry="deleteEntry($event)"
             />
         </div>
     </div>
@@ -288,6 +289,15 @@ const updateEntry = async (entryId: string) => {
             }
         });
     }
+}
+
+const deleteEntry = async (entryId: string) => {   
+    sortedAnime.value!.forEach(entry => {
+        if (entry.entry_id == entryId) {
+            sortedAnime.value!.splice(sortedAnime.value!.indexOf(entry), 1);
+            anime.value!.splice(sortedAnime.value!.indexOf(entry), 1);
+        }
+    });
 }
 
 

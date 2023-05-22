@@ -185,7 +185,7 @@
 
                 <!-- delete -->
                 <button 
-                    @click="" 
+                    @click="deleteAnimeEntry()" 
                     class=" p-2 px-4 rounded-md transition duration-300 easy-in-out hover:bg-rose-500 bg-zinc-800">
                     <Icon name="ri:delete-bin-2-fill" class="text-2xl"/>
                 </button>
@@ -197,6 +197,7 @@
 <script setup lang="ts">
 import { useToastStore } from '@/store/ToastStore';
 import { useUserStore } from '@/store/UserStore';
+import { emit } from 'process';
 
 const isHovered = ref(false);
 const isAnimeEditMenuOpen = ref(false);
@@ -227,7 +228,7 @@ const props = defineProps({
     user_id: { type: String, required: true}
 })
 
-const emits = defineEmits(['update:entry'])
+const emits = defineEmits(['update:entry', 'delete:entry']);
 
 const editAnimeEnty = ref();
 
@@ -282,7 +283,7 @@ const markFavorited = () => {
 }
 
 const selectWatchedEpisodesSub = () => {
-    editAnimeEnty.value.watchedEpisodes >= 0 ? editAnimeEnty.value.watchedEpisodes-- : props.totalEpisodes;
+    editAnimeEnty.value.watchedEpisodes >= 1 ? editAnimeEnty.value.watchedEpisodes-- : props.totalEpisodes;
     selectWatchedEpisodes();
 }
 
@@ -314,6 +315,20 @@ const updateAnimeEntry = async () => {
         toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
     } else {
         emits('update:entry', props.entryId);
+    }
+}
+
+const deleteAnimeEntry = async () => {
+    try {
+        isLoading.value = true;
+
+        await useAsyncData('deleteEntry', () => $fetch('/api/v1/user/animelist/deleteEntry', { method: 'GET', body: { entry_id: props.entryId }}));
+        emits('delete:entry', props.entryId);
+
+        toasts.addToast({title: 'Delete entry', description: 'Anime entry successfully deleted', icon: 'delete-entry', status: 'base'});
+    } catch(e: any) {
+        isLoading.value = false;
+        toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'});
     }
 }
 </script>
