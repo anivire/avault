@@ -22,6 +22,5 @@ export default defineNuxtConfig({
         '@nuxt/image-edge',
         'nuxt-icon'
         // 'nuxt-typed-router',
-    ],
-    ssr: false   
+    ] 
 })

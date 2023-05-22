@@ -12,7 +12,7 @@
     class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
 />
 
-<div v-if="authorizedUser">
+<div v-if="supabaseUser">
     <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl mt-36">
         <div 
             v-if="user != null"
@@ -107,13 +107,13 @@
 import { profile } from '.prisma/client';
 import { useToastStore } from '@/store/ToastStore';
 import { useUserStore } from '@/store/UserStore';
-import { e } from 'ofetch/dist/error-04138797';
 
 const toasts = useToastStore();
-const authorizedUser = useSupabaseUser();
-const authorizedStore = useUserStore();
+const supabaseUser = useSupabaseUser();
+const storedUser = useUserStore();
 const client = useSupabaseClient();
 const router = useRouter();
+
 const isCopied = ref(false);
 const user = ref<profile>();
 const newUsername = ref('');
@@ -123,12 +123,10 @@ definePageMeta({
     middleware: ['auth']
 })
 
-if (authorizedUser.value) {
-    const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: authorizedUser.value?.id }}));
+if (supabaseUser.value) {
+    const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: supabaseUser.value?.id }}));
 
-    if (data.value) {
-        user.value = data.value;
-    }
+    if (data.value) { user.value = data.value; }
 }
 
 useSeoMeta({
@@ -148,42 +146,36 @@ const copyTag = () => {
 }
 
 const changeUsername = async () => {
-    if (newUsername.value.length >= 3) {
-        const { error } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/updateUsername', {method: 'POST', body: { user_id: authorizedUser.value?.id, username: newUsername.value }}));
-
-        if (error.value) {
-            toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'base'})
-        } else {
-            toasts.addToast({title: 'Username successfully updated', description: newUsername.value.toString(), icon: 'settings', status: 'base'})
-
-            const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: authorizedUser.value?.id }}));
+    try {
+        if (newUsername.value.length >= 3) {
+            await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/updateUsername', {method: 'POST', body: { user_id: supabaseUser.value?.id, username: newUsername.value }}));
+            const { data } = await useAsyncData<profile>('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: supabaseUser.value?.id }}));
             
-            if (data.value) {
-                user.value = data.value;
-            }
+            if (data.value) { user.value = data.value; }
+
+            toasts.addToast({title: 'Username successfully updated', description: newUsername.value.toString(), icon: 'settings', status: 'base'})
+        } else {
+            toasts.addToast({title: 'Error', description: 'Minimum length of the username must be more than 3 characters', icon: 'error', status: 'error'})
         }
-    } else {
-        toasts.addToast({title: 'Error', description: 'Minimum length of the username must be more than 3 characters', icon: 'error', status: 'error'})
-    }
+    } catch(e: any) {
+        toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'})
+    }   
 }
 
 const deleteMe = async () => {
-    if (deleteTagConfirm.value == user.value!.tag) {
-        const { data, error } = await useAsyncData('deleteMe', () => $fetch('/api/v1/user/profile/deleteMe', {method: 'GET', query: { user_id: authorizedUser.value?.id }}));
+    try {
+        if (deleteTagConfirm.value == user.value!.tag) {
+            await useAsyncData('deleteMe', () => $fetch('/api/v1/user/profile/deleteMe', {method: 'GET', query: { user_id: supabaseUser.value?.id }}));
 
-        console.log(data.value)
-        console.log(error.value)
-
-        if (error.value != null && data.value == null) {
-            toasts.addToast({title: 'Error', description: error.value!.message, icon: 'error', status: 'error'})
-        } else {
             await client.auth.signOut().finally(() => { 
-                authorizedStore.logout(); 
+                storedUser.logout(); 
                 router.push('/')
             });
+        } else {
+            toasts.addToast({title: 'Error', description: 'Entered user tag does not match', icon: 'error', status: 'error'});
         }
-    } else {
-        toasts.addToast({title: 'Error', description: 'Entered user tag does not match', icon: 'error', status: 'error'});
+    } catch(e: any) {
+        toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'})
     }
 }
 </script>

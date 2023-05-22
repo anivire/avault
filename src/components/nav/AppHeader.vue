@@ -20,7 +20,7 @@
         <div 
             @mouseenter="isUserMenuOpen = true" 
             @mouseleave="isUserMenuOpen = false" 
-            v-if="authorizedUser.user.tag != ''"
+            v-if="storedUser.user.tag != ''"
             class="relative">
             <div 
                 @mouseleave="isUserMenuOpen = false"
@@ -28,8 +28,8 @@
                 <button 
                     :class="isUserMenuOpen ? 'rounded-t-md bg-zinc-800 ' : 'rounded-md bg-zinc-950'"
                     class="flex flex-row text-sm gap-2 py-2 px-5 items-center transition duration-300 easy-in-out font-bold">
-                        <NuxtImg :src="authorizedUser.user.avatar_url" class="w-6 rounded-full"/>
-                        @{{ authorizedUser.user.tag }}
+                        <NuxtImg :src="storedUser.user.avatar_url" class="w-6 rounded-full"/>
+                        @{{ storedUser.user.tag }}
                         <Icon 
                             name="ri:arrow-down-s-line" 
                             :class="isUserMenuOpen ? 'rotate-180' : 'rotate-0'"
@@ -47,9 +47,9 @@
                 <div
                     v-else
                     v-show="isUserMenuOpen" 
-                    class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-10 z-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl justify-between flex flex-col">
+                    class="absolute w-full rounded-b-md overflow-x-hidden top-0 z-10 mt-10 p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl justify-between flex flex-col">
                     <NuxtLink 
-                        :to="{ name: 'profile-tag', params: { tag: authorizedUser.user.tag } }"
+                        :to="{ name: 'profile-tag', params: { tag: storedUser.user.tag } }"
                         class="hover:bg-zinc-800 p-1 px-3 cursor-pointer rounded-md">
                             <p class="items-center flex flex-row gap-2 text-sm"><Icon name="ri:book-3-line" class="text-base"/> Profile</p>
                     </NuxtLink>
@@ -82,7 +82,8 @@
 import { useUserStore } from '@/store/UserStore';
 
 const client = useSupabaseClient();
-const authorizedUser = useUserStore();
+const storedUser = useUserStore();
+const supabaseUser = useSupabaseUser();
 const router = useRouter();
 
 const isUserMenuOpen = ref(false);
@@ -91,34 +92,37 @@ const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
     if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION' || event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') && session) {
-        console.log(event, session);
         const { data } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }}));
         
+        // Updated stored user data after log-in/update/refresh
         if (data.value) {
-            authorizedUser.setData({
+            storedUser.setData({
                 avatar_url: data.value.avatar_url!,
                 tag: data.value.tag,
                 user_id: data.value.user_id,
                 username: data.value.username
             });
+
+            // Checking  if user update profile picture on authorized social network - update it if is updated
+            if (supabaseUser.value!.user_metadata.avatar_url != storedUser.user.avatar_url) {
+                await useAsyncData('updateImage', () => $fetch('/api/v1/user/profile/updateImage', {method: 'POST', body: { user_id: session.user.id, avatar_url: supabaseUser.value!.user_metadata.avatar_url }}));
+            }
         }
 
         isUserLoaded.value = true;
     } else if (event == 'SIGNED_OUT' && session) {
         isUserLoaded.value = false;
-        console.log('SIGNED_OUT', session);
     } else {
         isUserLoaded.value = false;
-        authorizedUser.logout();
-        console.log(event, session);
+        storedUser.logout();
     }
     
 })
 
-const logOut = async () => {
+const logOut = async () => { 
     isLogout.value = true;
     await client.auth.signOut().finally(() => { 
-        authorizedUser.logout(); 
+        storedUser.logout(); 
         router.push('/')
     });
 }

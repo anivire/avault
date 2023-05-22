@@ -85,15 +85,10 @@
                             <p class="text-sm font-bold">Watched episodes</p>
                         </div>
                         <div class="flex flex-row items-center gap-2">
-                            <input 
-                                type="number" 
-                                min="0" 
-                                :max="totalEpisodes != undefined ? totalEpisodes : 999" 
-                                :value="watchedEpisodes" 
-                                readonly
-                                class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
+                            <button @click="selectWatchedEpisodesSub()"><Icon name="ri:subtract-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                            <p class="text-base font-bold hide-arrows">{{ watchedEpisodes }}</p>
                             <p class="text-sm text-zinc-400">/ {{ totalEpisodes != undefined ? totalEpisodes : '?' }}</p>
-                            <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                            <button @click="selectWatchedEpisodesAdd()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
                         </div>
                     </div>
                 </div>
@@ -116,7 +111,7 @@
                             :class="watchingStatus == 'watched' ? 'text-emerald-400' : watchingStatus == 'watching' ? 'text-amber-400' : watchingStatus == 'planned' ? 'text-violet-400' : 'text-rose-400'"
                             class="text-sm font-bold">{{ watchingStatus.charAt(0).toUpperCase() + watchingStatus.slice(1) }}</p>
                     </button>
-                    <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                    <div v-if="isListMenuOpen" class="absolute mt-11 z-50 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                         <button 
                             @click="selectList('select')" 
                             class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
@@ -173,7 +168,7 @@
                             :class="score == -1 || score == 0 || score == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
                             class="text-sm">{{ score == -1 || score == 0 || score == undefined ? 'Select' : score }}</p>
                     </button>
-                    <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                    <div v-if="isScoreMenuOpen" class="absolute z-50 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                         <button :class="score == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
                         <button :class="score == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
                         <button :class="score == 9 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
@@ -280,16 +275,25 @@ const markFavorited = () => {
     updateAnimeEntry();
 
     if (editAnimeEnty.value.isFavorited) {
-        toasts.addToast({title: 'Anime marked Favorite', description: props.title, icon: 'favorite', status: 'base'})
+        toasts.addToast({title: 'Anime marked as Favorited', description: props.title, icon: 'favorite', status: 'base'})
     } else {
-        toasts.addToast({title: 'Anime unmarked Favorite', description: props.title, icon: 'favorite', status: 'base'})
+        toasts.addToast({title: 'Anime no longer Favorited', description: props.title, icon: 'favorite', status: 'base'})
     }
 }
 
-const selectWatchedEpisodes = () => {
+const selectWatchedEpisodesSub = () => {
+    editAnimeEnty.value.watchedEpisodes >= 0 ? editAnimeEnty.value.watchedEpisodes-- : props.totalEpisodes;
+    selectWatchedEpisodes();
+}
+
+const selectWatchedEpisodesAdd = () => {
     editAnimeEnty.value.watchedEpisodes < (props.totalEpisodes != undefined ? props.totalEpisodes : 999) ? editAnimeEnty.value.watchedEpisodes++ : props.totalEpisodes;
+    selectWatchedEpisodes();
+}
+
+const selectWatchedEpisodes = () => {
     updateAnimeEntry();
-    toasts.addToast({title: 'Episodes watched ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
+    toasts.addToast({title: 'Episodes watched ➝ ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
 }
 
 const updateAnimeEntry = async () => {

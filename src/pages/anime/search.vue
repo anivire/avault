@@ -223,14 +223,6 @@ const yearOptions = ref([
     { value: [2023, 2024], name: '2023' },
 ]);
 
-const seasonOptions = ref([
-    { value: [-1], name: 'Any' },
-    { value: [AnimeSeason.winter], name: 'Winter' },
-    { value: [AnimeSeason.spring], name: 'Spring' },
-    { value: [AnimeSeason.summer], name: 'Summer' },
-    { value: [AnimeSeason.fall], name: 'Fall' },
-]);
-
 const formatOptions = ref([
     { value: [-1], name: 'Any' },
     { value: ['tv'], name: 'TV' },
@@ -412,7 +404,7 @@ function updateRoute() {
     }
     
     if (selectedScore.value.value[0] != -1) {
-        params.score = selectedScore.value.value[0].toString();
+        params.score = selectedScore.value.value[0];
     }
 
     router.push({

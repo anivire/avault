@@ -25,114 +25,114 @@
                     />
                     
                     <!-- User anime control panel -->
-                    <div v-if="user != null" class="grid grid-cols-6 gap-2">
-                        <button 
-                            @click="markFavorited()" 
-                            :class="userIsAnimeFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
-                            class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
-                            <Icon name="ri:heart-fill" class="text-2xl"/>
-                        </button>
-                        <div class="relative w-full col-span-5">
-                            <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out ">
-                                <div class="flex flex-row items-center gap-2">
-                                    <Icon name="ri:movie-2-fill" class="text-xl"/>
-                                    <p class="text-sm font-bold">Watched episodes</p>
-                                </div>
-                                <div class="flex flex-row items-center gap-2">
-                                    <input 
-                                        type="number" 
-                                        min="0" 
-                                        :max="anime.episodes != undefined ? anime.episodes : 999" 
-                                        v-model="userWatchedEpisodes"
-                                        readonly 
-                                        class="bg-transparent outline-none border-none w-12 text-right text-base font-bold hide-arrows">
-                                    <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
-                                    <button @click="selectWatchedEpisodes()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                    <div v-if="user != null" class="relative">
+                        <div v-if="isLoading" class="z-50 w-full h-full absolute backdrop-blur-sm backdrop-brightness-75">
+                            <p class="text-sm flex flex-row items-center gap-3 justify-center mt-8"><Icon class="animate-spin text-3xl" name="ri:loader-5-line"/></p>
+                        </div>
+                        <div class="grid grid-cols-6 gap-2">
+                            <button 
+                                @click="markFavorited()" 
+                                :class="userIsAnimeFavorited ? 'bg-rose-500 text-zinc-900' : 'hover:bg-zinc-700/50 bg-zinc-900'" 
+                                class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
+                                <Icon name="ri:heart-fill" class="text-2xl"/>
+                            </button>
+                            <div class="relative w-full col-span-5">
+                                <div :class="isEpisodesMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="w-full z-52 flex items-center flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out ">
+                                    <div class="flex flex-row items-center gap-2">
+                                        <Icon name="ri:movie-2-fill" class="text-xl"/>
+                                        <p class="text-sm font-bold">Watched episodes</p>
+                                    </div>
+                                    <div class="flex flex-row items-center gap-2">
+                                        <button @click="selectWatchedEpisodesSub()"><Icon name="ri:subtract-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                                        <p class="text-base font-bold hide-arrows">{{ userWatchedEpisodes }}</p>
+                                        <p class="text-sm text-zinc-400">/ {{ anime.episodes != undefined ? anime.episodes : '?' }}</p>
+                                        <button @click="selectWatchedEpisodesAdd()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div 
-                            class="relative w-full col-span-3" 
-                            @mouseover="isListMenuOpen = true" 
-                            @mouseleave="isListMenuOpen = false">
-                            <button :class="isListMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center hover:bg-zinc-800 transition duration-300 easy-in-out ">
-                                <div class="flex flex-row items-center gap-2">
-                                    <Icon name="ri:add-box-fill" class="text-xl"/>
-                                    <p class="text-sm font-bold">List</p>
+                            
+                            <div 
+                                class="relative w-full col-span-3" 
+                                @mouseover="isListMenuOpen = true" 
+                                @mouseleave="isListMenuOpen = false">
+                                <button :class="isListMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class=" w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between items-center hover:bg-zinc-800 transition duration-300 easy-in-out ">
+                                    <div class="flex flex-row items-center gap-2">
+                                        <Icon name="ri:add-box-fill" class="text-xl"/>
+                                        <p class="text-sm font-bold">List</p>
+                                    </div>
+                                    <p v-if="userAnimeList == 'select' || userAnimeList == undefined || userAnimeList == ''" class="text-sm text-zinc-400">Select</p>
+                                    <p 
+                                        v-else
+                                        :class="userAnimeList == 'watched' ? 'text-emerald-400' : userAnimeList == 'watching' ? 'text-amber-400' : userAnimeList == 'planned' ? 'text-violet-400' : 'text-rose-400'"
+                                        class="text-sm font-bold">{{ userAnimeList.charAt(0).toUpperCase() + userAnimeList.slice(1) }}</p>
+                                </button>
+                                <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                                    <button 
+                                        @click="selectList('select')" 
+                                        class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                        <p class="text-xs p-2">Select</p>
+                                    </button>
+                                    
+                                    <button 
+                                        @click="selectList('watched')" 
+                                        :class="userAnimeList == 'watched' ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  
+                                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                        <p class="text-xs p-2">Watched</p>
+                                        <Icon name="ri:check-line" class="mr-2"></Icon>
+                                    </button>
+                                    
+                                    <button 
+                                        @click="selectList('watching')" 
+                                        :class="userAnimeList == 'watching' ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  
+                                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                        <p class="text-xs p-2">Watching</p>
+                                        <Icon name="ri:eye-fill" class="mr-2"></Icon>
+                                    </button>
+
+                                    <button 
+                                        @click="selectList('planned')" 
+                                        :class="userAnimeList == 'planned' ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  
+                                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                        <p class="text-xs p-2">Planned</p>
+                                        <Icon name="ri:time-fill" class="mr-2"></Icon>
+                                    </button>
+
+                                    <button 
+                                        @click="selectList('dropped')" 
+                                        :class="userAnimeList == 'dropped' ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" 
+                                        class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
+                                        <p class="text-xs p-2">Dropped</p>
+                                        <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
+                                    </button>
                                 </div>
-                                <p v-if="userAnimeList == 'select' || userAnimeList == undefined || userAnimeList == ''" class="text-sm text-zinc-400">Select</p>
-                                <p 
-                                    v-else
-                                    :class="userAnimeList == 'watched' ? 'text-emerald-400' : userAnimeList == 'watching' ? 'text-amber-400' : userAnimeList == 'planned' ? 'text-violet-400' : 'text-rose-400'"
-                                    class="text-sm font-bold">{{ userAnimeList.charAt(0).toUpperCase() + userAnimeList.slice(1) }}</p>
-                            </button>
-                            <div v-if="isListMenuOpen" class="absolute mt-11 z-10 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
-                                <button 
-                                    @click="selectList('select')" 
-                                    class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
-                                    <p class="text-xs p-2">Select</p>
-                                </button>
-                                
-                                <button 
-                                    @click="selectList('watched')" 
-                                    :class="userAnimeList == 'watched' ? 'bg-emerald-500/50' : 'hover:bg-zinc-700/50'"  
-                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                                    <p class="text-xs p-2">Watched</p>
-                                    <Icon name="ri:check-line" class="mr-2"></Icon>
-                                </button>
-                                
-                                <button 
-                                    @click="selectList('watching')" 
-                                    :class="userAnimeList == 'watching' ? 'bg-amber-500/50' : 'hover:bg-zinc-700/50'"  
-                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                                    <p class="text-xs p-2">Watching</p>
-                                    <Icon name="ri:eye-fill" class="mr-2"></Icon>
-                                </button>
-
-                                <button 
-                                    @click="selectList('planned')" 
-                                    :class="userAnimeList == 'planned' ? 'bg-blue-500/50' : 'hover:bg-zinc-700/50'"  
-                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                                    <p class="text-xs p-2">Planned</p>
-                                    <Icon name="ri:time-fill" class="mr-2"></Icon>
-                                </button>
-
-                                <button 
-                                    @click="selectList('dropped')" 
-                                    :class="userAnimeList == 'dropped' ? 'bg-red-500/50' : 'hover:bg-zinc-700/50'" 
-                                    class="flex flex-row items-center justify-between transition duration-300 easy-in-out rounded-md w-full">
-                                    <p class="text-xs p-2">Dropped</p>
-                                    <Icon name="ri:eye-off-fill" class="mr-2"></Icon>
-                                </button>
                             </div>
-                        </div>
 
-                        <div 
-                            class="relative w-full col-span-3"
-                            @mouseover="isScoreMenuOpen = true" 
-                            @mouseleave="isScoreMenuOpen = false">
-                            <button :class="isScoreMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
-                                <div class="flex flex-row items-center gap-2">
-                                    <Icon name="material-symbols:star-rounded" class="text-xl"/>
-                                    <p class="text-sm font-bold">Score</p>
+                            <div 
+                                class="relative w-full col-span-3"
+                                @mouseover="isScoreMenuOpen = true" 
+                                @mouseleave="isScoreMenuOpen = false">
+                                <button :class="isScoreMenuOpen ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" class="items-center w-full z-52 flex flex-row gap-2 p-3 px-5 justify-between hover:bg-zinc-700/50 transition duration-300 easy-in-out ">
+                                    <div class="flex flex-row items-center gap-2">
+                                        <Icon name="material-symbols:star-rounded" class="text-xl"/>
+                                        <p class="text-sm font-bold">Score</p>
+                                    </div>
+                                    <p 
+                                        :class="userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
+                                        class="text-sm">{{ userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'Select' : userAnimeScore }}</p>
+                                </button>
+                                <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                                    <button :class="userAnimeScore == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
+                                    <button :class="userAnimeScore == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
+                                    <button :class="userAnimeScore == 9 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
+                                    <button :class="userAnimeScore == 8 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(8)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">8 - Very Good</button>
+                                    <button :class="userAnimeScore == 7 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(7)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">7 - Good</button>
+                                    <button :class="userAnimeScore == 6 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(6)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">6 - Fine</button>
+                                    <button :class="userAnimeScore == 5 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(5)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">5 - Average</button>
+                                    <button :class="userAnimeScore == 4 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(4)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">4 - Bad</button>
+                                    <button :class="userAnimeScore == 3 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(3)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">3 - Very Bad</button>
+                                    <button :class="userAnimeScore == 2 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(2)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">2 - Horrible</button>
+                                    <button :class="userAnimeScore == 1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">1 - Appaling</button>
                                 </div>
-                                <p 
-                                    :class="userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
-                                    class="text-sm">{{ userAnimeScore == -1 || userAnimeScore == 0 || userAnimeScore == undefined ? 'Select' : userAnimeScore }}</p>
-                            </button>
-                            <div v-if="isScoreMenuOpen" class="absolute z-10 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-900/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
-                                <button :class="userAnimeScore == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
-                                <button :class="userAnimeScore == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
-                                <button :class="userAnimeScore == 9 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
-                                <button :class="userAnimeScore == 8 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(8)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">8 - Very Good</button>
-                                <button :class="userAnimeScore == 7 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(7)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">7 - Good</button>
-                                <button :class="userAnimeScore == 6 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(6)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">6 - Fine</button>
-                                <button :class="userAnimeScore == 5 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(5)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">5 - Average</button>
-                                <button :class="userAnimeScore == 4 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(4)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">4 - Bad</button>
-                                <button :class="userAnimeScore == 3 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(3)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">3 - Very Bad</button>
-                                <button :class="userAnimeScore == 2 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(2)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">2 - Horrible</button>
-                                <button :class="userAnimeScore == 1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">1 - Appaling</button>
                             </div>
                         </div>
                     </div>
@@ -305,7 +305,10 @@
                 <h1 class="text-xl uppercase">Relations</h1>
                 <div class="flex flex-row flex-wrap gap-3">
                     <template v-for="item in anime.relations">
-                        <div v-for="entry in item.entry" class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all">
+                        <NuxtLink 
+                            v-for="entry in item.entry" 
+                            class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all" 
+                            :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
                             <Icon v-if="item.relation == 'Character'" name="ri:user-3-fill" class="text-2xl"/>
                             <Icon v-else-if="entry.type == 'anime'" name="ri:movie-2-line" class="text-2xl"/>
                             <Icon v-else-if="entry.type == 'manga'" name="ri:book-3-line" class="text-2xl"/>
@@ -322,10 +325,10 @@
                                 <p class="font-bold">{{ entry.name }}</p>
                             </div>
                             
-                            <NuxtLink v-if="item.relation != 'Character' && entry.type != 'manga'" :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
+                            <div v-if="item.relation != 'Character' && entry.type != 'manga'" >
                                 <Icon name="ri:arrow-right-up-line" class="text-3xl"/>
-                            </NuxtLink>
-                        </div>
+                            </div>
+                        </NuxtLink>
                     </template>
                 </div>
             </div>
@@ -350,6 +353,8 @@ const isTitlesShowed = ref(false);
 const isListMenuOpen = ref(false);
 const isEpisodesMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
+
+const isLoading = ref(false);
 
 const userAnimeScore = ref(0);
 const userAnimeList = ref('');
@@ -397,6 +402,7 @@ function parseAnimeDate(dateFrom: string, dateTo: string, status: AnimeStatus): 
 
 
 async function createOrUpdateAnimeEntry() {
+    isLoading.value = true;
     const { data } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: authorizedUser.user.user_id }}));
 
     if (data.value?.mal_id == undefined) {
@@ -427,6 +433,7 @@ async function createOrUpdateAnimeEntry() {
                 toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
             }
         }
+        isLoading.value = false;
     } else {
         console.log('Updated exist');
         if (anime.value) {
@@ -448,6 +455,7 @@ async function createOrUpdateAnimeEntry() {
                 toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
             }
         }
+        isLoading.value = false;
     }
 }
 
@@ -463,12 +471,19 @@ function markFavorited() {
     }
 }
 
-function selectWatchedEpisodes() {
-    if (anime.value) {
-        userWatchedEpisodes.value < (anime.value.episodes != undefined ? anime.value.episodes : 999) ? userWatchedEpisodes.value++ : anime.value!.episodes;
-        createOrUpdateAnimeEntry();
-        toasts.addToast({title: 'Episodes watched ' + userWatchedEpisodes.value, description: anime.value!.titles[0].title, icon: 'episodes', status: 'base'})
-    }
+const selectWatchedEpisodesSub = () => {
+    userWatchedEpisodes.value >= 0 ? userWatchedEpisodes.value-- : anime.value!.episodes;
+    selectWatchedEpisodes();
+}
+
+const selectWatchedEpisodesAdd = () => {
+    userWatchedEpisodes.value < (anime.value!.episodes != undefined ? anime.value!.episodes : 999) ? userWatchedEpisodes.value++ : anime.value!.episodes;
+    selectWatchedEpisodes();
+}
+
+const selectWatchedEpisodes = () => {
+    createOrUpdateAnimeEntry();
+    toasts.addToast({title: 'Episodes watched ➝ ' + userWatchedEpisodes.value, description: anime.value!.titles[0].title, icon: 'episodes', status: 'base'})
 }
 
 async function selectList(list: string) {
