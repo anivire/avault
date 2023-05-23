@@ -26,7 +26,7 @@
                             <p class="text-base font-bold line-clamp-1">{{ title }}</p>
                             <Icon name="ri:arrow-right-up-line" class="text-xl min-w-max"/>
                         </NuxtLink>
-                        <button v-if="user_id == authorizedUser.user.user_id" @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"><Icon name="ri:edit-2-fill" class="text-xl"/></button>
+                        <button v-if="user_id == storedUser.user.user_id" @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"><Icon name="ri:edit-2-fill" class="text-xl"/></button>
                     </div>
                     <div class="flex flex-row gap-1.5 mb-1">
                         <p 
@@ -66,7 +66,7 @@
             </div>
             <h1 v-if="score == 0 || score == -1 ? false : true" class="w-36 flex flex-row justify-center">{{ score }}</h1>
         </div>
-        <div v-if="isAnimeEditMenuOpen && user_id == authorizedUser.user.user_id" class="relative">
+        <div v-if="isAnimeEditMenuOpen && user_id == storedUser.user.user_id" class="relative">
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-30"></div>
             <div class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
                 <!-- favorite -->
@@ -197,7 +197,8 @@
 <script setup lang="ts">
 import { useToastStore } from '@/store/ToastStore';
 import { useUserStore } from '@/store/UserStore';
-import { emit } from 'process';
+
+const editAnimeEnty = ref();
 
 const isHovered = ref(false);
 const isAnimeEditMenuOpen = ref(false);
@@ -205,9 +206,9 @@ const isListMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
 const isLoading = ref(false);
 
-const authorizedUser = useUserStore()
-const user = useSupabaseUser();
+const storedUser = useUserStore()
 const toasts = useToastStore();
+const emits = defineEmits(['update:entry', 'delete:entry']);
 
 const props = defineProps({
     animeId: { type: Number, required: true},
@@ -228,9 +229,12 @@ const props = defineProps({
     user_id: { type: String, required: true}
 })
 
-const emits = defineEmits(['update:entry', 'delete:entry']);
-
-const editAnimeEnty = ref();
+enum UpdateField {
+    Favorite,
+    List,
+    Score,
+    Episodes
+}
 
 onMounted(() => {
     if (props) {
@@ -260,26 +264,18 @@ const selectList = (list: string) => {
         }
 
         editAnimeEnty.value.watchingStatus = list;
-        updateAnimeEntry();
-        toasts.addToast({title: 'Added to list ➝ ' + list, description: props.title, icon: 'list', status: 'base'})
+        updateAnimeEntry(UpdateField.List);
     }
 }
 
 const selectScore = (score: number) => {
     editAnimeEnty.value.score = score;
-    updateAnimeEntry();
-    toasts.addToast({title: 'Set score to anime ⭐' + score, description: props.title, icon: 'score', status: 'base'})
+    updateAnimeEntry(UpdateField.Score);
 }
 
 const markFavorited = () => {
     editAnimeEnty.value.isFavorited = !editAnimeEnty.value.isFavorited;
-    updateAnimeEntry();
-
-    if (editAnimeEnty.value.isFavorited) {
-        toasts.addToast({title: 'Anime marked as Favorited', description: props.title, icon: 'favorite', status: 'base'})
-    } else {
-        toasts.addToast({title: 'Anime no longer Favorited', description: props.title, icon: 'favorite', status: 'base'})
-    }
+    updateAnimeEntry(UpdateField.Favorite);
 }
 
 const selectWatchedEpisodesSub = () => {
@@ -293,39 +289,68 @@ const selectWatchedEpisodesAdd = () => {
 }
 
 const selectWatchedEpisodes = () => {
-    updateAnimeEntry();
-    toasts.addToast({title: 'Episodes watched ➝ ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
+    updateAnimeEntry(UpdateField.Episodes);
 }
 
-const updateAnimeEntry = async () => {
-    isLoading.value = true;
+const updateAnimeEntry = async (updatedField: UpdateField) => {
+    try {
+        isLoading.value = true;
 
-    const updatedEntryData = {
-        watching_status: editAnimeEnty.value.watchingStatus,
-        score: editAnimeEnty.value.score,
-        is_favorited: editAnimeEnty.value.isFavorited,
-        wathed_episodes: editAnimeEnty.value.watchedEpisodes,
-        updated_at: new Date(),
-        entry_id: props.entryId
-    }; 
+        const updatedEntryData = {
+            watching_status: editAnimeEnty.value.watchingStatus,
+            score: editAnimeEnty.value.score,
+            is_favorited: editAnimeEnty.value.isFavorited,
+            wathed_episodes: editAnimeEnty.value.watchedEpisodes,
+            updated_at: new Date(),
+            entry_id: props.entryId
+        }; 
 
-    const { error } = await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
-    
-    if (error.value) {
-        toasts.addToast({title: 'Error', description: error.value.message, icon: 'error', status: 'error'})
-    } else {
+        const { error } = await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
         emits('update:entry', props.entryId);
+
+        switch(updatedField) {
+            case UpdateField.Favorite: {
+                if (editAnimeEnty.value.isFavorited) {
+                    toasts.addToast({title: 'Anime marked as Favorited', description: props.title, icon: 'favorite', status: 'base'})
+                } else {
+                    toasts.addToast({title: 'Anime no longer Favorited', description: props.title, icon: 'favorite', status: 'base'})
+                }
+
+                break;
+            }
+            case UpdateField.Episodes: {
+                toasts.addToast({title: 'Episodes watched ➝ ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
+
+                break;
+            }
+            case UpdateField.List: {
+                toasts.addToast({title: 'Added to list ➝ ' + editAnimeEnty.value.watchingStatus, description: props.title, icon: 'list', status: 'base'})
+
+                break;
+            } 
+            case UpdateField.Score: {
+                toasts.addToast({title: 'Set score to anime ⭐' + editAnimeEnty.value.score, description: props.title, icon: 'score', status: 'base'})
+
+                break;
+            }
+        }
+
+        isLoading.value = false;
+    } catch(e: any) {
+        isLoading.value = false;
+        toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'});
     }
+   
 }
 
 const deleteAnimeEntry = async () => {
     try {
         isLoading.value = true;
 
-        await useAsyncData('deleteEntry', () => $fetch('/api/v1/user/animelist/deleteEntry', { method: 'GET', body: { entry_id: props.entryId }}));
+        await useAsyncData('deleteEntry', () => $fetch('/api/v1/user/animelist/deleteEntry', { method: 'GET', query: { entry_id: props.entryId }}));
         emits('delete:entry', props.entryId);
 
-        toasts.addToast({title: 'Delete entry', description: 'Anime entry successfully deleted', icon: 'delete-entry', status: 'base'});
+        toasts.addToast({title: 'Delete', description: 'Anime entry successfully deleted', icon: 'delete-entry', status: 'base'});
     } catch(e: any) {
         isLoading.value = false;
         toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'});
