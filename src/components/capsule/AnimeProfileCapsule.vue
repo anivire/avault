@@ -14,16 +14,15 @@
             </div>
             <div class="flex flex-row items-center h-36 w-full ">
                 <nuxt-img 
-                    v-show="isImageLoading"
                     :src="imageUrl" 
                     :class="isHovered && !isLoading ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
                     loading="lazy"
                     class="h-full w-32 transition-all duration-200 ease-in-out z-10"
                     @load="isImageLoading = true"
                 />
-                <div v-show="!isImageLoading" class="text-xs text-zinc-400 flex flex-row items-center justify-center w-32"> 
+                <!-- <div v-show="!isImageLoading" class="text-xs text-zinc-400 flex flex-row items-center justify-center w-32"> 
                     <Icon class="animate-spin text-3xl" name="ri:loader-5-line" />
-                </div>
+                </div> -->
                 <div 
                     :class="score == 0 || score == -1 ? 'px-5' : 'pl-5'"
                     class="flex flex-col gap-1 justify-center w-full">
