@@ -39,7 +39,6 @@ const props = defineProps({
 const emit = defineEmits(['remove']);
 
 onMounted(() => {
-    console.log(props)
     timerId.value = setInterval(() => {
         if (liveTime.value >= 1 ) {
             liveTime.value--;

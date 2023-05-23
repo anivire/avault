@@ -14,10 +14,19 @@
             </div>
             <div class="flex flex-row items-center h-36 w-full ">
                 <nuxt-img 
+                    v-show="isImageLoading"
                     :src="imageUrl" 
                     :class="isHovered && !isLoading ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
-                    class="h-full transition-all duration-200 ease-in-out z-10"
+                    width="50"
+                    height="100"
+                    quality="50"
+                    loading="lazy"
+                    class="h-full w-32 transition-all duration-200 ease-in-out z-10"
+                    @load="isImageLoading = true"
                 />
+                <div v-show="!isImageLoading" class="text-xs text-zinc-400 flex flex-row items-center justify-center w-32"> 
+                    <Icon class="animate-spin text-3xl" name="ri:loader-5-line" />
+                </div>
                 <div 
                     :class="score == 0 || score == -1 ? 'px-5' : 'pl-5'"
                     class="flex flex-col gap-1 justify-center w-full">
@@ -205,6 +214,7 @@ const isAnimeEditMenuOpen = ref(false);
 const isListMenuOpen = ref(false);
 const isScoreMenuOpen = ref(false);
 const isLoading = ref(false);
+const isImageLoading = ref(false);
 
 const storedUser = useUserStore()
 const toasts = useToastStore();
@@ -296,46 +306,52 @@ const updateAnimeEntry = async (updatedField: UpdateField) => {
     try {
         isLoading.value = true;
 
-        const updatedEntryData = {
-            watching_status: editAnimeEnty.value.watchingStatus,
-            score: editAnimeEnty.value.score,
-            is_favorited: editAnimeEnty.value.isFavorited,
-            wathed_episodes: editAnimeEnty.value.watchedEpisodes,
-            updated_at: new Date(),
-            entry_id: props.entryId
-        }; 
+        const { data } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: props.animeId }}));
 
-        const { error } = await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
-        emits('update:entry', props.entryId);
+        if (data.value) {
+            const updatedEntryData = {
+                image_url: data.value?.images.webp?.image_url,
+                total_episodes: data.value.episodes,
+                watching_status: editAnimeEnty.value.watchingStatus,
+                score: editAnimeEnty.value.score,
+                is_favorited: editAnimeEnty.value.isFavorited,
+                wathed_episodes: editAnimeEnty.value.watchedEpisodes,
+                updated_at: new Date(),
+                entry_id: props.entryId
+            }; 
 
-        switch(updatedField) {
-            case UpdateField.Favorite: {
-                if (editAnimeEnty.value.isFavorited) {
-                    toasts.addToast({title: 'Anime marked as Favorited', description: props.title, icon: 'favorite', status: 'base'})
-                } else {
-                    toasts.addToast({title: 'Anime no longer Favorited', description: props.title, icon: 'favorite', status: 'base'})
+            await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
+            emits('update:entry', props.entryId);
+
+            switch(updatedField) {
+                case UpdateField.Favorite: {
+                    if (editAnimeEnty.value.isFavorited) {
+                        toasts.addToast({title: 'Anime marked as Favorited', description: props.title, icon: 'favorite', status: 'base'})
+                    } else {
+                        toasts.addToast({title: 'Anime no longer Favorited', description: props.title, icon: 'favorite', status: 'base'})
+                    }
+
+                    break;
                 }
+                case UpdateField.Episodes: {
+                    toasts.addToast({title: 'Episodes watched ➝ ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
 
-                break;
+                    break;
+                }
+                case UpdateField.List: {
+                    toasts.addToast({title: 'Added to list ➝ ' + editAnimeEnty.value.watchingStatus, description: props.title, icon: 'list', status: 'base'})
+
+                    break;
+                } 
+                case UpdateField.Score: {
+                    toasts.addToast({title: 'Set score to anime ⭐' + editAnimeEnty.value.score, description: props.title, icon: 'score', status: 'base'})
+
+                    break;
+                }
             }
-            case UpdateField.Episodes: {
-                toasts.addToast({title: 'Episodes watched ➝ ' + editAnimeEnty.value.watchedEpisodes, description: props.title, icon: 'episodes', status: 'base'})
 
-                break;
-            }
-            case UpdateField.List: {
-                toasts.addToast({title: 'Added to list ➝ ' + editAnimeEnty.value.watchingStatus, description: props.title, icon: 'list', status: 'base'})
-
-                break;
-            } 
-            case UpdateField.Score: {
-                toasts.addToast({title: 'Set score to anime ⭐' + editAnimeEnty.value.score, description: props.title, icon: 'score', status: 'base'})
-
-                break;
-            }
+            isLoading.value = false;
         }
-
-        isLoading.value = false;
     } catch(e: any) {
         isLoading.value = false;
         toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'});

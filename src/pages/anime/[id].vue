@@ -412,7 +412,7 @@ async function createOrUpdateAnimeEntry() {
             const newEntryData = {
                 mal_id: route.params.id,
                 total_episodes: anime.value.episodes,
-                image_url: anime.value.images.jpg.image_url,
+                image_url: anime.value.images.webp?.image_url,
                 title: anime.value.title != undefined ? anime.value.title : anime.value.titles[0].title,
                 studios: 'test', // add correct studios property
                 type: anime.value.type.toString(),
@@ -439,6 +439,7 @@ async function createOrUpdateAnimeEntry() {
         if (anime.value) {
             const updatedEntryData = {
                 total_episodes: anime.value.episodes,
+                image_url: anime.value.images.webp?.image_url,
                 airing_season: anime.value.season + ' ' + anime.value.year,
                 airing_status: parseAnimeAiringStatus(anime.value.status),
                 watching_status: userAnimeList.value,

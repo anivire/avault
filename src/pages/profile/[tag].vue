@@ -1,13 +1,15 @@
 <template>
 <div class="absolute overflow-hidden">
     <nuxt-img 
-        :src="user?.avatar_url ? user.avatar_url : ''" 
+        v-if="user != null" 
+        :src="user.avatar_url!" 
         class="w-screen h-52 object-cover blur-lg opacity-60"
     />
 </div> 
 
 <nuxt-img  
-    :src="user?.avatar_url ? user.avatar_url : ''" 
+    v-if="user != null" 
+    :src="user.avatar_url!" 
     class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
 />
 <div 
@@ -15,7 +17,7 @@
     class="relative mx-auto max-w-7xl mt-36 flex flex-col gap-5">   
     <div class="flex flex-row gap-3 mb-5">  
         <nuxt-img 
-        :src="user?.avatar_url ? user.avatar_url : ''" 
+            :src="user.avatar_url!" 
             class="object-cover rounded-full w-36"
         />
 
@@ -181,8 +183,9 @@
     <div 
         v-else
         class="flex flex-col items-center mt-16">
-        <p class="font-bold">No results</p>
-        <p class="text-zinc-400">Yeah, it's very sad to hear...</p>
+        <!-- <p class="font-bold">No results</p>
+        <p class="text-zinc-400">Yeah, it's very sad to hear...</p> -->
+        <p class="text-xs text-zinc-400 flex flex-row items-center gap-3 justify-center">Anime loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
     </div>
 </div>
 </template>
@@ -193,8 +196,6 @@ import AnimeProfileCapsule from '@/src/components/capsule/AnimeProfileCapsule.vu
 import Input from '@/src/components/Input.vue';
 import Select from '@/src/components/Select.vue';
 import SmallSelect from '@/src/components/SmallSelect.vue';
-
-const route = useRoute();
 
 const order = ref([
     { value: ['title'], name: 'Alphabet'},
@@ -243,8 +244,11 @@ const selectedSort = ref(sort.value[0]);
 const selectedFavorite = ref('');
 
 const anime = ref<animeList[]>();
+const isEntriesPending = ref(true);
 const sortedAnime = ref<animeList[]>();
 const viewMode = ref('grid');
+
+const route = useRoute();
 
 watch(selectedList, (newValue) => {
     if (newValue.value[0] == "favorited") {
@@ -275,6 +279,19 @@ watch(selectedOrder, (newValue) => {
 watch(selectedSort, (newValue) => {
     setSearchQuery();
 })
+
+
+const { data: user } = await useAsyncData<profile>('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
+
+if (user.value) {
+    const { data, pending } = await useAsyncData('animelist', () => $fetch('/api/v1/user/animelist', {method: 'GET', query: { user_id: user.value!.user_id}}));
+    isEntriesPending.value = pending.value;
+
+    if (data.value) {
+        anime.value = data.value as unknown as animeList[];
+        sortedAnime.value = data.value as unknown as animeList[];
+    }
+}
 
 const updateEntry = async (entryId: string) => {   
     const { data } = await useAsyncData<animeList>('searchEntryById', () => $fetch('/api/v1/user/animelist/searchEntryById', {method: 'GET', query: { user_id: user.value!.user_id, entry_id: entryId}}));
@@ -325,17 +342,6 @@ const setSearchQuery = () => {
         sortedAnime.value.reverse();
     }
     
-}
-
-const { data: user } = await useAsyncData('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
-
-if (user.value) {
-    const { data, error } = await useAsyncData('animelist', () => $fetch('/api/v1/user/animelist', {method: 'GET', query: { user_id: user.value!.user_id}}));
-
-    if (data.value) {
-        anime.value = data.value as unknown as animeList[];
-        sortedAnime.value = anime.value;
-    }
 }
 
 useSeoMeta({

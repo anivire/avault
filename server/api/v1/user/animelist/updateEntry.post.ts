@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         },
         data: {
             total_episodes: body.animeList.total_episodes,
+            image_url: body.animeList.image_url,
             airing_season: body.animeList.airing_season,
             airing_status: body.animeList.airing_status,
             watching_status: body.animeList.watching_status,

@@ -24,10 +24,7 @@ import { useToastStore } from '@/store/ToastStore';
 
 const toasts = useToastStore();
 
-
 const remove = (index: string) => {
-    
-console.log(toasts.toast)
     toasts.rmToast(index);
 }
 </script>
