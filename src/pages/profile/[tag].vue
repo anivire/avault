@@ -159,6 +159,7 @@
             class="anime gap-5">
             <AnimeProfileCapsule 
                 v-for="entry in sortedAnime" 
+                :key="entry.entry_id"
                 :added-at="(new Date(entry.added_at).toLocaleDateString())"
                 :airing-season="entry.airing_season"
                 :airing-status="entry.airing_status"
