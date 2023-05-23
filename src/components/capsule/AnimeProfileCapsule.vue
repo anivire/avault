@@ -17,7 +17,6 @@
                     v-show="isImageLoading"
                     :src="imageUrl" 
                     :class="isHovered && !isLoading ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
-                    quality="50"
                     loading="lazy"
                     class="h-full w-32 transition-all duration-200 ease-in-out z-10"
                     @load="isImageLoading = true"
