@@ -91,10 +91,10 @@ const isUserLoaded = ref(false);
 const isLogout = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
-    if ((event == 'SIGNED_IN' || event == 'INITIAL_SESSION' || event == 'TOKEN_REFRESHED' || event == 'USER_UPDATED') && session) {
+    if ((event == 'SIGNED_IN' || event == 'USER_UPDATED') && session) {
         const { data } = await useAsyncData('me', () => $fetch('/api/v1/user/profile/me', {method: 'GET', query: { id: session.user.id }}));
         
-        // Updated stored user data after log-in/update/refresh
+        // Updated stored user data after log-in
         if (data.value) {
             storedUser.setData({
                 avatar_url: data.value.avatar_url!,
@@ -104,13 +104,14 @@ client.auth.onAuthStateChange(async (event, session) => {
             });
 
             // Checking  if user update profile picture on authorized social network - update it if is updated
+            // Just because i'm too lazy for writing great storage avatar system
             if (supabaseUser.value!.user_metadata.avatar_url != storedUser.user.avatar_url) {
                 await useAsyncData('updateImage', () => $fetch('/api/v1/user/profile/updateImage', {method: 'POST', body: { user_id: session.user.id, avatar_url: supabaseUser.value!.user_metadata.avatar_url }}));
             }
         }
 
         isUserLoaded.value = true;
-    } else if (event == 'SIGNED_OUT' && session) {
+    } else if (event == 'SIGNED_OUT') {
         isUserLoaded.value = false;
     } else {
         isUserLoaded.value = false;

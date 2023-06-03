@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-        user: { user_id: '', username: '', tag: '', avatar_url: '' }
+        user: { user_id: '', username: '', tag: '', avatar_url: '' },
     }),
     persist: true,
     actions: {

@@ -6,11 +6,6 @@
     class="w-screen h-52 object-cover blur-lg opacity-60"
 />
 </div> 
-<nuxt-img 
-    v-if="user != null" 
-    :src="user.avatar_url ? user.avatar_url : ''" 
-    class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
-/>
 
 <div v-if="supabaseUser">
     <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl mt-36">

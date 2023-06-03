@@ -7,11 +7,6 @@
     />
 </div> 
 
-<nuxt-img  
-    v-if="user != null" 
-    :src="user.avatar_url!" 
-    class="absolute w-screen h-96 object-cover blur-[164px] opacity-20 -z-10"
-/>
 <div 
     v-if="user != null"
     class="relative mx-auto max-w-7xl mt-36 flex flex-col gap-5">   
