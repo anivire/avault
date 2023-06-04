@@ -341,8 +341,8 @@ const setSearchQuery = () => {
 useSeoMeta({
     title: user.value != undefined ? user.value.tag + '\'s Profile › AVAULT' : 'Profile › AVAULT',
     ogTitle: user.value != undefined ? user.value.tag : 'Profile',
-    description: 'User profile page',
+    description: `${user.value!.username} profile (@${user.value!.tag}). \nMember since ${user.value!.created_at} / total entries ${anime.value!.length}`,
     ogDescription: 'User profile page',
-    ogImage: user.value?.avatar_url,
+    ogImage: user.value?.avatar_url
 })
 </script>

@@ -39,5 +39,6 @@ useSeoMeta({
     ogTitle: 'Upcoming',
     description: 'Upcoming anime',
     ogDescription: 'Upcoming anime',
+    twitterCard: 'summary_large_image'
 })
 </script>

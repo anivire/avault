@@ -39,5 +39,6 @@ useSeoMeta({
     ogTitle: 'Ongoings',
     description: 'This anime season\'s ongoings',
     ogDescription: 'This anime season\'s ongoings',
+    twitterCard: 'summary_large_image'
 })
 </script>

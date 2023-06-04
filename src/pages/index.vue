@@ -68,4 +68,12 @@ useSeoMeta({
     description: 'Home page of AVAULT',
     ogDescription: 'Home page of AVAULT',
 })
+
+useSeoMeta({
+    title: 'AVAULT',
+    ogTitle: 'AVAULT',
+    description: `Store all of your watched anime titles in one place!`,
+    ogDescription: `Store all of your watched anime titles in one place!`,
+    twitterCard: 'summary_large_image'
+})
 </script>

@@ -60,5 +60,6 @@ useSeoMeta({
     ogTitle: 'Top 100',
     description: 'Top 100 rated anime of all time by MAL users',
     ogDescription: 'Top 100 rated anime of all time by MAL users',
+    twitterCard: 'summary_large_image'
 })
 </script>
