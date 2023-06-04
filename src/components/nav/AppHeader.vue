@@ -1,5 +1,12 @@
 <template>
 <!-- <div class="py-4 bg-[#09090b]/25"> -->
+<div class="flex flex-row w-full justify-center">
+    <AuthModal 
+        v-if="showModal" 
+        class="fixed w-full z-50" 
+        @close:auth="showModal = false"
+    />
+</div>
 <div class="py-6">
     <div class="flex flex-row w-full items-center max-w-7xl mx-auto justify-between">
         <div class="flex flex-row items-center gap-8">
@@ -67,19 +74,20 @@
             </div>
         </div>
         
-    <NuxtLink
-        v-else
-        to="/auth" 
-        class="text-sm items-center flex gap-2 font-bold transition-colors duration-200 ease-in-out">
-        <Icon name="ri:login-box-line" class="text-base"/>
-        Sign-in
-    </NuxtLink>
+        <div
+            v-else
+            @click="showModal = true"
+            class="cursor-pointer text-sm items-center flex gap-2 font-bold transition-colors duration-200 ease-in-out">
+            <Icon name="ri:login-box-line" class="text-base"/>
+            Sign-in
+        </div>
     </div>
 </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store/UserStore';
+import AuthModal from '../AuthModal.vue';
 
 const client = useSupabaseClient();
 const storedUser = useUserStore();
@@ -89,6 +97,7 @@ const router = useRouter();
 const isUserMenuOpen = ref(false);
 const isUserLoaded = ref(false);
 const isLogout = ref(false);
+const showModal = ref(false);
 
 client.auth.onAuthStateChange(async (event, session) => {
     if ((event == 'SIGNED_IN' || event == 'USER_UPDATED') && session) {

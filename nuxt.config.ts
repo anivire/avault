@@ -4,7 +4,6 @@ export default defineNuxtConfig({
             tailwindcss: {},
             autoprefixer: {},
         },
-        
     },
     dir: {
         layouts: 'src/layouts',
@@ -21,6 +20,6 @@ export default defineNuxtConfig({
         '@pinia-plugin-persistedstate/nuxt',
         '@nuxt/image-edge',
         'nuxt-icon'
-        // 'nuxt-typed-router',
-    ] 
+    ],
+    ssr: false
 })

@@ -15,6 +15,5 @@
 <script setup lang="ts">
 import AppFooter from '../components/nav/AppFooter.vue';
 import AppHeader from '../components/nav/AppHeader.vue';
-import Toast from '../components/Toast.vue';
 import ToastWrapper from '../components/ToastWrapper.vue';
 </script>

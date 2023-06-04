@@ -179,9 +179,7 @@
     <div 
         v-else
         class="flex flex-col items-center mt-16">
-        <!-- <p class="font-bold">No results</p>
-        <p class="text-zinc-400">Yeah, it's very sad to hear...</p> -->
-        <p class="text-xs text-zinc-400 flex flex-row items-center gap-3 justify-center">Anime loading <Icon class="animate-spin" name="ri:loader-5-line"/></p>
+        <p class="text-base text-zinc-400 flex flex-row items-center gap-2 justify-center"><Icon name="ri:book-3-line"/> No results</p>
     </div>
 </div>
 </template>
