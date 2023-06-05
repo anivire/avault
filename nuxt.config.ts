@@ -21,5 +21,5 @@ export default defineNuxtConfig({
         '@nuxt/image-edge',
         'nuxt-icon'
     ],
-    ssr: true
+    ssr: false
 })

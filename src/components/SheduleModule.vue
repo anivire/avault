@@ -30,8 +30,4 @@ daysArray.value.forEach(element => {
         element.isCurrent = false;
     }
 });
-
-console.log(currentDayOfWeek.value)
-console.log(new Date().getDay())
-
 </script>
