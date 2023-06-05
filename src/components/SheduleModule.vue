@@ -12,7 +12,7 @@
 import SheduleWrapper from './SheduleWrapper.vue';
 
 const daysArray = ref([
-    {day: "monday", isCurrent: false},
+    {day: "monday", isCurrent: true},
     {day: "tuesday", isCurrent: false},
     {day: "wednesday", isCurrent: false},
     {day: "thursday", isCurrent: false},
@@ -30,4 +30,8 @@ daysArray.value.forEach(element => {
         element.isCurrent = false;
     }
 });
+
+console.log(currentDayOfWeek.value)
+console.log(new Date().getDay())
+
 </script>

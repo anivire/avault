@@ -2,7 +2,7 @@
     <div>
         <div
             @click="isOpen = !isOpen" 
-            :class="[isOpen ? 'rounded-t-md' : 'rounded-md', isCurrent ? 'from-rose-900 to-rose-900/70 hover:from-rose-800 hover:to-rose-800/70' : 'from-zinc-900 to-zinc-900/70 hover:from-zinc-800 hover:to-zinc-800/70']"
+            :class="[isOpen ? 'rounded-t-md' : 'rounded-md', props.isCurrent ? 'from-rose-900 to-rose-900/70 hover:from-rose-800 hover:to-rose-800/70' : 'from-zinc-900 to-zinc-900/70 hover:from-zinc-800 hover:to-zinc-800/70']"
             class="flex flex-col gap-2 bg-gradient-to-r p-1 h-12 w-full justify-center cursor-pointer">
             <div class="flex flex-row justify-between px-3 p-2 items-center">
                 <p class="font-semibold capitalize">{{ day }}</p>
@@ -51,7 +51,7 @@ const isOpenedOnce = ref(1);
 const sheduledAnime = ref<Anime[]>();
 
 onMounted(() => {
-    if (props.isCurrent == true) {
+    if (props.isCurrent) {
         isOpen.value = true;
     }
 })
