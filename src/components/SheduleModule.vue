@@ -28,6 +28,4 @@ daysArray.value.forEach(element => {
         element.isCurrent = true;
     }
 });
-
-console.log(daysArray.value)
 </script>

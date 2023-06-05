@@ -26,30 +26,30 @@ defineProps({
     timezone: { type: String, required: true },
 })
 
-const setTimeWithOffset = (time: string, timezone: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const sourceTime = new Date(hours, minutes);
+// const setTimeWithOffset = (time: string, timezone: string) => {
+//     const [hours, minutes] = time.split(':').map(Number);
+//     const sourceTime = new Date(hours, minutes);
 
-    const jp = moment(sourceTime).tz(timezone)
-    const userTz = moment(sourceTime).tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+//     const jp = moment(sourceTime).tz(timezone)
+//     const userTz = moment(sourceTime).tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
-    console.log(jp.format())
-    console.log(userTz.format())
+//     console.log(jp.format())
+//     console.log(userTz.format())
 
-    //const userOffset = new Date().getTimezoneOffset();
+//     //const userOffset = new Date().getTimezoneOffset();
 
-    //const userLocalTime = new Date(sourceTime.getTime() - userOffset * 60000);
+//     //const userLocalTime = new Date(sourceTime.getTime() - userOffset * 60000);
 
-    // sourceTime.toLocaleString('en-US', { timeZone: timezone });
-    // console.log(sourceTime.toLocaleString('en-US', { timeZone: timezone }));
-    // const userTime = sourceTime.toLocaleTimeString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-    // console.log(userTime);
-    //sourceTime.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-    //console.log(sourceTime)
+//     // sourceTime.toLocaleString('en-US', { timeZone: timezone });
+//     // console.log(sourceTime.toLocaleString('en-US', { timeZone: timezone }));
+//     // const userTime = sourceTime.toLocaleTimeString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+//     // console.log(userTime);
+//     //sourceTime.toLocaleString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+//     //console.log(sourceTime)
 
 
-    return jp.format('h:mm a');
+//     return jp.format('h:mm a');
 
-    //new Date().toLocaleString("eu-Eu", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) 
-}
+//     //new Date().toLocaleString("eu-Eu", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) 
+// }
 </script>

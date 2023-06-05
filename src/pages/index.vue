@@ -35,7 +35,7 @@
                     </div>
                     <div v-else
                         class="grid grid-cols-4 gap-3">
-                        <AnimeCapsuleSkeleton v-for="i in 4"/>
+                        <AnimeCapsuleSkeleton v-for="i in 8"/>
                     </div>
                 </div>
                 <div class="col-span-2">

@@ -53,10 +53,8 @@ const sheduledAnime = ref<Anime[]>();
 onMounted(() => {
     if (props.isCurrent == true) {
         isOpen.value = true;
-        loadData();
     }
 })
-
 
 watch(isOpen, async (newValue) => {
     if (newValue && isOpenedOnce.value == 1) {
@@ -66,31 +64,15 @@ watch(isOpen, async (newValue) => {
 
 const loadData = async () => {
     isOpenedOnce.value = 0;
+    const { data } = await useAsyncData('shedule', () => $fetch('/api/v1/shedule', { method: 'GET', query: { day: props.day } }));
 
-    if (props.day == 'saturday & sunday') {
-        const { data } = await useAsyncData('shedule', () => $fetch('/api/v1/shedule', { method: 'GET', query: { day: 'sunday' } }));
+    data.value!.data.forEach(element => {
+        if (element.approved == false || element.year == null || element.status != 'Currently Airing') {
+            data.value!.data.splice(data.value!.data.indexOf(element), 1);
+        }
+    });
+    data.value!.data.sort((a, b) => a.popularity > b.popularity ? 1 : -1);
 
-        data.value!.data.forEach(element => {
-            if (element.approved == false || element.year == null || element.status != 'Currently Airing') {
-                data.value!.data.splice(data.value!.data.indexOf(element), 1);
-            }
-        });
-        data.value!.data.sort((a, b) => a.popularity > b.popularity ? 1 : -1);
-
-        console.log(data.value)
-        sheduledAnime.value = data.value!.data as unknown as Anime[];
-    } else {
-        const { data } = await useAsyncData('shedule', () => $fetch('/api/v1/shedule', { method: 'GET', query: { day: props.day } }));
-
-        data.value!.data.forEach(element => {
-            if (element.approved == false || element.year == null || element.status != 'Currently Airing') {
-                data.value!.data.splice(data.value!.data.indexOf(element), 1);
-            }
-        });
-        data.value!.data.sort((a, b) => a.popularity > b.popularity ? 1 : -1);
-
-        console.log(data.value)
-        sheduledAnime.value = data.value!.data as unknown as Anime[];
-    }
+    sheduledAnime.value = data.value!.data as unknown as Anime[];
 }
 </script>
