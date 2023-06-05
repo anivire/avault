@@ -26,6 +26,8 @@ currentDayOfWeek.value = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday'
 daysArray.value.forEach(element => {
     if (element.day == currentDayOfWeek.value) {
         element.isCurrent = true;
+    } else {
+        element.isCurrent = false;
     }
 });
 </script>
