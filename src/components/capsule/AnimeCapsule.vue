@@ -18,6 +18,8 @@
     <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}">
         <nuxt-img 
             :src="imageUrl" 
+            width="200"
+            height="500"
             :class="isPosterHovered ? 'h-[22rem] rounded-lg' : 'h-full rounded-t-lg'"
             class="transition-all duration-200 ease-in-out object-cover" 
             loading="lazy"
