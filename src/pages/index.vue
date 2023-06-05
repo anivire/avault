@@ -8,7 +8,7 @@
             <div class="w-1/3">
                 <div class="flex flex-row items-center justify-between px-1 py-3">
                     <h1 class="text-lg uppercase">Shedule</h1>
-                    <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
+                    <Icon name="ri:calendar-2-fill" class="text-2xl"/>
                 </div>
                 <SheduleModule/>
             </div>
