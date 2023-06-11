@@ -3,7 +3,7 @@
     <NuxtLoadingIndicator />
     <div class="bg-rose-600 flex flex-row gap-2 p-3 items-center justify-center">
         <Icon name="ri:bug-fill" class="text-base"/>
-        <p class="text-sm">Anime search may not work correctly.</p>
+        <p class="text-sm">Anime search and shedules may not work correctly due to Jikan API recent updates.</p>
     </div>
     <div class="flex flex-col relative min-h-screen">
         <div class="absolute z-10 w-full"><AppHeader/></div> 
