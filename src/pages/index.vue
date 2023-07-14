@@ -1,18 +1,18 @@
 <template>
     <div class="mt-28 mx-auto max-w-7xl">
-        <div class="flex flex-row gap-5">
+        <div class="grid grid-cols-3 gap-5">
             <!-- <div class="flex flex-row items-center justify-between px-1 py-3">
                 <h1 class="text-lg uppercase">Shedule</h1>
                 <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
             </div> -->
-            <div class="w-1/3">
+            <div class="w-full">
                 <div class="flex flex-row items-center justify-between px-1 py-3">
                     <h1 class="text-lg uppercase">Shedule</h1>
                     <Icon name="ri:calendar-2-fill" class="text-2xl"/>
                 </div>
                 <SheduleModule/>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full col-span-2">
                 <div class="col-span-2">
                     <div class="flex flex-row items-center justify-between px-1 py-3">
                         <h1 class="text-lg uppercase">Ongoings</h1>
@@ -41,7 +41,7 @@
                 <div class="col-span-2">
                     <div class="flex flex-row items-center justify-between px-1 py-3">
                         <h1 class="text-lg uppercase">Upcoming</h1>
-                        <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
+                        <NuxtLink to="/anime/upcoming"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
                     </div>
                     <div 
                         v-if="upcomingAnimes"

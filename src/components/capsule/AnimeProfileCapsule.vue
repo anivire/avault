@@ -73,7 +73,7 @@
         </div>
         <div v-if="isAnimeEditMenuOpen && user_id == storedUser.user.user_id" class="relative">
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-30"></div>
-            <div class="grid grid-cols-8 gap-3 p-3 bg-zinc-900 rounded-b-md">
+            <div class="grid grid-cols-9 gap-3 p-3 bg-zinc-900 rounded-b-md">
                 <!-- favorite -->
                 <button 
                     @click="markFavorited()" 
@@ -83,7 +83,7 @@
                 </button>
 
                 <!-- episodes -->
-                <div class="relative w-full col-span-7">
+                <div class="relative w-full col-span-8">
                     <div class="w-full z-50 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name="ri:movie-2-fill" class="text-xl"/>
@@ -188,6 +188,13 @@
                     </div> 
                 </div>
 
+                <!-- update -->
+                <button 
+                    @click="reloadAnimeEntry()" 
+                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out text-zinc-50 bg-zinc-800 hover:bg-zinc-600/50">
+                    <Icon name="ri:refresh-line" class="text-2xl"/>
+                </button>
+                
                 <!-- delete -->
                 <button 
                     @click="deleteAnimeEntry()" 
@@ -202,6 +209,7 @@
 <script setup lang="ts">
 import { useToastStore } from '@/store/ToastStore';
 import { useUserStore } from '@/store/UserStore';
+import { AnimeStatus } from '@tutkli/jikan-ts';
 
 const editAnimeEnty = ref();
 
@@ -298,6 +306,39 @@ const selectWatchedEpisodes = () => {
     updateAnimeEntry(UpdateField.Episodes);
 }
 
+function parseAnimeAiringStatus(status: string): string {
+    return status == AnimeStatus.airing ? "Ongoing" : status == AnimeStatus.upcoming ? "Upcoming" : "Released";
+}
+
+const reloadAnimeEntry = async () => {
+    try {
+        isLoading.value = true;
+
+        const { data } = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: props.animeId }}));
+
+        if (data.value) {
+            const updatedEntryData = {
+                image_url: data.value?.images.webp?.image_url,
+                total_episodes: data.value.episodes,
+                airing_status: parseAnimeAiringStatus(data.value.status),
+                watching_status: editAnimeEnty.value.watchingStatus,
+                score: editAnimeEnty.value.score,
+                is_favorited: editAnimeEnty.value.isFavorited,
+                wathed_episodes: editAnimeEnty.value.watchedEpisodes,
+                entry_id: props.entryId
+            }; 
+
+            await useAsyncData('updateEntry', () => $fetch('/api/v1/user/animelist/updateEntry', { method: 'POST', body: { animeList: updatedEntryData }}));
+            toasts.addToast({title: 'Information updated', description: 'Reload page to see updated changes', icon: '', status: 'info'});
+            emits('update:entry', props.entryId);
+            isLoading.value = false;
+        }
+    } catch(e: any) {
+        isLoading.value = false;
+        toasts.addToast({title: 'Error', description: e.message, icon: 'error', status: 'error'});
+    }
+}
+
 const updateAnimeEntry = async (updatedField: UpdateField) => {
     try {
         isLoading.value = true;
@@ -309,6 +350,7 @@ const updateAnimeEntry = async (updatedField: UpdateField) => {
                 image_url: data.value?.images.webp?.image_url,
                 total_episodes: data.value.episodes,
                 watching_status: editAnimeEnty.value.watchingStatus,
+                airing_status: parseAnimeAiringStatus(data.value.status),
                 score: editAnimeEnty.value.score,
                 is_favorited: editAnimeEnty.value.isFavorited,
                 wathed_episodes: editAnimeEnty.value.watchedEpisodes,

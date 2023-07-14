@@ -32,7 +32,7 @@
 import AnimeCapsule from '@/src/components/capsule/AnimeCapsule.vue';
 import AnimeCapsuleSkeleton from '@/src/components/skeleton/AnimeCapsuleSkeleton.vue';
 
-const { data: upcomingAnimes, pending: upcomingPending } = await useLazyAsyncData('upcoming', () => $fetch('/api/v1/anime/season/upcoming', { method: 'GET', query: { count: 48 } }));
+const { data: upcomingAnimes, pending: upcomingPending } = await useLazyAsyncData('upcoming', () => $fetch('/api/v1/anime/season/upcoming', { method: 'GET', query: { count: 25 } }));
 
 useSeoMeta({
     title: 'Upcoming › AVAULT',

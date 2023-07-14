@@ -273,31 +273,7 @@
                             :name="character.character.name" />
                     </div>
                 </div>
-                <div v-else class="flex flex-col gap-3">
-                    <div class="flex flex-row justify-between items-center">
-                        <h1 class="text-xl uppercase">Characters</h1>
-                        <div class="grid grid-cols-3 text-center">
-                            <button 
-                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
-                                <Icon name="ri:arrow-drop-left-line" class="text-xl"/> 
-                                Prev
-                            </button>
-                            <p class="text-zinc-50">{{ currentCharacterPage + 1 }} / {{ 0 }}</p>
-                            <button 
-                                class="text-zinc-400 hover:text-zinc-50 transition duration-300 easy-in-out hover:underline decoration-dotted underline-offset-4 w-fit">
-                                Next 
-                                <Icon name="ri:arrow-drop-right-line" 
-                                class="text-xl"/>
-                            </button>
-                        </div>
-                    </div>
-                    <div 
-                        class="characters-carousel gap-4 h-full" 
-                        style="overflow-y: hidden; overflow-x: hidden;">
-                        <p v-show="characters!.length == 0">No characters was found</p>
-                        <CharacterCapsuleSkeleton v-for="i in 4"/> 
-                    </div>
-                </div>
+                
             </div>
 
             <!-- Anime relations -->
@@ -307,8 +283,7 @@
                     <template v-for="item in anime.relations">
                         <div 
                             v-for="entry in item.entry" 
-                            class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all" 
-                            :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
+                            class="w-fit justify-between bg-zinc-900 p-3 px-5 rounded-lg flex flex-row items-center gap-5 hover:bg-zinc-800 duration-300 ease-in-out transition-all" >
                             <Icon v-if="item.relation == 'Character'" name="ri:user-3-fill" class="text-2xl"/>
                             <Icon v-else-if="entry.type == 'anime'" name="ri:movie-2-line" class="text-2xl"/>
                             <Icon v-else-if="entry.type == 'manga'" name="ri:book-3-line" class="text-2xl"/>
@@ -325,7 +300,7 @@
                                 <p class="font-bold">{{ entry.name }}</p>
                             </div>
                             
-                            <NuxtLink v-if="item.relation != 'Character' && entry.type != 'manga'" >
+                            <NuxtLink v-if="item.relation != 'Character' && entry.type != 'manga'" :to="{ name: 'anime-id', params: { id: entry.mal_id }}">
                                 <Icon name="ri:arrow-right-up-line" class="text-3xl"/>
                             </NuxtLink>
                         </div>

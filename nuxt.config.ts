@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     css: [
         'assets/css/index.css'
     ],
-    plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }],
     modules: [
         '@nuxtjs/supabase',
         '@pinia/nuxt',

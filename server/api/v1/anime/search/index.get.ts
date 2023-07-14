@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         status: query.status as string,
         min_score: query.score as number,
         sfw: true,
+        unapproved: false
     })
     .catch(async (response: Response) => {
         if (response.status == 429) {
