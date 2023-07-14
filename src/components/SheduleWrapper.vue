@@ -5,7 +5,7 @@
             :class="[isOpen ? 'rounded-t-md' : 'rounded-md', props.isCurrent ? 'from-rose-900 to-rose-900/70 hover:from-rose-800 hover:to-rose-800/70' : 'from-zinc-900 to-zinc-900/70 hover:from-zinc-800 hover:to-zinc-800/70']"
             class="flex flex-col gap-2 bg-gradient-to-r p-1 h-12 w-full justify-center cursor-pointer">
             <div class="flex flex-row justify-between px-3 p-2 items-center">
-                <p class="font-semibold capitalize">{{ day == SchedulesFilter.monday ? 'Monday' : day == SchedulesFilter.tuesday ? 'Tuesday' : day == SchedulesFilter.wednesday ? 'Wednesday' : day == SchedulesFilter.thursday ? 'Thursday' : day == SchedulesFilter.friday ? 'Friday' : day == SchedulesFilter.saturday ? 'Saturday' : 'Sunday' }}</p>
+                <p class="font-semibold capitalize">{{ day == SchedulesFilter.monday ? 'Monday' : day == SchedulesFilter.tuesday ? 'Tuesday' : day == SchedulesFilter.wednesday ? 'Wednesday' : day == SchedulesFilter.thursday ? 'Thursday' : day == SchedulesFilter.friday ? 'Friday' : day }}</p>
                 <Icon 
                     :class="isOpen ? 'rotate-180' : 'rotate-0'"
                     class="transition duration-200 ease-in-out"
@@ -71,6 +71,7 @@ const loadData = async () => {
     //         data.value!.data.splice(data.value!.data.indexOf(element), 1);
     //     }
     // });
+    
     data.value!.sort((a, b) => a.popularity > b.popularity ? 1 : -1);
 
     sheduledAnime.value = data.value!;

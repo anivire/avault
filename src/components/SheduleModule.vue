@@ -19,12 +19,12 @@ const daysArray = ref([
     {day: SchedulesFilter.wednesday, isCurrent: false},
     {day: SchedulesFilter.thursday, isCurrent: false},
     {day: SchedulesFilter.friday, isCurrent: false},
-    {day: SchedulesFilter.saturday, isCurrent: false},
-    {day: SchedulesFilter.sunday, isCurrent: false},
+    {day: 'saturday', isCurrent: false},
+    {day: 'sunday', isCurrent: false},
 ])
 const currentDayOfWeek = ref();
 
-currentDayOfWeek.value = [SchedulesFilter.sunday, SchedulesFilter.monday, SchedulesFilter.tuesday, SchedulesFilter.wednesday, SchedulesFilter.thursday, SchedulesFilter.friday, SchedulesFilter.saturday][new Date().getDay()];
+currentDayOfWeek.value = ['sunday', SchedulesFilter.monday, SchedulesFilter.tuesday, SchedulesFilter.wednesday, SchedulesFilter.thursday, SchedulesFilter.friday, 'saturday'][new Date().getDay()];
 daysArray.value.forEach(element => {
     if (element.day == currentDayOfWeek.value) {
         element.isCurrent = true;
