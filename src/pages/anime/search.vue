@@ -1,15 +1,5 @@
 <template>
     <div class="mt-28 max-w-7xl mx-auto">
-        <!-- <div class="my-5">
-            <p>{{ q }}</p>
-            <p>{{ selectedYear }}</p>
-            <p>{{ selectedSeason }}</p>
-            <p>{{ selectedFormat }}</p>
-            <p>{{ selectedStatus }}</p>
-            <p>{{ selectedGenre }}</p>
-            <p>{{ selectedScore }}</p>
-        </div> -->
-        
         <div class="flex flex-col gap-5">
             <!-- Search panel -->
             <div class="search-panel grid grid-cols-6 gap-3">
@@ -263,7 +253,7 @@ const selectedSeason = ref({value: [], name: ''});
 const selectedFormat = ref({value: [], name: ''});
 const selectedStatus = ref({value: [], name: ''});
 const selectedGenre = ref({value: [], name: ''});
-const searchAnimes = ref<Anime[]>();
+//const searchAnimes = ref<Anime[]>();
 const selectedOrder = ref(order.value[0]);
 const selectedAnimePerPage = ref(animePerPage.value[0]);
 const selectedSort = ref(sort.value[1]);
@@ -312,9 +302,29 @@ watch(currentPage, async (newValue, oldValue) => {
     updateRoute();
 })
 
+
 // ToDo: fix unapproved anime in search
+// Show anime on load
+// await Promise.all([
+const {data: searchAnimes} = await useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
+    method: 'GET', 
+    query: {
+            page:           route.query.page,
+            limit:          route.query.limit,
+            orderBy:        route.query.orderBy,
+            sortBy:         route.query.sortBy,
+            searchString:   route.query.q,
+            yearStart:      route.query.yearStart,
+            yearEnd:        route.query.yearEnd,
+            type:           route.query.type,
+            status:         route.query.status,
+            score:          route.query.score
+        }
+    }));
+
 watch(route, (newValue, oldValue) => {
-    searchAnimes.value = undefined;
+    console.log('route', route)
+    searchAnimes.value = null;
 
     useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
         method: 'GET', 
@@ -332,45 +342,10 @@ watch(route, (newValue, oldValue) => {
             }
         })
     .then((data: Anime[]) => { 
-        data.forEach(element => {
-            if (element.approved == false) {
-                data.splice(data.indexOf(element), 1);
-            }
-        });
 
         searchAnimes.value = data
      }));
 })
-
-// ToDo: fix unapproved anime in search
-// Show anime on load
-await Promise.all([
-    useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
-        method: 'GET', 
-        query: {
-                page:           route.query.page,
-                limit:          route.query.limit,
-                orderBy:        route.query.orderBy,
-                sortBy:         route.query.sortBy,
-                searchString:   route.query.q,
-                yearStart:      route.query.yearStart,
-                yearEnd:        route.query.yearEnd,
-                type:           route.query.type,
-                status:         route.query.status,
-                score:          route.query.score
-            }
-        })
-    .then((data: Anime[]) => { 
-
-        // data.forEach(element => {
-        //     if (element.approved == false) {
-        //         data.splice(data.indexOf(element), 1);
-        //     }
-        // });
-        
-        searchAnimes.value = data 
-    }))
-])
 
 function updateRoute() {
     const params: Record<string, string | string[]> = {}
