@@ -342,6 +342,12 @@ const { data: anime } = await useAsyncData('anime', () => $fetch('/api/v1/anime'
 const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
 const { data: searchEntry } = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: user.value?.id }}));
 
+console.log(anime.value)
+
+if (anime.value == null) {
+    navigateTo('/anime/search');
+}
+
 // If user authorized, check animeList entry
 if (searchEntry.value?.mal_id != undefined && user.value != null) {
     userAnimeScore.value = searchEntry.value.score as number;

@@ -105,7 +105,7 @@ client.auth.onAuthStateChange(async (event, session) => {
         
         // Updated stored user data after log-in
         if (data.value) {
-            storedUser.setData({
+                storedUser.setData({
                 avatar_url: data.value.avatar_url!,
                 tag: data.value.tag,
                 user_id: data.value.user_id,
@@ -120,12 +120,13 @@ client.auth.onAuthStateChange(async (event, session) => {
         }
 
         isUserLoaded.value = true;
-    } else if (event == 'SIGNED_OUT') {
-        isUserLoaded.value = false;
-    } else {
-        isUserLoaded.value = false;
-        storedUser.logout();
-    }
+    } 
+    // else if (event == 'SIGNED_OUT') {
+    //     isUserLoaded.value = false;
+    // } else {
+    //     isUserLoaded.value = false;
+    //     storedUser.logout();
+    // }
     
 })
 

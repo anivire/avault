@@ -277,6 +277,11 @@ watch(selectedSort, (newValue) => {
 
 const { data: user } = await useAsyncData<profile>('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
 
+if (user.value == null) {
+    navigateTo('/');
+}
+
+
 if (user.value) {
     const { data, pending } = await useAsyncData('animelist', () => $fetch('/api/v1/user/animelist', {method: 'GET', query: { user_id: user.value!.user_id}}));
     isEntriesPending.value = pending.value;
