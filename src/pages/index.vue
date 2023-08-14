@@ -19,7 +19,7 @@
                         <NuxtLink to="/anime/ongoings"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
                     </div>
                     <div
-                        v-if="ongoingAnimes" 
+                        v-if="!ongoingPending" 
                         class="grid grid-cols-4 gap-3">
                         <AnimeCapsule
                             v-for="anime in ongoingAnimes"
@@ -28,7 +28,7 @@
                             :anime-id="anime.mal_id"
                             :image-url="anime.images.jpg.image_url"
                             :score="anime.score"
-                            :studio="anime.studios[0].name"
+                            :studio="anime.studios.length === 0 ? 'Unknown' : anime.studios[0].name"
                             :title="anime.title != undefined ? anime.title : anime.titles[0].title"
                             :type="anime.type"
                         />
@@ -44,7 +44,7 @@
                         <NuxtLink to="/anime/upcoming"><Icon name="ri:arrow-right-up-line" class="text-2xl"/></NuxtLink>
                     </div>
                     <div 
-                        v-if="upcomingAnimes"
+                        v-if="!upcomingPending"
                         class="grid grid-cols-4 gap-3">
                         <AnimeCapsule
                             v-for="anime in upcomingAnimes"
@@ -53,7 +53,7 @@
                             :anime-id="anime.mal_id"
                             :image-url="anime.images.jpg.image_url"
                             :score="anime.score"
-                            :studio="anime.studios[0].name"
+                            :studio="anime.studios.length === 0 ? 'Unknown' : anime.studios[0].name"
                             :title="anime.title != undefined ? anime.title : anime.titles[0].title"
                             :type="anime.type"
                         />

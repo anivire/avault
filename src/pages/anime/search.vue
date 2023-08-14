@@ -417,4 +417,9 @@ useSeoMeta({
     ogDescription: 'Search anime page',
     twitterCard: 'summary_large_image'
 })
+
+
+definePageMeta({
+    layout: 'search'
+})
 </script>
