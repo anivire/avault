@@ -4,7 +4,7 @@ const jikanClient = new JikanClient();
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
-    const { data } = await jikanClient.schedules.getSchedules({filter: query.day as SchedulesFilter})
+    const { data } = await jikanClient.schedules.getSchedules({filter: query.day as SchedulesFilter, unapproved: false, kids: false})
         .catch(async (response: Response) => {
             if (response.status == 429) {
                 throw createError({
