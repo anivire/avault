@@ -12,45 +12,47 @@
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75">
                 <p class="text-sm flex flex-row items-center gap-3 justify-center mt-16 ml-24"><Icon class="animate-spin text-3xl" name="ri:loader-5-line"/></p>
             </div>
-            <div class="flex flex-row items-center h-36 w-full ">
+            <div class="flex flex-row items-center md:h-36 h-32 w-full ">
                 <nuxt-img 
                     :src="imageUrl" 
-                    :class="isHovered && !isLoading ? 'scale-110 rounded-md shadow-xl' : 'scale-100 rounded-l-md'"
+                    :class="isHovered && !isLoading ? 'md:scale-110 md:rounded-md md:shadow-xl' : 'md:scale-100 rounded-l-md'"
                     loading="lazy"
-                    class="h-full w-32 transition-all duration-200 ease-in-out z-10"
+                    class="h-full md:w-32 w-24 transition-all duration-200 ease-in-out z-10"
                     @load="isImageLoading = true"
                 />
-                <!-- <div v-show="!isImageLoading" class="text-xs text-zinc-400 flex flex-row items-center justify-center w-32"> 
-                    <Icon class="animate-spin text-3xl" name="ri:loader-5-line" />
-                </div> -->
                 <div 
                     :class="score == 0 || score == -1 ? 'px-5' : 'pl-5'"
                     class="flex flex-col gap-1 justify-center w-full">
                     <div class="flex flex-row justify-between gap-5 items-center">
                         <NuxtLink :to="{name: 'anime-id', params: { id: animeId }}" class="flex flex-row gap-1 items-center hover:bg-zinc-700/50 rounded-md w-fit">
-                            <p class="text-base font-bold line-clamp-1">{{ title }}</p>
+                            <p class="md:text-base text-xs font-bold line-clamp-1">{{ title }}</p>
                             <Icon name="ri:arrow-right-up-line" class="text-xl min-w-max"/>
                         </NuxtLink>
-                        <button v-if="user_id == storedUser.user.user_id" @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"><Icon name="ri:edit-2-fill" class="text-xl"/></button>
+                        <button 
+                            v-if="user_id == storedUser.user.user_id" 
+                            @click="isAnimeEditMenuOpen = !isAnimeEditMenuOpen"
+                            class="flex items-center">
+                            <Icon name="ri:edit-2-fill" class="md:text-xl text-lg"/>
+                        </button>
                     </div>
-                    <div class="flex flex-row gap-1.5 mb-1">
+                    <div class="flex flex-row flex-wrap md:max-h-6 max-h-5 overflow-y-hidden gap-1.5 mb-1">
                         <p 
                             v-if="isFavorited"
-                            class="text-zinc-900 font-extrabold text-xs p-1 px-2 rounded-full bg-zinc-50">
+                            class="text-zinc-900 font-extrabold text-xs md:p-1 md:px-2 px-1 p-0.5 rounded-md bg-zinc-50">
                             <Icon name="ri:heart-fill"/>
                         </p>
                         <p 
-                            class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full bg-zinc-50">
+                            class="text-zinc-900 font-extrabold text-xs md:p-1 md:px-3 px-1 p-0.5 rounded-md bg-zinc-50">
                             {{ type }}
                         </p>
                         <p 
                             :class="watchingStatus == 'watching' ? 'bg-amber-400' : watchingStatus == 'watched' ? 'bg-emerald-400' : watchingStatus == 'planned' ? 'bg-violet-400' : 'bg-rose-400'"
-                            class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full">
+                            class="text-zinc-900 font-extrabold text-xs md:p-1 md:px-3 px-1 p-0.5 rounded-md">
                             {{ watchingStatus == 'watching' ? 'Watching' : watchingStatus == 'watched' ? 'Watched' : watchingStatus == 'planned' ? 'Planned' : 'Dropped' }}
                         </p>
                         <p 
                             :class="airingStatus == 'Ongoing' ? 'bg-amber-400' : airingStatus == 'Upcoming' ? 'bg-rose-400' : 'bg-emerald-400'"
-                            class="text-zinc-900 font-extrabold text-xs p-1 px-3 rounded-full">
+                            class="text-zinc-900 font-extrabold text-xs md:p-1 md:px-3 px-1 p-0.5 rounded-md">
                             {{ airingStatus }}
                         </p>
                     </div>
@@ -63,36 +65,36 @@
                                     class="bg-gradient-to-r from-emerald-400 to-green-600 transition-all duration-200 ease-in-out rounded-sm p-1">
                                 </div>
                             </div>
-                            <p class="text-zinc-400 text-sm flex flex-row justify-between">Episodes watched <span class="text-zinc-50">{{ watchedEpisodes }} / {{ totalEpisodes == 0 || totalEpisodes == null ? '?' : totalEpisodes }}</span></p>
-                            <p class="text-zinc-400 text-sm flex flex-row justify-between">Added at<span class="text-zinc-50">{{ addedAt }}</span></p>
+                            <p class="text-zinc-400 md:text-sm text-xs flex flex-row justify-between">Episodes watched <span class="text-zinc-50">{{ watchedEpisodes }} / {{ totalEpisodes == 0 || totalEpisodes == null ? '?' : totalEpisodes }}</span></p>
+                            <p class="text-zinc-400 md:text-sm text-xs flex flex-row justify-between">Added at<span class="text-zinc-50">{{ addedAt }}</span></p>
                         </div>
                     </div>
                 </div>
             </div>
-            <h1 v-if="score == 0 || score == -1 ? false : true" class="w-36 flex flex-row justify-center">{{ score }}</h1>
+            <h1 v-if="score == 0 || score == -1 ? false : true" class="md:w-36 w-20 flex flex-row justify-center md:text-5xl text-3xl">{{ score }}</h1>
         </div>
         <div v-if="isAnimeEditMenuOpen && user_id == storedUser.user.user_id" class="relative">
             <div v-if="isLoading" class="w-full h-full absolute backdrop-blur-sm backdrop-brightness-75 z-30"></div>
-            <div class="grid grid-cols-9 gap-3 p-3 bg-zinc-900 rounded-b-md">
+            <div class="grid grid-cols-9 md:gap-3 gap-2 p-3 bg-zinc-900 rounded-b-md">
                 <!-- favorite -->
                 <button 
                     @click="markFavorited()" 
                     :class="isFavorited ? 'bg-rose-500 text-zinc-800' : 'hover:bg-zinc-600/50 bg-zinc-800'" 
-                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out">
-                    <Icon name="ri:heart-fill" class="text-2xl"/>
+                    class="md:p-2 md:px-4 p-1 rounded-md transition duration-300 easy-in-out">
+                    <Icon name="ri:heart-fill" class="md:text-2xl text-lg"/>
                 </button>
 
                 <!-- episodes -->
                 <div class="relative w-full col-span-8">
-                    <div class="w-full z-50 flex items-center flex-row gap-2 p-3 px-5 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
+                    <div class="w-full z-50 flex items-center flex-row gap-2 md:p-3 p-2 md:px-5 px-3 justify-between bg-zinc-800 transition duration-300 easy-in-out rounded-md">
                         <div class="flex flex-row items-center gap-2">
-                            <Icon name="ri:movie-2-fill" class="text-xl"/>
-                            <p class="text-sm font-bold">Watched episodes</p>
+                            <Icon name="ri:movie-2-fill" class="md:text-xl text-lg"/>
+                            <p class="md:text-sm text-xs">Watched episodes</p>
                         </div>
                         <div class="flex flex-row items-center gap-2">
                             <button @click="selectWatchedEpisodesSub()"><Icon name="ri:subtract-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
                             <p class="text-base font-bold hide-arrows">{{ watchedEpisodes }}</p>
-                            <p class="text-sm text-zinc-400">/ {{ totalEpisodes != undefined ? totalEpisodes : '?' }}</p>
+                            <p class="md:text-sm text-xs text-zinc-400">/ {{ totalEpisodes != undefined ? totalEpisodes : '?' }}</p>
                             <button @click="selectWatchedEpisodesAdd()"><Icon name="ri:add-fill" class="hover:scale-125 transition-all duration-100 ease-in-out"/></button>
                         </div>
                     </div>
@@ -100,23 +102,23 @@
 
                 <!-- list -->
                 <div 
-                    class="relative w-full col-span-4" 
+                    class="relative w-full md:col-span-4 col-span-9" 
                     @mouseover="isListMenuOpen = true" 
                     @mouseleave="isListMenuOpen = false">
                     <button 
                         :class="isListMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                        class=" w-full z-50 flex flex-row gap-2 p-3 px-5 justify-between items-center transition duration-300 easy-in-out ">
+                        class=" w-full z-50 flex flex-row gap-2 md:p-3 p-2 md:px-5 px-3 justify-between items-center transition duration-300 easy-in-out ">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name="ri:add-box-fill" class="text-xl"/>
-                            <p class="text-sm font-bold">List</p>
+                            <p class="md:text-sm text-xs">List</p>
                         </div>
                         <p v-if="watchingStatus == 'select' || watchingStatus == undefined || watchingStatus == ''" class="text-sm text-zinc-400">Select</p>
                         <p 
                             v-else
                             :class="watchingStatus == 'watched' ? 'text-emerald-400' : watchingStatus == 'watching' ? 'text-amber-400' : watchingStatus == 'planned' ? 'text-violet-400' : 'text-rose-400'"
-                            class="text-sm font-bold">{{ watchingStatus.charAt(0).toUpperCase() + watchingStatus.slice(1) }}</p>
+                            class="md:text-sm text-xs font-bold">{{ watchingStatus.charAt(0).toUpperCase() + watchingStatus.slice(1) }}</p>
                     </button>
-                    <div v-if="isListMenuOpen" class="absolute mt-11 z-50 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                    <div v-if="isListMenuOpen" class="absolute md:mt-11 mt-9 z-50 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 items-center backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                         <button 
                             @click="selectList('select')" 
                             class="flex flex-row items-center hover:bg-zinc-700/50 justify-between transition duration-300 easy-in-out rounded-md w-full">
@@ -159,21 +161,21 @@
 
                 <!-- score -->
                 <div 
-                    class="relative w-full col-span-3"
+                    class="relative w-full md:col-span-3 col-span-5"
                     @mouseover="isScoreMenuOpen = true" 
                     @mouseleave="isScoreMenuOpen = false">
                     <button 
                         :class="isScoreMenuOpen ? 'bg-zinc-600/50 rounded-t-md' : 'bg-zinc-800 rounded-md'" 
-                        class="items-center w-full z-50 flex flex-row gap-2 p-3 px-5 justify-between transition duration-300 easy-in-out ">
+                        class="items-center w-full z-50 flex flex-row gap-2 md:p-3 p-2 md:px-5 px-3 justify-between transition duration-300 easy-in-out ">
                         <div class="flex flex-row items-center gap-2">
-                            <Icon name="material-symbols:star-rounded" class="text-xl"/>
-                            <p class="text-sm font-bold">Score</p>
+                            <Icon name="material-symbols:star-rounded" class="md:text-xl text-lg"/>
+                            <p class="md:text-sm text-xs font-bold">Score</p>
                         </div>
                         <p 
                             :class="score == -1 || score == 0 || score == undefined ? 'text-zinc-400' : 'text-zinc-50 font-bold'"
                             class="text-sm">{{ score == -1 || score == 0 || score == undefined ? 'Select' : score }}</p>
                     </button>
-                    <div v-if="isScoreMenuOpen" class="absolute z-50 mt-11 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
+                    <div v-if="isScoreMenuOpen" class="absolute z-50 md:mt-11 mt-9 w-full top-0 right-0 text-left p-2 origin-top bg-zinc-800/75 backdrop-blur-3xl rounded-b-md justify-between flex flex-col">
                         <button :class="score == -1 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(-1)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">Select</button>
                         <button :class="score == 10 ? 'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(10)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">10 - Masterpiece</button>
                         <button :class="score == 9 ?  'bg-zinc-700' : 'hover:bg-zinc-700/50'" @click="selectScore(9)" class="text-xs p-2 text-left duration-300 easy-in-out rounded-md">9 - Great</button>
@@ -191,15 +193,15 @@
                 <!-- update -->
                 <button 
                     @click="reloadAnimeEntry()" 
-                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out text-zinc-50 bg-zinc-800 hover:bg-zinc-600/50">
-                    <Icon name="ri:refresh-line" class="text-2xl"/>
+                    class="md:col-span-1 col-span-2 md:p-2 p-2 rounded-md transition duration-300 easy-in-out text-zinc-50 bg-zinc-800 hover:bg-zinc-600/50  items-center flex justify-center">
+                    <Icon name="ri:refresh-line" class="md:text-2xl text-lg"/>
                 </button>
                 
                 <!-- delete -->
                 <button 
                     @click="deleteAnimeEntry()" 
-                    class=" p-2 px-4 rounded-md transition duration-300 easy-in-out hover:bg-rose-500 bg-zinc-800">
-                    <Icon name="ri:delete-bin-2-fill" class="text-2xl"/>
+                    class="md:col-span-1 col-span-2 md:p-2 p-2 rounded-md transition duration-300 easy-in-out hover:bg-rose-500 bg-zinc-800 items-center flex justify-center">
+                    <Icon name="ri:delete-bin-2-fill" class="md:text-2xl text-lg"/>
                 </button>
             </div>
         </div>

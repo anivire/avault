@@ -1,6 +1,6 @@
 <template>
 <!-- ToDo: fix squared and rectangled anime posters -->
-<div class="relative text-left rounded-lg transition duration-300 easy-in-out z-0 flex flex-col justify-between h-[22rem] overflow-hidden">
+<div class="relative text-left rounded-xl transition duration-300 easy-in-out z-0 flex flex-col justify-between xl:h-[22rem] h-[18rem] overflow-hidden">
     <div 
         v-if="airingStatus != 'Not yet aired' && score != null"
         :class="isPosterHovered ? '-translate-x-24' : 'translate-x-0'"
@@ -20,8 +20,8 @@
             :src="imageUrl" 
             width="200"
             height="500"
-            :class="isPosterHovered ? 'h-[22rem] rounded-lg' : 'h-full rounded-t-lg'"
-            class="transition-all duration-200 ease-in-out object-cover" 
+            :class="isPosterHovered ? 'xl:h-[22rem] h-[18rem] rounded-lg' : 'h-full rounded-t-lg'"
+            class="transition-all duration-200 ease-in-out object-cover w-full" 
             loading="lazy"
             @mouseenter="isPosterHovered = true"
             @mouseleave="isPosterHovered = false"
@@ -32,7 +32,7 @@
         class="transition-all duration-200 ease-in-out">
         <div 
             :class="isInfoHovered ? 'translate-y-0' : 'translate-y-0'"
-            class="absolute bottom-0 p-3 flex flex-col grow gap-1 bg-zinc-900 hover:bg-zinc-800 rounded-b-md w-full transition-all duration-200 ease-in-out" 
+            class="absolute bottom-0 p-3 flex flex-col grow gap-1 bg-zinc-900 hover:bg-zinc-800 w-full transition-all duration-200 ease-in-out" 
             @mouseenter="isInfoHovered = true"
             @mouseleave="isInfoHovered = false">
             <div class="flex flex-row items-center gap-1 text-zinc-400 text-xs">
@@ -52,21 +52,6 @@
                 {{ title }}
             </p>
             <p class="text-zinc-400 text-xs">{{ studio }}</p> 
-            <!-- <div 
-                class="flex flex-row gap-3 justify-center items-center">
-                <button class="flex flex-row items-center gap-1 hover:bg-rose-600/90 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:heart-fill"/>
-                </button>
-                <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:star-fill"/>
-                </button>
-                <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md col-span-2 justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:add-box-fill"/>
-                </button>
-                <button class="flex flex-row items-center gap-1 hover:bg-zinc-600/50 rounded-md col-span-2 justify-center p-2 duration-200 easy-in-out transition-colors">
-                    <Icon name="ri:movie-2-fill"/>
-                </button>
-            </div>       -->
         </div>
     </div>
 </div>

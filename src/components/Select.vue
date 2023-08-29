@@ -6,26 +6,26 @@
         <button 
             @click="isItemsShow = !isItemsShow"
             :class="isItemsShow ? 'bg-zinc-800 rounded-t-md' : 'bg-zinc-900 rounded-md'" 
-            class="items-center w-full z-52 flex flex-row gap-2 py-3 px-5 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out">
+            class="items-center w-full z-52 flex flex-row gap-2 md:py-3 md:px-5 py-2 px-2 justify-between hover:bg-zinc-800 transition duration-300 easy-in-out">
             <p 
                 :class="selectedOption.value[0] == -1 ? 'text-zinc-500' : 'font-bold'"
-                class="text-sm">
+                class="md:text-sm text-xs">
                 {{ selectedOption.name }}
             </p>
             <Icon 
                 name="ri:arrow-down-s-line" 
                 :class="isItemsShow ? 'rotate-180' : 'rotate-0'"
-                class="text-xl transition-transform duration-200 ease-in-out"
+                class="md:text-xl text-lg transition-transform duration-200 ease-in-out"
             />
         </button>
         <div
             v-show="isItemsShow" 
-            class="absolute w-full rounded-b-md overflow-x-hidden top-0 mt-11 z-50 p-2 origin-top bg-zinc-900/75 backdrop-blur-3x justify-between flex flex-col backdrop-blur-3xl">
+            class="absolute w-full rounded-b-md overflow-x-hidden top-0 md:mt-11 mt-8 z-50 p-2 origin-top bg-zinc-900/75 backdrop-blur-3x justify-between flex flex-col backdrop-blur-3xl">
             <div 
                 v-for="option in options" 
                 @click="select({ value: option.value, name: option.name })"
                 :class="selectedOption == option ? 'bg-blue-900' : 'hover:bg-blue-900'"
-                class=" p-1 px-3 cursor-pointer rounded-md">
+                class="md:p-1 md:px-3 p-0.5 px-2 cursor-pointer rounded-md">
                 <p class="text-xs">{{ option.name }}</p>
             </div>
         </div>

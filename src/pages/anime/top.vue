@@ -1,12 +1,12 @@
 <template>
-<div class="flex flex-col gap-3 mx-auto max-w-7xl mt-28">
+<div class="flex flex-col gap-3 mx-auto max-w-7xl mt-28 px-5">
     <div class="flex flex-row items-center justify-between px-1 py-3">
         <h1 class="text-lg uppercase">Top 100 anime</h1>
         <Icon name="ri:layout-grid-fill" class="text-2xl"/>
     </div>
     <div 
         v-if="topAnimes && topAnimes.length > 10"
-        class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+        class="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3.5">
         <AnimeCapsule
             v-for="anime, i in topAnimes"
             :aired-from="anime.aired == undefined ? 'n/a' : anime.aired.from"
@@ -20,7 +20,10 @@
             :is-top="true"
             :top-number="i + 1"
         />
-        <AnimeCapsuleSkeleton v-if="isLoadingScroll" v-for="i in 24"/>
+        <AnimeCapsuleSkeleton 
+            v-if="isLoadingScroll" 
+            v-for="i in 12"
+        />
     </div>
 </div>
 </template>

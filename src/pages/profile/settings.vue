@@ -3,48 +3,48 @@
 <nuxt-img 
     v-if="user != null"     
     :src="user.avatar_url ? user.avatar_url : ''" 
-    class="w-screen h-52 object-cover blur-lg opacity-60"
+    class="w-screen md:h-52 h-28 object-cover blur-lg opacity-60"
 />
 </div> 
 
 <div v-if="supabaseUser">
-    <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl mt-36">
+    <div class="flex flex-col gap-5 justify-start relative mx-auto max-w-7xl md:mt-36 mt-32 px-5">
         <div 
             v-if="user != null"
             class="flex flex-col gap-5">   
-            <div class="flex flex-row gap-3 mb-5">  
+            <div class="flex flex-row gap-3 md:mb-5 mb-3">  
                 <nuxt-img 
                 :src="user?.avatar_url ? user.avatar_url : ''" 
-                    class="object-cover rounded-full w-36"
+                    class="object-cover rounded-full md:w-36 md:h-36 h-16 w-16"
                 />
 
                 <div class="flex flex-col gap-1 justify-end">
                     <div class="flex flex-row gap-2 items-center">
-                        <h1 class="text-4xl">{{ user.username }}</h1>
+                        <h1 class="md:text-4xl text-2xl">{{ user.username }}</h1>
                         <div 
                             v-if="user.badges"
                             v-for="entry, i in (user.badges as any)" 
                             class="mt-2 flex flex-row gap-1">
-                            <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="text-xl text-emerald-400"/>
-                            <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="text-xl text-emerald-400"/>
-                            <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="text-lg text-amber-400"/>
+                            <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="md:text-xl text-lg text-emerald-400"/>
+                            <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="md:text-xl text-lg text-emerald-400"/>
+                            <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="md:text-xl text-lg text-amber-400"/>
                         </div>
                     </div>
-                    <div class="flex flex-row gap-5">
-                        <p class="text-zinc-400 flex flex-row items-center text-sm">
-                            <Icon name="ri:at-line" class="text-lg"/>
-                            <span class="text-zinc-400 text-base">{{ user.tag }}</span> 
+                    <div class="flex md:flex-row flex-col md:gap-5 gap-1.5">
+                        <p class="text-zinc-400 flex flex-row gap-1.5 items-center md:text-base text-sm">
+                            <Icon name="ri:at-line" class="md:text-lg text-sm"/>
+                            <span class="text-zinc-400 md:text-base text-sm">{{ user.tag }}</span> 
                         </p>
-                        <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
-                            <Icon name="ri:calendar-line" class="text-lg"/>
+                        <p class="text-zinc-400 flex flex-row gap-1.5 items-center md:text-base text-sm">
+                            <Icon name="ri:calendar-line" class="md:text-lg text-sm"/>
                             Member since 
-                            <span class="text-zinc-50 font-bold text-base">{{ new Date(user.created_at as unknown as string).toLocaleDateString() }}</span> 
+                            <span class="text-zinc-50 font-bold md:text-base text-sm">{{ new Date(user.created_at as unknown as string).toLocaleDateString() }}</span> 
                         </p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-4 gap-3">
+        <div class="md:grid md:grid-cols-4 flex flex-col gap-3">
             <div class="flex flex-col gap-3 w-full bg-zinc-900 p-3 px-5 rounded-md">
                 <div>
                     <h1 class="text-base uppercase">Profile tag</h1>

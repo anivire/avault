@@ -1,46 +1,46 @@
 <template>
 <div class="absolute overflow-hidden">
     <nuxt-img 
-        v-if="user != null" 
+        v-if="user" 
         :src="user.avatar_url!" 
-        class="w-screen h-52 object-cover blur-lg opacity-60"
+        class="w-screen md:h-52 h-28 object-cover blur-lg opacity-60"
     />
 </div> 
 
 <div 
-    v-if="user != null"
-    class="relative mx-auto max-w-7xl mt-36 flex flex-col gap-5">   
-    <div class="flex flex-row gap-3 mb-5">  
+    v-if="user"
+    class="relative mx-auto max-w-7xl md:mt-36 mt-32 flex flex-col gap-5 px-5">   
+    <div class="flex flex-row gap-3 md:mb-5 mb-3">  
         <nuxt-img 
             :src="user.avatar_url!" 
-            class="object-cover rounded-full w-36"
+            class="object-cover rounded-full md:w-36 md:h-36 h-16 w-16"
         />
 
         <div class="flex flex-col gap-1 justify-end">
             <div class="flex flex-row gap-2 items-center">
-                <h1 class="text-4xl">{{ user.username }}</h1>
+                <h1 class="md:text-4xl text-2xl">{{ user.username }}</h1>
                 <div 
                     v-if="user.badges"
                     v-for="entry, i in (user.badges as any)" 
-                    class="mt-2 flex flex-row gap-1">
-                    <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="text-xl text-emerald-400"/>
-                    <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="text-xl text-emerald-400"/>
-                    <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="text-lg text-amber-400"/>
+                    class="flex flex-row gap-1">
+                    <Icon v-if="entry.badge == 'admin'" name="ri:code-box-fill" class="md:text-xl text-lg text-emerald-400"/>
+                    <Icon v-if="entry.badge == 'early-member'" name="ri:seedling-fill" class="md:text-xl text-lg text-emerald-400"/>
+                    <Icon v-if="entry.badge == 'supporter'" name="ri:vip-diamond-fill" class="md:text-xl text-lg text-amber-400"/>
                 </div>
             </div>
-            <div class="flex flex-row gap-5">
-                <p class="text-zinc-400 flex flex-row items-center text-sm">
-                    <Icon name="ri:at-line" class="text-lg"/>
-                    <span class="text-zinc-400 text-base">{{ user.tag }}</span> 
+            <div class="flex md:flex-row flex-col md:gap-5 gap-1.5">
+                <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
+                    <Icon name="ri:at-line" class="md:text-lg text-sm"/>
+                    <span class="text-zinc-400">{{ user.tag }}</span> 
                 </p>
                 <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
-                    <Icon name="ri:calendar-line" class="text-lg"/>
+                    <Icon name="ri:calendar-line" class="md:text-lg text-sm"/>
                     Member since 
-                    <span class="text-zinc-50 font-bold text-base">{{ new Date(user.created_at as unknown as string).toLocaleDateString() }}</span> 
+                    <span class="text-zinc-50 font-bold md:text-base text-sm">{{ new Date(user.created_at as unknown as string).toLocaleDateString() }}</span> 
                 </p>
                 <p class="text-zinc-400 flex flex-row gap-1.5 items-center text-sm">
-                    <Icon name="ri:book-3-line" class="text-lg"/>
-                    <span class="text-zinc-50 font-bold text-base">
+                    <Icon name="ri:book-3-line" class="md:text-lg text-sm"/>
+                    <span class="text-zinc-50 font-bold md:text-base text-sm">
                     {{ anime?.length }}
                     </span> 
                     entries 
@@ -48,9 +48,14 @@
             </div>
         </div>
     </div>
-    <div class="search-panel grid grid-cols-6 gap-3">
+    <div class="search-panel grid md:grid-cols-6 gap-3">
+        <div class="flex flex-col gap-2 col-span-3">
+            <p class="md:text-sm text-xs font-bold uppercase">Search</p>
+            <Input @update:input="q = $event"/>
+        </div>
+        
         <div class="flex flex-col gap-2">
-            <p class="text-sm font-bold uppercase">List</p>
+            <p class="md:text-sm text-xs font-bold uppercase">List</p>
             <Select 
                 :options="listOptions"
                 :default="selectedList"
@@ -58,13 +63,8 @@
             />
         </div>
 
-        <div class="flex flex-col gap-2 col-span-3">
-            <p class="text-sm font-bold uppercase">Search</p>
-            <Input @update:input="q = $event"/>
-        </div>
-        
         <div class="flex flex-col gap-2">
-            <p class="text-sm font-bold uppercase">Format</p>
+            <p class="md:text-sm text-xs font-bold uppercase">Format</p>
             <Select 
                 :options="formatOptions"
                 :default="selectedFormat"
@@ -73,7 +73,7 @@
         </div>
         
         <div class="flex flex-col gap-2">
-            <p class="text-sm font-bold uppercase">Status</p>
+            <p class="md:text-sm text-xs font-bold uppercase">Status</p>
             <Select 
                 :options="statusOptions"
                 :default="selectedStatus"
@@ -82,61 +82,49 @@
         </div>
     </div>
     <div class="flex flex-row gap-3 items-center">
-        <Icon name="ri:price-tag-3-fill"/>
-        <div class="flex flex-row gap-2 items-center grow">            
-            <p 
-                v-show="selectedList.value[0] != -1 && selectedList.value[0] != null"
-                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
-                {{ selectedList.name }}
-            </p>
+        <div class="md:flex hidden flex-row w-full items-center gap-3">
+            <Icon name="ri:price-tag-3-fill"/>
+            <div class="flex flex-row gap-2 items-center grow">            
+                <p 
+                    v-show="selectedList.value[0] != -1 && selectedList.value[0] != null"
+                    class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                    {{ selectedList.name }}
+                </p>
 
-            <p 
-                v-show="selectedFormat.value[0] != -1 && selectedFormat.value[0] != null"
-                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
-                {{ selectedFormat.name }}
-            </p>
+                <p 
+                    v-show="selectedFormat.value[0] != -1 && selectedFormat.value[0] != null"
+                    class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                    {{ selectedFormat.name }}
+                </p>
 
-            <p 
-                v-show="selectedStatus.value[0] != -1 && selectedStatus.value[0] != null"
-                class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
-                {{ selectedStatus.name }}
-            </p>
-        </div>
-
-        <!-- Sort button -->
-        <div class="flex flex-row gap-1">
-            <Icon 
-                @click="viewMode = 'grid'"
-                :class="viewMode == 'grid' ? 'text-zinc-50' : 'text-zinc-400'"
-                name="ri:layout-grid-fill" 
-                class="text-xl cursor-pointer"
-            />  
-            <Icon 
-                @click="viewMode = 'flex'"
-                :class="viewMode == 'flex' ? 'text-zinc-50' : 'text-zinc-400'"
-                name="ri:menu-fill" 
-                class="text-xl cursor-pointer"
-            /> 
+                <p 
+                    v-show="selectedStatus.value[0] != -1 && selectedStatus.value[0] != null"
+                    class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
+                    {{ selectedStatus.name }}
+                </p>
+            </div>
         </div>
         
-        <div class="flex flex-row gap-1">
-            <Icon 
-                @click="selectedSort = sort[0]"
-                :class="selectedSort.value[0] == 'asc' ? 'text-zinc-50' : 'text-zinc-400'"
-                name="ri:sort-asc" 
-                class="text-xl cursor-pointer"
-            />    
-            <Icon 
-                @click="selectedSort = sort[1]"
-                :class="selectedSort.value[0] == 'desc' ? 'text-zinc-50' : 'text-zinc-400'"
-                name="ri:sort-desc" 
-                class="text-xl cursor-pointer"
-            />    
+        <div class="flex flex-row items-center gap-3 md:justify-normal justify-between md:w-fit w-full">
+            <div class="flex flex-row gap-1">
+                <Icon 
+                    @click="selectedSort = sort[0]"
+                    :class="selectedSort.value[0] == 'asc' ? 'text-zinc-50' : 'text-zinc-400'"
+                    name="ri:sort-asc" 
+                    class="text-xl cursor-pointer"
+                />    
+                <Icon 
+                    @click="selectedSort = sort[1]"
+                    :class="selectedSort.value[0] == 'desc' ? 'text-zinc-50' : 'text-zinc-400'"
+                    name="ri:sort-desc" 
+                    class="text-xl cursor-pointer"
+                />    
+            </div>
+            <SmallSelect 
+                :options="order"
+                @update:select-small="selectedOrder = $event"
+            />
         </div>
-        <SmallSelect 
-            :options="order"
-            @update:select-small="selectedOrder = $event"
-        />
         
         <!-- <SmallSelect 
             :options="animePerPage"
@@ -150,8 +138,7 @@
         </div>
         <div 
             v-else
-            :class="viewMode == 'grid' ? 'grid grid-cols-2' : viewMode == 'flex' ? 'flex flex-col' : ''"
-            class="anime gap-5">
+            class="anime gap-5 md:grid grid-cols-2 flex flex-col">
             <AnimeProfileCapsule 
                 v-for="entry in sortedAnime" 
                 :key="entry.entry_id"
@@ -277,11 +264,6 @@ watch(selectedSort, (newValue) => {
 
 const { data: user } = await useAsyncData<profile>('profile', () => $fetch('/api/v1/user/profile', {method: 'GET', query: { tag: route.params.tag }}));
 
-if (user.value == null) {
-    navigateTo('/');
-}
-
-
 if (user.value) {
     const { data, pending } = await useAsyncData('animelist', () => $fetch('/api/v1/user/animelist', {method: 'GET', query: { user_id: user.value!.user_id}}));
     isEntriesPending.value = pending.value;
@@ -290,6 +272,8 @@ if (user.value) {
         anime.value = data.value as unknown as animeList[];
         sortedAnime.value = data.value as unknown as animeList[];
     }
+} else {
+    navigateTo('/');
 }
 
 const updateEntry = async (entryId: string) => {   
@@ -315,7 +299,6 @@ const deleteEntry = async (entryId: string) => {
         }
     });
 }
-
 
 const setSearchQuery = () => {
     sortedAnime.value = anime.value!.filter(x => 

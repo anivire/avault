@@ -1,15 +1,15 @@
 <template>
-    <div class="mt-28 max-w-7xl mx-auto">
-        <div class="flex flex-col gap-5">
+    <div class="mt-28 max-w-7xl mx-auto px-5">
+        <div class="flex flex-col md:gap-5 gap-3">
             <!-- Search panel -->
-            <div class="search-panel grid grid-cols-6 gap-3">
-                <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Search</p>
+            <div class="search-panel grid md:grid-cols-6 grid-cols-3 gap-3">
+                <div class="flex flex-col gap-2 col-span-2">
+                    <p class="md:text-sm text-xs font-bold uppercase">Search</p>
                     <Input @update:input="q = $event"/>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Year</p>
+                    <p class="md:text-sm text-xs font-bold uppercase">Year</p>
                     <Select 
                         :options="yearOptions"
                         :default="selectedYear"
@@ -18,7 +18,7 @@
                 </div>
                 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Format</p>
+                    <p class="md:text-sm text-xs font-bold uppercase">Format</p>
                     <Select 
                         :options="formatOptions"
                         :default="selectedFormat"
@@ -27,7 +27,7 @@
                 </div>
                 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Status</p>
+                    <p class="md:text-sm text-xs font-bold uppercase">Status</p>
                     <Select 
                         :options="statusOptions"
                         :default="selectedStatus"
@@ -35,17 +35,17 @@
                     />
                 </div>
                 
-                <div class="flex flex-col gap-2">
+                <!-- <div class="flex flex-col gap-2">
                     <p class="text-sm font-bold uppercase">Genres</p>
                     <Select 
                         :options="genresOptions"
                         :default="selectedGenre"
                         @update:select="selectedGenre = $event"
                     />
-                </div>
+                </div> -->
                 
                 <div class="flex flex-col gap-2">
-                    <p class="text-sm font-bold uppercase">Starting at</p>
+                    <p class="md:text-sm text-xs font-bold uppercase">Starting at</p>
                     <Select 
                         :options="scoreOptions"
                         :default="selectedScore"
@@ -55,8 +55,8 @@
             </div>
             <!-- Tags -->
             <div class="flex flex-row gap-3 items-center">
-                <Icon name="ri:price-tag-3-fill"/>
-                <div class="flex flex-row gap-2 items-center grow">
+                <div class="md:flex hidden flex-row gap-2 items-center grow">
+                    <Icon name="ri:price-tag-3-fill"/>
                     <p 
                         v-show="selectedYear.value[0] != -1 && selectedYear.value[0] != null"
                         class="py-1 px-3 bg-zinc-50 rounded-xl text-sm text-zinc-900 font-black">
@@ -95,23 +95,25 @@
                     </p>
                 </div>
 
-                <!-- Sort button -->
-                <div class="flex flex-row gap-1">
-                    <Icon 
-                        @click="selectedSort = sort[0]"
-                        :class="selectedSort.value[0] == 'asc' ? 'text-zinc-50' : 'text-zinc-400'"
-                        name="ri:sort-asc" 
-                        class="text-xl cursor-pointer"/>    
-                    <Icon 
-                        @click="selectedSort = sort[1]"
-                        :class="selectedSort.value[0] == 'desc' ? 'text-zinc-50' : 'text-zinc-400'"
-                        name="ri:sort-desc" 
-                        class="text-xl cursor-pointer"/>    
+                <div class="flex flex-row items-center gap-3 md:justify-normal justify-between md:w-fit w-full">
+                    <!-- Sort button -->
+                    <div class="flex flex-row gap-1">
+                        <Icon 
+                            @click="selectedSort = sort[0]"
+                            :class="selectedSort.value[0] == 'asc' ? 'text-zinc-50' : 'text-zinc-400'"
+                            name="ri:sort-asc" 
+                            class="text-xl cursor-pointer"/>    
+                        <Icon 
+                            @click="selectedSort = sort[1]"
+                            :class="selectedSort.value[0] == 'desc' ? 'text-zinc-50' : 'text-zinc-400'"
+                            name="ri:sort-desc" 
+                            class="text-xl cursor-pointer"/>    
+                    </div>
+                    <SmallSelect 
+                        :options="order"
+                        @update:select-small="selectedOrder = $event"
+                    />
                 </div>
-                <SmallSelect 
-                    :options="order"
-                    @update:select-small="selectedOrder = $event"
-                />
                 
                 <!-- <SmallSelect 
                     :options="animePerPage"
@@ -119,10 +121,10 @@
                 /> -->
             </div>
             <!-- Animes -->
-            <div v-if="searchAnimes">
+            <div v-if="!isSearching">
                 <div 
                     v-if="searchAnimes?.length != 0" 
-                    class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+                    class="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3.5">
                     <div v-for="anime in searchAnimes">
                         <AnimeCapsule
                             :aired-from="anime.aired.from"
@@ -146,8 +148,10 @@
             <!-- Skeleton -->
             <div 
                 v-else
-                class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
-                <AnimeCapsuleSkeleton v-for="i in 24"/>
+                class="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3.5">
+                <div v-for="i in 24">
+                    <AnimeCapsuleSkeleton/>
+                </div>
             </div>
             <!-- Pagination -->
             <div
@@ -183,6 +187,9 @@ import AnimeCapsuleSkeleton from '@/src/components/skeleton/AnimeCapsuleSkeleton
 const route = useRoute();
 const router = useRouter();
 
+const updateRouteC = ref(0);
+const isSearching = ref(false);
+
 const order = ref([
     { value: ['score'], name: 'Score'},
     { value: ['title'], name: 'Title'},
@@ -203,14 +210,14 @@ const animePerPage = ref([
 
 const yearOptions = ref([
     { value: [-1], name: 'Any' },
-    { value: [1980, 1990], name: '1980-1989' },
-    { value: [1990, 2000], name: '1990-1999' },
-    { value: [2000, 2011], name: '2000-2010' },
-    { value: [2011, 2015], name: '2011-2014' },
-    { value: [2015, 2020], name: '2015-2019' },
-    { value: [2020, 2022], name: '2020-2021' },
-    { value: [2022, 2023], name: '2022' },
-    { value: [2023, 2024], name: '2023' },
+    { value: [1980, 1990], name: '1980-1990' },
+    { value: [1990, 2000], name: '1990-2000' },
+    { value: [2000, 2011], name: '2000-2011' },
+    { value: [2011, 2015], name: '2011-2015' },
+    { value: [2015, 2020], name: '2015-2020' },
+    { value: [2020, 2022], name: '2020-2022' },
+    { value: [2022, 2023], name: '2022-2023' },
+    { value: [2023, 2024], name: '2023-2024' },
 ]);
 
 const formatOptions = ref([
@@ -253,7 +260,7 @@ const selectedSeason = ref({value: [], name: ''});
 const selectedFormat = ref({value: [], name: ''});
 const selectedStatus = ref({value: [], name: ''});
 const selectedGenre = ref({value: [], name: ''});
-//const searchAnimes = ref<Anime[]>();
+const searchAnimes = ref<Anime[]>();
 const selectedOrder = ref(order.value[0]);
 const selectedAnimePerPage = ref(animePerPage.value[0]);
 const selectedSort = ref(sort.value[1]);
@@ -302,63 +309,18 @@ watch(currentPage, async (newValue, oldValue) => {
     updateRoute();
 })
 
-
-// ToDo: fix unapproved anime in search
-// Show anime on load
-// await Promise.all([
-const {data: searchAnimes} = await useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
-    method: 'GET', 
-    query: {
-            page:           route.query.page,
-            limit:          route.query.limit,
-            orderBy:        route.query.orderBy,
-            sortBy:         route.query.sortBy,
-            searchString:   route.query.q,
-            yearStart:      route.query.yearStart,
-            yearEnd:        route.query.yearEnd,
-            type:           route.query.type,
-            status:         route.query.status,
-            score:          route.query.score
-        }
-    }));
-
-watch(route, (newValue, oldValue) => {
-    console.log('route', route)
-    searchAnimes.value = null;
-
-    useAsyncData('anime', () => $fetch('/api/v1/anime/search', {
-        method: 'GET', 
-        query: {
-                page:           route.query.page,
-                limit:          route.query.limit,
-                orderBy:        route.query.orderBy,
-                sortBy:         route.query.sortBy,
-                searchString:   route.query.q,
-                yearStart:      route.query.yearStart,
-                yearEnd:        route.query.yearEnd,
-                format:         route.query.type,
-                status:         route.query.status,
-                score:          route.query.score
-            }
-        })
-    .then((data: Anime[]) => { 
-
-        searchAnimes.value = data
-     }));
-})
-
-function updateRoute() {
+async function updateRoute() {
     const params: Record<string, string | string[]> = {}
 
     params.page = currentPage.value.toString();
     params.limit = '24';
 
     if (selectedOrder.value.value[0]) {
-        params.orderBy = selectedOrder.value.value[0];
+        params.order_by = selectedOrder.value.value[0];
     }
 
     if (selectedSort.value.value[0]) {
-        params.sortBy = selectedSort.value.value[0];
+        params.sort = selectedSort.value.value[0];
     }
     
     if (q.value != undefined && q.value != '') {
@@ -366,8 +328,8 @@ function updateRoute() {
     }
     
     if (selectedYear.value.value[0] != -1) {
-        params.yearStart = selectedYear.value.value[0];
-        params.yearEnd = selectedYear.value.value[1];
+        params.start_date = selectedYear.value.value[0] + '-01-01';
+        params.end_date = selectedYear.value.value[1] + '-01-01';
     }
     
     if (selectedFormat.value.value[0] != -1) {
@@ -386,6 +348,30 @@ function updateRoute() {
         path: '/anime/search',
         query: params,
     });
+    
+    searchAnimes.value = undefined;
+    isSearching.value = true;
+
+    const {data} = await useFetch('/api/v1/anime/search', {
+        method: 'GET', 
+        query: {
+                page:           params.page,
+                limit:          params.limit,
+                order_by:       params.order_by,
+                sort:           params.sort,
+                q:              params.q,
+                start_date:     params.start_date,
+                end_date:       params.end_date,
+                format:         params.type,
+                status:         params.status,
+                score:          params.score
+            }
+        });
+        
+    if (data) { 
+        searchAnimes.value = data.value!; 
+        isSearching.value = false;
+    }
 }
 
 function prevPage() {

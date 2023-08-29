@@ -1,5 +1,5 @@
 <template>
-<div class="mt-28 flex flex-col gap-3 mx-auto max-w-7xl">
+<div class="mt-28 flex flex-col gap-3 mx-auto max-w-7xl px-5">
     <div class="flex flex-col gap-3">
         <div class="flex flex-row items-center justify-between px-1 py-3">
             <h1 class="text-lg uppercase">Ongoing anime</h1>
@@ -7,7 +7,7 @@
         </div>
         <div
             v-if="!ongoingPending" 
-            class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+            class="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3.5">
             <AnimeCapsule
                 v-for="anime in ongoingAnimes"
                 :aired-from="anime.aired.from"
@@ -21,7 +21,7 @@
             />
         </div>
         <div v-else
-            class="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-3.5">
+            class="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-3.5">
             <AnimeCapsuleSkeleton v-for="i in 24"/>
         </div>
     </div>
