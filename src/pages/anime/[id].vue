@@ -340,38 +340,18 @@ const userIsAnimeFavorited = ref(false);
 
 const currentCharacterPage = ref(0);
 
-const anime = ref<Anime>();
-const searchEntry = ref();
-
 //const { data: characters } = await useAsyncData('characters', () => $fetch('/api/v1/anime/characters', {method: 'GET', query: { id: route.params.id }}));
-const animePromise = useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }}));
-const searchEntryPromise = useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: user.value?.id }}));
-
-Promise.all([animePromise, searchEntryPromise])
-    .then(([animeResponse, searchEntryResponse]) => {
-        if (animeResponse.data.value != undefined) {
-            anime.value = animeResponse.data.value as Anime;
-            searchEntry.value = searchEntryResponse.data.value;
-            isPending.value = true;
-        } else {
-            navigateTo('/anime/search');
-        }
-    })
-    .catch(error => {
+const {data: anime} = await useAsyncData('anime', () => $fetch('/api/v1/anime', {method: 'GET', query: { id: route.params.id }})
+    .catch((error) => {
         navigateTo('/anime/search');
-    });
+    })
+    .finally(() => {
+        isPending.value = true;
+    }));
 
-console.log(anime.value)
+const {data: searchEntry} = await useAsyncData('searchEntry', () => $fetch('/api/v1/user/animelist/searchEntry', {method: 'GET', query: { mal_id: route.params.id, user_id: user.value?.id }}));
 
-// If user authorized, check animeList entry
-if (searchEntry.value?.mal_id != undefined && user.value != null) {
-    userAnimeScore.value = searchEntry.value.score as number;
-    userAnimeList.value = searchEntry.value.watching_status;
-    userWatchedEpisodes.value = searchEntry.value.wathed_episodes as number;
-    userIsAnimeFavorited.value = searchEntry.value.is_favorited;
-}
-
-if (anime.value) {
+if (anime.value != undefined) {
     useSeoMeta({
         title: anime.value.titles[0].title ? anime.value.titles[0].title + ' › AVAULT' : 'Anime › AVAULT',
         ogTitle: anime.value.titles[0].title ? anime.value.titles[0].title : 'Anime',
@@ -379,6 +359,14 @@ if (anime.value) {
         ogDescription: anime.value.synopsis,
         ogImage: anime.value.images.jpg.image_url,
     })
+}
+
+// If user authorized, check animeList entry
+if (searchEntry.value?.mal_id != undefined && user.value != null) {
+    userAnimeScore.value = searchEntry.value.score as number;
+    userAnimeList.value = searchEntry.value.watching_status;
+    userWatchedEpisodes.value = searchEntry.value.wathed_episodes as number;
+    userIsAnimeFavorited.value = searchEntry.value.is_favorited;
 }
 
 function parseAnimeAiringStatus(status: string): string {
